@@ -1,0 +1,70 @@
+/* 字体检查页面样式 */
+.font-check-container {
+  padding: 20px;
+  background-color: #f5f5f5;
+  min-height: 100vh;
+}
+
+.title {
+  font-size: 24px;
+  font-weight: bold;
+  text-align: center;
+  margin-bottom: 30px;
+  color: #333;
+}
+
+.font-section {
+  margin-bottom: 25px;
+  padding: 15px;
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.section-title {
+  font-size: 16px;
+  font-weight: bold;
+  color: #666;
+  margin-bottom: 10px;
+}
+
+/* 各种字体测试 */
+.default-font {
+  font-size: 18px;
+  color: #333;
+  margin-bottom: 5px;
+}
+
+.font-primary {
+  font-family: var(--font-primary);
+  font-size: 18px;
+  color: #333;
+  margin-bottom: 5px;
+}
+
+.font-fangzheng-xingkai {
+  font-family: var(--font-fangzheng-xingkai);
+  font-size: 18px;
+  color: #333;
+  margin-bottom: 5px;
+}
+
+.font-hanyi-xuejun-jian {
+  font-family: var(--font-hanyi-xuejun-jian);
+  font-size: 18px;
+  color: #333;
+  margin-bottom: 5px;
+}
+
+.font-hanyi-xuejun-fan {
+  font-family: var(--font-hanyi-xuejun-fan);
+  font-size: 18px;
+  color: #333;
+  margin-bottom: 5px;
+}
+
+.system-font {
+  font-size: 18px;
+  color: #333;
+  margin-bottom: 5px;
+}

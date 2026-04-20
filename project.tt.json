@@ -1,0 +1,9 @@
+{
+  "miniprogramRoot": "./",
+  "projectname": "codefun",
+  "appid": "wxb74152f68d8ad954",
+  "setting": {
+    "es6": false,
+    "minified": false
+  }
+}

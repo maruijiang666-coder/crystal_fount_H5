@@ -1,0 +1,27 @@
+diff --git a/node_modules/@tarojs/components/types/Button.d.ts b/node_modules/@tarojs/components/types/Button.d.ts
+index 2fe36d6..3428734 100644
+--- a/node_modules/@tarojs/components/types/Button.d.ts
++++ b/node_modules/@tarojs/components/types/Button.d.ts
+@@ -175,6 +175,11 @@ interface ButtonProps extends StandardProps {
+    */
+   onGetRealnameAuthInfo?: CommonEventFunction
+ 
++  /** 获取用户头像，可以从 bindchooseavatar 回调中获取到头像信息
++   * @see https://developers.weixin.qq.com/miniprogram/dev/framework/open-ability/userProfile.html
++   */
++  onChooseavatar?: CommonEventFunction
++
+   /** 当使用开放能力时，发生错误的回调
+    *
+    * 生效时机：`open-type="launchApp"`
+@@ -240,6 +245,10 @@ declare namespace ButtonProps {
+       getPhoneNumber
+       /** 获取用户信息，可以从 bindgetuserinfo 回调中获取到用户信息 */
+       getUserInfo
++      /** 获取用户头像，可以从 bindchooseavatar 回调中获取到头像信息
++       * @see https://developers.weixin.qq.com/miniprogram/dev/framework/open-ability/userProfile.html
++       */
++      chooseAvatar
+       /** 用户实名信息授权，已经弃用 */
+       getRealnameAuthInfo
+       /** 打开APP，可以通过app-parameter属性设定向APP传的参数

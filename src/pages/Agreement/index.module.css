@@ -1,0 +1,47 @@
+.page {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  background-color: #f8f8f8;
+}
+
+.header {
+  padding: 30px;
+  background-color: #ffffff;
+  border-bottom: 1px solid #e0e0e0;
+  display: flex;
+  justify-content: center;
+}
+
+.title {
+  font-size: 36px;
+  font-weight: bold;
+  color: #333333;
+}
+
+.content {
+  flex: 1;
+  padding: 30px 40px;
+  box-sizing: border-box;
+}
+
+.section {
+  margin-bottom: 40px;
+}
+
+.sectionTitle {
+  font-size: 32px;
+  font-weight: bold;
+  color: #333333;
+  margin-bottom: 20px;
+  display: block;
+}
+
+.paragraph {
+  font-size: 28px;
+  color: #666666;
+  line-height: 1.8;
+  margin-bottom: 10px;
+  display: block;
+  text-align: justify;
+}

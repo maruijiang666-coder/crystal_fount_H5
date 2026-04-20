@@ -1,0 +1,59 @@
+.page {
+  padding-bottom: 1002px;
+  background-image: linear-gradient(180deg, #0c0e0e 0%, #17191a 100%);
+  width: 100%;
+  overflow-y: auto;
+  overflow-x: hidden;
+  height: 100%;
+}
+.image {
+  width: 100vw;
+  height: 59.7333vw;
+}
+.image_2 {
+  width: 100vw;
+  height: 145.6vw;
+}
+.pos_2 {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+}
+.group {
+  width: 610px;
+}
+.pos_4 {
+  position: absolute;
+  left: 50%;
+  top: 1042px;
+  transform: translateX(-50%);
+}
+.image_3 {
+  width: 50px;
+  height: 50px;
+}
+.font {
+  font-size: 48px;
+  font-family: Iceland;
+  line-height: 37.92px;
+  color: transparent;
+}
+.text {
+  background-image: linear-gradient(90deg, #da9d4d 0%, #835c2f 100%);
+  -webkit-background-clip: text;
+}
+.pos_3 {
+  position: absolute;
+  right: 34.56px;
+  top: 50%;
+  transform: translateY(-50%);
+}
+.text_2 {
+  color: transparent;
+  font-size: 32px;
+  font-family: Iceland;
+  line-height: 29.56px;
+  background-image: linear-gradient(265.2deg, #d99c4d 10.3%, #ba8541 89.7%);
+  -webkit-background-clip: text;
+}

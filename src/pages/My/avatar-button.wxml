@@ -1,0 +1,7 @@
+<button 
+  class="avatar-choose-btn" 
+  open-type="chooseAvatar" 
+  bindchooseavatar="onChooseAvatarNative"
+>
+  <slot></slot>
+</button>

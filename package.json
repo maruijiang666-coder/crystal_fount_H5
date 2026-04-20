@@ -1,0 +1,67 @@
+{
+  "name": "codefun",
+  "version": "1.0.0",
+  "private": true,
+  "description": "",
+  "templateInfo": {
+    "name": "default",
+    "typescript": false,
+    "css": "css"
+  },
+  "scripts": {
+    "build:weapp": "cross-env NODE_ENV=production NODE_OPTIONS=--openssl-legacy-provider taro build --type weapp",
+    "build:swan": "cross-env NODE_OPTIONS=--openssl-legacy-provider taro build --type swan",
+    "build:alipay": "cross-env NODE_OPTIONS=--openssl-legacy-provider taro build --type alipay",
+    "build:tt": "cross-env NODE_OPTIONS=--openssl-legacy-provider taro build --type tt",
+    "build:h5": "cross-env NODE_OPTIONS=--openssl-legacy-provider taro build --type h5",
+    "build:rn": "cross-env NODE_OPTIONS=--openssl-legacy-provider taro build --type rn",
+    "build:qq": "cross-env NODE_OPTIONS=--openssl-legacy-provider taro build --type qq",
+    "build:jd": "cross-env NODE_OPTIONS=--openssl-legacy-provider taro build --type jd",
+    "build:quickapp": "cross-env NODE_OPTIONS=--openssl-legacy-provider taro build --type quickapp",
+    "dev:weapp": "cross-env NODE_ENV=development NODE_OPTIONS=--openssl-legacy-provider taro build --type weapp --watch",
+    "dev:swan": "cross-env NODE_OPTIONS=--openssl-legacy-provider npm run build:swan -- --watch",
+    "dev:alipay": "cross-env NODE_OPTIONS=--openssl-legacy-provider npm run build:alipay -- --watch",
+    "dev:tt": "cross-env NODE_OPTIONS=--openssl-legacy-provider npm run build:tt -- --watch",
+    "dev:h5": "cross-env NODE_OPTIONS=--openssl-legacy-provider npm run build:h5 -- --watch",
+    "dev:rn": "cross-env NODE_OPTIONS=--openssl-legacy-provider npm run build:rn -- --watch",
+    "dev:qq": "cross-env NODE_OPTIONS=--openssl-legacy-provider npm run build:qq -- --watch",
+    "dev:jd": "cross-env NODE_OPTIONS=--openssl-legacy-provider npm run build:jd -- --watch",
+    "dev:quickapp": "cross-env NODE_OPTIONS=--openssl-legacy-provider npm run build:quickapp -- --watch",
+    "postinstall": "patch-package"
+  },
+  "browserslist": [
+    "last 3 versions",
+    "Android >= 4.1",
+    "ios >= 8"
+  ],
+  "author": "",
+  "dependencies": {
+    "@babel/runtime": "^7.7.7",
+    "@tarojs/components": "3.4.2",
+    "@tarojs/plugin-framework-react": "3.4.2",
+    "@tarojs/react": "3.4.2",
+    "@tarojs/runtime": "3.4.2",
+    "@tarojs/taro": "3.4.2",
+    "react": "^17.0.0",
+    "react-dom": "^17.0.0",
+    "three": "^0.181.2",
+    "threejs-miniprogram": "^0.0.8"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.8.0",
+    "@tarojs/cli": "^3.4.2",
+    "@tarojs/mini-runner": "3.4.2",
+    "@tarojs/webpack-runner": "3.4.2",
+    "@types/react": "^17.0.2",
+    "@types/webpack-env": "^1.13.6",
+    "babel-preset-taro": "3.4.2",
+    "cross-env": "^10.1.0",
+    "eslint": "^6.8.0",
+    "eslint-config-taro": "3.4.2",
+    "eslint-plugin-import": "^2.12.0",
+    "eslint-plugin-react": "^7.8.2",
+    "eslint-plugin-react-hooks": "^4.2.0",
+    "patch-package": "^8.0.1",
+    "stylelint": "^14.4.0"
+  }
+}

@@ -1,0 +1,15 @@
+.sliderContainer {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow-x: hidden;
+  height: 500px; /* 只保留足够的高度来显示卡片 */
+  width: 100%;
+}
+
+.cardImage {
+  object-fit: contain;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
