@@ -4,6 +4,7 @@ import Taro, { useDidShow } from '@tarojs/taro';
 import styles from './SJShouYe.module.css';
 import { getOssImageUrl } from '../../utils/config.js';
 import { checkCrystalActivation } from '../../utils/auth.js';
+import { getApiUrl, API_ENDPOINTS } from '../../utils/api.config.js';
 
 export default function SJShouYe(props) {
   const [pressedCard, setPressedCard] = useState(null);
@@ -36,11 +37,6 @@ export default function SJShouYe(props) {
       const nfcId = Taro.getStorageSync('nfc_tag_id');
       const token = Taro.getStorageSync('importcode');
 
-      if (isWebEnv) {
-        console.log('[SJShouYe] skip touch_crystal request in H5');
-        return;
-      }
-
       if (!nfcId) {
         console.log('[SJShouYe] skip touch_crystal request because nfc_tag_id is missing');
         return;
@@ -53,7 +49,7 @@ export default function SJShouYe(props) {
 
       try {
         const res = await Taro.request({
-          url: 'https://crystal.quant-speed.com/api/touch_crystal/',
+          url: getApiUrl(API_ENDPOINTS.TOUCH_CRYSTAL),
           method: 'GET',
           data: { nfc_tag_id: nfcId },
           header: {
@@ -75,18 +71,13 @@ export default function SJShouYe(props) {
     const fetchUserTags = () => {
       const token = Taro.getStorageSync('importcode');
 
-      if (isWebEnv) {
-        console.log('[SJShouYe] skip user_nfc_tags request in H5');
-        return;
-      }
-
       if (!token) {
         console.log('[SJShouYe] skip user_nfc_tags request because importcode is missing');
         return;
       }
 
       Taro.request({
-        url: 'https://crystal.quant-speed.com/api/activate_crystal/user_nfc_tags/',
+        url: getApiUrl(API_ENDPOINTS.ACTIVATE_CRYSTAL_USER_TAGS),
         method: 'GET',
         header: {
           'accept': 'application/json',
@@ -283,18 +274,8 @@ export default function SJShouYe(props) {
         className={`flex-row ${styles['section']}`}
         style={{backgroundImage: `url(${getOssImageUrl('SJSY/2ef0ed71548c576fd256d13e2f016096.png')})`}}
       >
-        {/* 紫色水晶源石  
-        <Image
-          className={`shrink-0 self-center ${styles['image_2']}`}
-          src={getOssImageUrl('SJSY/7bdd21d5b5815b0b26bfbc0c93eb9614.png')}
-        /> */}
       <Text className={`self-start ${styles['deerTitle']} ${styles['ml-11']}`} style={{fontFamily: 'HanyiXuejunFanti', letterSpacing: '4px'}}>遣山小鹿</Text>
         <Text className={`self-start ${styles['text']} ${styles['ml-11']}`} style={{fontFamily: 'HanyiXuejunFanti',fontSize: '24px',letterSpacing: '2px'}}>运势金</Text>
-        {/* 原本这里是手串的位置。现在变为小鹿
-        <Image
-          className={`flex-1 ${styles['image']} ${styles['ml-11']}`}
-          src={getOssImageUrl('SJSY/6cec6f7f5aa0f7ebd6a5481d215c5a83.png')}
-        /> */}
           <Image
           mode="aspectFit"
           className={`flex-1 ${styles['image']} ${styles['ml-11']}`}
@@ -308,7 +289,7 @@ export default function SJShouYe(props) {
             className={`flex-col ${styles['section_2']}`}
             style={{backgroundImage: `url(${getOssImageUrl('SJSY/b006026aece6a0992802b69125015c60.png')})`}}
           >
-            <View className={`flex-row`}>
+            <View className={styles.statsRow}>
               <View className={`flex-col items-center ${styles['section_3']} ${styles['equal-division-item']}`}
                 onClick={showActivateDate}
                 onTouchStart={() => setPressedCard('activateDate')}
@@ -350,7 +331,7 @@ export default function SJShouYe(props) {
                 )}
               </View>
 
-              <View className={`ml-20 flex-col items-center ${styles['section_3']} ${styles['equal-division-item']}`}
+              <View className={`flex-col items-center ${styles['section_3']} ${styles['equal-division-item']}`}
                 onClick={showDeerLevel}
                 onTouchStart={() => setPressedCard('deerLevel')}
                 onTouchEnd={() => setPressedCard(null)}
@@ -391,7 +372,7 @@ export default function SJShouYe(props) {
                 )}
               </View>
               {/* 触碰次数 */}
-              <View className={`ml-20 flex-col items-center ${styles['section_3']} ${styles['equal-division-item']}`}
+              <View className={`flex-col items-center ${styles['section_3']} ${styles['equal-division-item']}`}
                 onClick={showTouchCount}
                 onTouchStart={() => setPressedCard('touchCount')}
                 onTouchEnd={() => setPressedCard(null)}
@@ -431,7 +412,7 @@ export default function SJShouYe(props) {
                   </View>
                 )}
               </View>
-              <View className={`ml-20 flex-col items-center ${styles['section_3']} ${styles['equal-division-item']}`}
+              <View className={`flex-col items-center ${styles['section_3']} ${styles['equal-division-item']}`}
                 onClick={showFortuneLevel}
                 onTouchStart={() => setPressedCard('fortuneLevel')}
                 onTouchEnd={() => setPressedCard(null)}
@@ -487,28 +468,20 @@ export default function SJShouYe(props) {
             </View>
           </View>
           <View className={`flex-col ${styles['group_2']}`}>
-            <Text className={`self-start ${styles['font_5']} ${styles['text_5']}`}>灵宠</Text>
+            <Text className={`self-start ${styles['font_5']} ${styles['text_5']}`}>我的守护兽</Text>
             <View className={`flex-col self-stretch ${styles['section_5']} ${styles['mt-5']}`}
               style={{
                 backgroundImage: `url(${getOssImageUrl('SJSY/222.png')})`,
                 backgroundSize: '100% 100%',
                 backgroundRepeat: 'no-repeat'
               }}>
-              <View className={`flex-row justify-between items-center relative`}>
+              <View className={`flex-row justify-between items-center`}>
                 <Image
                   className={`${styles['image_4']}`}
                   src={getOssImageUrl('SJSY/1e467fc804d0fd434a82a6706adadf24.png')}
                 />
                 <View 
-                  className={`flex-col items-start ${styles['group_3']}`}
-                  style={{
-                    position: 'absolute',
-                    right: 50,
-                    top: '40%',
-                    transform: 'translateY(-50%)',
-                    zIndex: 10
-                  }}
-                >
+                  className={`flex-col items-start ${styles['group_3']}`}>
                   <Text className={`${styles['font_5']} ${styles['text_6']}`}>迷你鹿</Text>
                   <Text className={`mt-14 ${styles['font_3']} ${styles['text_7']}`}>
                     {crystalData ? crystalData.level : '期待你长大的样子'}
@@ -644,7 +617,7 @@ export default function SJShouYe(props) {
 
                   Taro.showLoading({ title: '检查播客状态...' });
                   Taro.request({
-                      url: 'https://crystal.quant-speed.com/api/yunshi/fortune/podcast/',
+                      url: getApiUrl(API_ENDPOINTS.YUNSHI_PODCAST),
                       method: 'GET',
                       header: {
                           'accept': 'application/json',

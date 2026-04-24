@@ -1,10 +1,10 @@
 import { useState, useEffect, useRef } from 'react';
 import Taro, { useDidShow } from '@tarojs/taro';
 import { View, Text, ScrollView, Image } from '@tarojs/components';
+import { getApiUrl, API_ENDPOINTS } from '../../utils/api.config.js';
 import styles from './index.module.css';
 
-const API_BASE = 'https://crystal.quant-speed.com';
-const PODCAST_API = `${API_BASE}/api/fortune_report/`;
+const PODCAST_API = getApiUrl(API_ENDPOINTS.FORTUNE_REPORT);
 
 // Format seconds to MM:SS
 const formatTime = (seconds) => {

@@ -8,7 +8,7 @@
   margin-top: 14px;
 }
 .page {
-  padding: 84px 41.4px 0 42px;
+  padding: 84px 0 0 0;
   background-image: linear-gradient(180deg, #0c0e0e 0%, #17191a 100%);
   height: 100%;
   width: 100%;
@@ -16,14 +16,14 @@
   overflow-x: hidden;
 }
 .group {
-  margin-left: 21.32px;
-  margin-right: 4.6px;
+  margin: 0 42px;
 }
 .text {
   color: #ffffff;
   font-size: 64px;
   font-family: ABeeZee;
   line-height: 57.72px;
+  white-space: nowrap;
 }
 .image_2 {
   width: 40px;
@@ -34,10 +34,9 @@
   height: 60px;
 }
 .section {
-  margin-right: 4.6px;
-  margin-top: 70.94px;
-  padding: 18px 40px 18px 48.42px;
-  background-image: linear-gradient(90deg, #05bcaa 0%, #223654 100%);
+  margin: 70.94px 42px 0;
+  padding: 30px 40px;
+  background-image: linear-gradient(90deg, #d9b548 0%, #f4e287 100%);
   border-radius: 20px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 }
@@ -49,10 +48,11 @@
 }
 .text_2 {
   color: #ffffff;
-  line-height: 35px;
+  line-height: 40px;
+  font-size: 42px;
 }
 .group_3 {
-  margin-top: 50px;
+  margin: 50px 42px 0;
 }
 .equal-division {
   align-self: stretch;
@@ -64,9 +64,9 @@
 /* New Score Card Styles */
 .score-card {
   flex: 1;
-  background-color: #292b2f;
+  background: linear-gradient(180deg, #26282c 0%, #232529 100%);
   border-radius: 20px;
-  height: 140px;
+  height: 180px;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -94,7 +94,7 @@
 }
 
 .score-main {
-  font-size: 48px;
+  font-size: 60px;
   font-family: Inter;
   font-weight: bold;
   line-height: 1;
@@ -122,7 +122,7 @@
 }
 
 .score-label {
-  font-size: 28px;
+  font-size: 32px;
   font-family: Inter;
   color: #ffffff;
   line-height: 1;
@@ -152,7 +152,7 @@
   transform: scale(0.9) rotate(15deg);
 }
 .section_3 {
-  margin-top: -14px;
+  margin-top: 40px;
   width: 472px;
   height: 510.54px;
 }
@@ -187,30 +187,30 @@
   line-height: 26.34px;
 }
 .section_4 {
-  margin: 46px 30px 0 118px;
-  padding: 14px 0 25.4px;
+  margin: 20px 12px 0 48px;
+  padding: 10px 0 16px;
   background-image: linear-gradient(169.6deg, #313335 4.6%, #82848859 95.4%);
   border-radius: 30px;
-  width: 100px;
-  height: 132px;
+  width: 72px;
+  height: 96px;
 }
 .text_6 {
   line-height: 26.4px;
 }
 .section_5 {
   margin-right: 10px;
-  margin-top: 46px;
-  padding: 14px 0 25.46px;
+  margin-top: 20px;
+  padding: 10px 0 16px;
   background-image: linear-gradient(169.6deg, #313335 4.6%, #82848859 95.4%);
   border-radius: 30px;
-  width: 100px;
-  height: 132px;
+  width: 72px;
+  height: 96px;
 }
 .text_7 {
   line-height: 26.46px;
 }
 .group_5 {
-  padding-top: 76.2px;
+  padding-top: 32px;
 }
 .text_4 {
   margin-left: 10.58px;
@@ -221,8 +221,8 @@
 .text-wrapper {
   background-image: linear-gradient(169.6deg, #313335 4.6%, #82848859 95.4%);
   border-radius: 30px;
-  width: 100px;
-  height: 102.54px;
+  width: 72px;
+  height: 80px;
 }
 .pos_18 {
   position: absolute;
@@ -344,13 +344,19 @@
   position: absolute;
   width: 400px;
   height: 400px;
-  background: radial-gradient(circle, rgba(6, 188, 170, 0.4) 0%, rgba(0,0,0,0) 70%);
+  background: radial-gradient(circle, rgba(135, 198, 215, 0.26) 0%, rgba(0,0,0,0) 72%);
   border-radius: 50%;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
   z-index: -1;
   animation: glow 4s ease-in-out infinite;
+}
+
+.backimg-container {
+  width: 100%;
+  position: relative;
+  z-index: 0;
 }
 
 .crystal-inner {

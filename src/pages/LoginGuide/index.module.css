@@ -5,6 +5,7 @@
   font-family: -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Helvetica, Segoe UI, Arial, Roboto, 'PingFang SC', 'miui', 'Hiragino Sans GB', 'Microsoft Yahei', sans-serif;
   position: relative;
   overflow-x: hidden;
+  box-sizing: border-box;
 }
 
 /* Background Ambient Effects */
@@ -13,8 +14,8 @@
   position: absolute;
   top: -100px;
   right: -100px;
-  width: 500px;
-  height: 500px;
+  width: 320px;
+  height: 320px;
   background: radial-gradient(circle, rgba(214, 162, 7, 0.05), transparent 70%);
   border-radius: 50%;
   pointer-events: none;
@@ -26,8 +27,8 @@
   position: absolute;
   bottom: 10%;
   left: -50px;
-  width: 400px;
-  height: 400px;
+  width: 260px;
+  height: 260px;
   background: radial-gradient(circle, rgba(100, 100, 255, 0.03), transparent 70%);
   border-radius: 50%;
   pointer-events: none;
@@ -54,9 +55,9 @@
 /* Progress Bar */
 .progressContainer {
   position: absolute;
-  top: 60px; /* Adjust based on status bar/header */
-  left: 30px;
-  right: 30px;
+  top: 26px;
+  left: 16px;
+  right: 16px;
   height: 4px;
   background: rgba(255, 255, 255, 0.1);
   border-radius: 2px;
@@ -74,8 +75,8 @@
 
 .stepCounter {
   position: absolute;
-  top: 30px;
-  right: 30px;
+  top: 14px;
+  right: 16px;
   color: rgba(255, 255, 255, 0.4);
   font-size: 14px;
   font-weight: 600;
@@ -84,10 +85,10 @@
 
 .slideCard {
   width: 100%;
-  max-height: 80vh;
+  max-height: 76vh;
   background: rgba(20, 20, 20, 0.6);
-  border-radius: 24px;
-  padding: 30px 24px;
+  border-radius: 18px;
+  padding: 22px 16px;
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
@@ -118,12 +119,12 @@
 /* Step Header inside the card */
 .stepHeader {
   text-align: center;
-  margin-bottom: 24px;
+  margin-bottom: 18px;
   width: 100%;
 }
 
 .stepTitle {
-  font-size: 24px;
+  font-size: 20px;
   color: #fff;
   margin-bottom: 8px;
   font-weight: 700;
@@ -134,7 +135,7 @@
 }
 
 .stepDesc {
-  font-size: 14px;
+  font-size: 13px;
   color: rgba(255, 255, 255, 0.6);
   line-height: 1.5;
 }
@@ -154,15 +155,15 @@
   justify-content: space-between;
   width: 100%;
   margin-top: auto;
-  gap: 16px;
+  gap: 10px;
 }
 
 .navBtn {
   flex: 1;
-  padding: 14px 0;
+  padding: 12px 0;
   border-radius: 30px;
   text-align: center;
-  font-size: 16px;
+  font-size: 14px;
   font-weight: 600;
   transition: all 0.2s;
   border: 1px solid transparent;
@@ -210,16 +211,16 @@
 }
 
 .slideImage {
-  width: 220px;
-  height: 220px;
-  margin-bottom: 40px;
+  width: 160px;
+  height: 160px;
+  margin-bottom: 24px;
   flex-shrink: 0;
   filter: drop-shadow(0 0 20px rgba(255, 255, 255, 0.05));
   object-fit: contain;
 }
 
 .slideTitle {
-  font-size: 26px;
+  font-size: 22px;
   color: #fff;
   margin-bottom: 16px;
   font-weight: 700;
@@ -234,7 +235,7 @@
 }
 
 .slideDesc {
-  font-size: 15px;
+  font-size: 14px;
   color: rgba(255, 255, 255, 0.6);
   line-height: 1.6;
   text-align: center;
@@ -244,7 +245,7 @@
 /* Indicators */
 .indicators {
   position: absolute;
-  bottom: 100px;
+  bottom: 72px;
   left: 0;
   right: 0;
   display: flex;
@@ -270,7 +271,7 @@
 
 .fixedStartBtnWrapper {
   position: absolute;
-  bottom: 40px;
+  bottom: 24px;
   left: 0;
   right: 0;
   display: flex;
@@ -280,8 +281,8 @@
 
 .cancelBtnTop {
   position: absolute;
-  top: 40px;
-  left: 30px;
+  top: 18px;
+  left: 16px;
   z-index: 100;
   padding: 6px 16px;
   background: rgba(255, 255, 255, 0.1);
@@ -295,9 +296,9 @@
 .startBtn {
   background: linear-gradient(135deg, #d6a207, #8e6c05);
   color: #fff;
-  padding: 14px 50px;
+  padding: 12px 32px;
   border-radius: 40px;
-  font-size: 18px;
+  font-size: 16px;
   font-weight: 600;
   box-shadow: 0 4px 20px rgba(214, 162, 7, 0.2);
   animation: float 3s ease-in-out infinite;
@@ -313,19 +314,19 @@
 
 /* Form Styles */
 .formContainer {
-  padding: 20px 20px 60px;
+  padding: 14px 14px 36px;
   position: relative;
   z-index: 1;
 }
 
 .header {
   text-align: center;
-  margin-bottom: 30px;
-  padding-top: 20px;
+  margin-bottom: 20px;
+  padding-top: 10px;
 }
 
 .title {
-  font-size: 28px;
+  font-size: 22px;
   color: #fff;
   margin-bottom: 8px;
   display: block;
@@ -342,9 +343,9 @@
 
 .section {
   background: rgba(255, 255, 255, 0.03);
-  border-radius: 16px;
-  padding: 20px;
-  margin-bottom: 20px;
+  border-radius: 14px;
+  padding: 14px;
+  margin-bottom: 14px;
   border: 1px solid rgba(255, 255, 255, 0.08);
   backdrop-filter: blur(10px);
 }
@@ -352,7 +353,7 @@
 .sectionHeader {
   display: flex;
   align-items: center;
-  margin-bottom: 20px;
+  margin-bottom: 14px;
   border-bottom: 1px solid rgba(255, 255, 255, 0.05);
   padding-bottom: 10px;
 }
@@ -367,14 +368,14 @@
 }
 
 .sectionTitle {
-  font-size: 18px;
+  font-size: 16px;
   color: #e0e0e0;
   font-weight: 600;
   letter-spacing: 1px;
 }
 
 .formGroup {
-  margin-bottom: 24px; /* Increased spacing */
+  margin-bottom: 18px;
 }
 
 /* New Label Styles with Icon Support */

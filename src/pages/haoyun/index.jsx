@@ -2,6 +2,7 @@ import { useState, useRef, useEffect, useMemo } from 'react';
 import Taro from '@tarojs/taro';
 import { View, Text, Image, Button } from '@tarojs/components';
 import { getOssImageUrl } from '../../utils/config.js';
+import { getApiUrl, API_ENDPOINTS } from '../../utils/api.config.js';
 import styles from './index.module.css';
 
 // 水晶加成数据
@@ -172,7 +173,7 @@ export default function Haoyun(props) {
     // 3. 最后尝试请求 API
     try {
       const res = await Taro.request({
-        url: 'https://crystal.quant-speed.com/api/fortune_report/',
+        url: getApiUrl(API_ENDPOINTS.FORTUNE_REPORT),
         method: 'GET',
         header: {
           'accept': 'application/json',
@@ -356,7 +357,7 @@ export default function Haoyun(props) {
   // 计算圆弧位置
   const getArcPosition = (position, offset = 0) => {
     const radius = 100; // 圆弧半径
-    const arcWidth = 280; // 圆弧宽度
+    const arcWidth = 280; // 圆弧宽度（px）
     const itemWidth = arcWidth / 3; // 每个槽位宽度
     
     // 计算当前位置的 x 坐标
@@ -364,14 +365,12 @@ export default function Haoyun(props) {
     const normalizedPos = position - 2 + (offset / itemWidth);
     const x = normalizedPos * itemWidth;
     
-    // 计算 y 坐标（下凹圆弧，负值表示向下）
+    // 计算 y 坐标，维持更舒展的弧线，避免水晶标签贴到小鹿周围
     const normalizedX = x / (arcWidth / 2);
-    // 稍微平缓一点的圆弧，或者保持原样
     const y = -radius * (1 - Math.sqrt(Math.max(0, 1 - normalizedX * normalizedX)));
     
-    // 计算缩放（中间大，两边小）
-    // 放大中间效果：1.3
-    const scale = 1.3 - Math.abs(normalizedPos) * 0.3;
+    // 中间放大，两侧弱化
+    const scale = Math.max(0.72, 1.3 - Math.abs(normalizedPos) * 0.3);
     
     // 计算透明度
     const opacity = Math.max(0.3, 1 - Math.abs(normalizedPos) * 0.3);
@@ -453,7 +452,7 @@ export default function Haoyun(props) {
   // 根据幸运色生成渐变背景样式 (支持模糊匹配)
   const getGradientStyle = (luckyColor) => {
     // 定义默认背景色（蓝绿色渐变）
-    const defaultGradient = 'linear-gradient(90deg, #05bcaa 0%, #223654 100%)';
+    const defaultGradient = 'linear-gradient(90deg, #d9b548 0%, #f4e287 100%)';
     const defaultTextColor = '#ffffff'; // 默认深色背景下文字为白色
 
     // 1. 如果值为空、undefined 或 null，直接返回默认色
@@ -511,7 +510,7 @@ export default function Haoyun(props) {
   return (
     <View className={`flex-col ${styles['page']} ${props.className}`}>
       <View className={`flex-row justify-between items-center self-stretch ${styles['group']}`}>
-        <View className={`flex-row items-end`}>
+        <View className={`flex-row items-center`}>
           <Text className={`${styles['text']}`}>互动</Text>
            <Image
               className={`shrink-0 ${styles['image_2']}`}
@@ -532,11 +531,6 @@ export default function Haoyun(props) {
               alignItems: 'center'
             }}
           >
-            {/* 分享按钮，暂时不用了 */}
-               {/* <Image
-          className={`${styles['image']}`}
-          src={getOssImageUrl('haoyun/f04c3c46f4d4b3c37bc6b6bbab979bbd.png')}
-        /> */}
           </Button>
       </View>
       {/* 总体运势 */}
@@ -557,7 +551,7 @@ export default function Haoyun(props) {
         <View className='flex-col'>
           <Text className={`${styles['font']} ${styles['text_2']}`} style={{ color: currentStyle.color }}>总体得分：{currentOverallScore}</Text>
           {fortuneData.lucky_color && (
-            <Text className={`${styles['font_3']}`} style={{ fontSize: '24px', marginTop: '8px', color: currentStyle.color }}>
+            <Text className={`${styles['font_3']}`} style={{ marginTop: '4px', color: currentStyle.color }}>
               幸运色：{fortuneData.lucky_color}
             </Text>
           )}
@@ -591,6 +585,7 @@ export default function Haoyun(props) {
         style={{
             backgroundImage: `url(https://tangledup-ai-staging.oss-cn-shanghai.aliyuncs.com/mini_app/crystal_mini_app/assets/haoyun/xiaolu.gif)`,
             backgroundSize: '100% 100%',
+            backgroundPosition: 'center',
             backgroundRepeat: 'no-repeat'
           }}
         onClick={() => {
@@ -643,10 +638,14 @@ export default function Haoyun(props) {
               }}
               style={{
                 position: 'absolute',
-                transform: `translateX(${pos.x}rpx) translateY(${pos.y}rpx) scale(${pos.scale})`,
-                opacity: pos.opacity,
+                left: '50%',
+                top: '0',
+                transform: `translateX(calc(-50% + ${pos.x}px)) translateY(${pos.y}px) scale(${pos.scale})`,
+                opacity: isCenter ? 1 : pos.opacity,
                 transition: isAnimating ? 'all 0.3s ease-out' : 'none',
                 zIndex: Math.round((1 - Math.abs(pos.x) / 200) * 100),
+                pointerEvents: isCenter ? 'auto' : 'none',
+                filter: isCenter ? 'none' : 'blur(0.15px)'
               }}
             >
               <View 
@@ -689,7 +688,7 @@ export default function Haoyun(props) {
           backgroundPosition: 'center',
           width: '100%',
           height: '320px',
-          marginTop: '-100px', // Pull it up a bit to overlap with crystals as seen in design often, or just to reduce space
+          marginTop: '-100px',
           // filter: 'blur(10px)'
         }}
       />

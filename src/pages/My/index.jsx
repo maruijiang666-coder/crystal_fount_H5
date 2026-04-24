@@ -479,7 +479,7 @@ export default function My(props) {
 
       // 获取详情
       const res = await Taro.request({
-        url: `https://crystal.quant-speed.com/api/profiles/${profileId}/`,
+        url: getApiUrl(`${API_ENDPOINTS.PROFILES}${profileId}/`),
         method: 'GET',
         header: {
           'accept': 'application/json',
@@ -524,7 +524,7 @@ export default function My(props) {
       console.log('开始更新用户信息:', updateData);
 
       const res = await Taro.request({
-        url: 'https://crystal.quant-speed.com/api/auth/users/me/',
+        url: getApiUrl(API_ENDPOINTS.USER_ME),
         method: 'PATCH',
         header: {
           'accept': 'application/json',

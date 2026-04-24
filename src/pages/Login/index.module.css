@@ -1,46 +1,55 @@
 .mt-25 {
-  margin-top: 50px;
+  margin-top: 22px;
 }
 .page {
   background-color: #0b1411;
   width: 100%;
+  box-sizing: border-box;
   overflow-y: auto;
   overflow-x: hidden;
   min-height: 100vh;
-  padding: 645.78px 0 557.56px;
+  padding: 96px 18px 140px;
   display: flex;
   flex-direction: column;
+  justify-content: center;
 }
 .group {
-  margin: 0 38px;
+  width: 100%;
+  max-width: 420px;
+  margin: 0 auto;
 }
 .text {
   color: #fbbc05;
-  font-size: 48px;
-  font-family: Inter;
-  line-height: 44.12px;
+  font-size: 32px;
+  font-family: var(--font-primary, Inter);
+  line-height: 1.15;
+  text-align: center;
 }
 .font {
-  font-size: 28px;
-  font-family: Inter;
-  line-height: 26.02px;
+  font-size: 16px;
+  font-family: var(--font-primary, Inter);
+  line-height: 1.5;
 }
 .text_2 {
   color: #dadada;
+  text-align: center;
 }
 .text-wrapper {
-  padding: 36.48px 0 34.72px;
+  padding: 16px 0 15px;
   background-color: #a5864d;
-  width: 566px;
+  width: 100%;
+  max-width: 320px;
+  border-radius: 14px;
   display: flex;
   justify-content: center;
   align-items: center;
+  box-sizing: border-box;
 }
 .text_3 {
   color: #ffffff;
-  font-size: 40px;
-  font-family: Inter;
-  line-height: 36.8px;
+  font-size: 22px;
+  font-family: var(--font-primary, Inter);
+  line-height: 1.2;
 }
 .login-button {
   background: transparent;
@@ -56,50 +65,56 @@
 }
 
 .cancel-button {
-  margin-top: 40px;
-  width: 566px;
-  height: 100px;
+  margin-top: 18px;
+  width: 100%;
+  max-width: 320px;
+  height: 54px;
   display: flex;
   justify-content: center;
   align-items: center;
   border: 1px solid rgba(165, 134, 77, 0.5);
   background-color: rgba(165, 134, 77, 0.1);
+  border-radius: 14px;
+  box-sizing: border-box;
 }
 
 .cancel-text {
   color: #a5864d;
-  font-size: 32px;
-  font-family: Inter;
+  font-size: 18px;
+  font-family: var(--font-primary, Inter);
 }
 
 .agreement-container {
-  margin-top: 40px;
+  margin-top: 20px;
   display: flex;
   flex-direction: row;
   justify-content: center;
   align-items: center;
   flex-wrap: wrap;
+  gap: 4px 0;
 }
 
 .agreement-text {
-  font-size: 24px;
+  font-size: 13px;
   color: #dadada;
+  line-height: 1.5;
 }
 
 .agreement-link {
-  font-size: 24px;
+  font-size: 13px;
   color: #a5864d;
+  line-height: 1.5;
 }
 
 .checkbox-area {
-  margin-right: 16px;
+  margin-right: 8px;
 }
 
 .checkbox {
-  width: 32px;
-  height: 32px;
+  width: 18px;
+  height: 18px;
   border-radius: 50%;
-  border: 2px solid #a5864d;
+  border: 1.5px solid #a5864d;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -111,11 +126,11 @@
 }
 
 .checkbox-inner {
-  width: 16px;
-  height: 8px;
-  border-left: 3px solid #fff;
-  border-bottom: 3px solid #fff;
-  transform: rotate(-45deg) translate(2px, -2px);
+  width: 9px;
+  height: 5px;
+  border-left: 2px solid #fff;
+  border-bottom: 2px solid #fff;
+  transform: rotate(-45deg) translate(1px, -1px);
 }
 
 .modal-overlay {
@@ -133,39 +148,41 @@
 
 .modal-content {
   background-image: linear-gradient(200.5deg, #3d6650 -28.1%, #273d31 121.1%);
-  width: 600px;
-  border-radius: 20px;
-  padding: 40px;
+  width: min(92vw, 360px);
+  border-radius: 16px;
+  padding: 24px 18px 18px;
   display: flex;
   flex-direction: column;
   border: 2px solid #666666;
   box-shadow: 0px 8px 16px #00000066;
+  box-sizing: border-box;
 }
 
 .modal-header {
   display: flex;
   flex-direction: column;
-  margin-bottom: 40px;
+  margin-bottom: 20px;
 }
 
 .modal-title {
-  font-size: 36px;
+  font-size: 24px;
   color: #fbbc05;
   font-weight: bold;
-  margin-bottom: 20px;
+  margin-bottom: 10px;
   text-align: center;
 }
 
 .modal-subtitle {
-  font-size: 40px;
+  font-size: 18px;
   color: #ffffff;
   font-weight: bold;
-  margin-bottom: 10px;
+  margin-bottom: 6px;
 }
 
 .modal-desc {
-  font-size: 28px;
+  font-size: 14px;
   color: #dadada;
+  line-height: 1.5;
 }
 
 .modal-form {
@@ -176,10 +193,11 @@
 .form-item {
   display: flex;
   flex-direction: row;
-  align-items: center;
+  align-items: flex-start;
   justify-content: space-between;
-  padding: 30px 0;
+  padding: 16px 0;
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  gap: 12px;
 }
 
 .form-item:last-child {
@@ -187,8 +205,9 @@
 }
 
 .form-label {
-  font-size: 32px;
+  font-size: 16px;
   color: #dadada;
+  flex-shrink: 0;
 }
 
 .avatar-btn {
@@ -221,20 +240,75 @@
   width: 300px;
 }
 
+.modal-input {
+  text-align: right;
+  font-size: 16px;
+  color: #ffffff;
+  width: 100%;
+  min-width: 0;
+}
+
+.code-input {
+  flex: 1;
+  width: auto;
+}
+
+.code-panel {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.code-input-wrap {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+
+.code-btn {
+  flex-shrink: 0;
+  height: 36px;
+  padding: 0 12px;
+  line-height: 36px;
+  border-radius: 10px;
+  background: linear-gradient(90deg, #a5864d 0%, #d6b36a 100%);
+  color: #ffffff;
+  font-size: 13px;
+  border: none;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 76px;
+  width: 76px;
+  appearance: none;
+}
+
+.code-btn::after {
+  border: none;
+}
+
+.code-btn[disabled] {
+  opacity: 0.55;
+}
+
 .modal-footer {
   display: flex;
   flex-direction: row;
   justify-content: space-between;
-  margin-top: 40px;
-  gap: 30px;
+  margin-top: 22px;
+  gap: 12px;
 }
 
 .btn-refuse {
   flex: 1;
   background-color: rgba(255, 255, 255, 0.1);
   color: #dadada;
-  font-size: 32px;
-  padding: 24px 0;
+  font-size: 16px;
+  padding: 12px 0;
   border-radius: 8px;
   text-align: center;
   line-height: 1.4;
@@ -246,8 +320,8 @@
   flex: 1;
   background-color: #a5864d;
   color: #ffffff;
-  font-size: 32px;
-  padding: 24px 0;
+  font-size: 16px;
+  padding: 12px 0;
   border-radius: 8px;
   text-align: center;
   line-height: 1.4;
@@ -259,15 +333,15 @@
   display: flex;
   flex-direction: row;
   align-items: flex-start;
-  margin-top: 30px;
-  padding: 0 10px;
+  margin-top: 16px;
+  padding: 0 4px;
 }
 
 .agreement-content {
   flex: 1;
-  font-size: 24px;
+  font-size: 12px;
   color: #dadada;
-  line-height: 1.5;
+  line-height: 1.6;
 }
 
 .link {

@@ -3,6 +3,7 @@ import { View, Text, Image, ScrollView, Textarea } from '@tarojs/components';
 import Taro, { useDidShow, useDidHide } from '@tarojs/taro';
 import styles from './index.module.css';
 import { getOssImageUrl } from '../../utils/config';
+import { getApiUrl, API_ENDPOINTS } from '../../utils/api.config.js';
 import RollingNumber from '../../components/RollingNumber';
 import NFCManager from '../../utils/NFCManager';
 
@@ -392,8 +393,8 @@ export default function NFCTouch() {
   const callTouchCrystalApi = () => {
     const storedNfcId = Taro.getStorageSync('nfc_tag_id');
     const nfcId = storedNfcId || 'NFC__004';
-    Taro.request({
-      url: 'https://crystal.quant-speed.com/api/touch_crystal/',
+      Taro.request({
+          url: getApiUrl(API_ENDPOINTS.TOUCH_CRYSTAL),
       method: 'POST',
       header: {
         'accept': 'application/json',
@@ -448,7 +449,7 @@ export default function NFCTouch() {
       }
 
       Taro.request({
-        url: 'https://crystal.quant-speed.com/api/activate_crystal/',
+        url: getApiUrl(API_ENDPOINTS.ACTIVATE_CRYSTAL),
         method: 'POST',
         header: {
           accept: 'application/json',
@@ -590,7 +591,7 @@ export default function NFCTouch() {
       const nfcId = storedNfcId || 'NFC_003';
 
       Taro.request({
-          url: 'https://crystal.quant-speed.com/api/touch_crystal/consume_energy/',
+          url: getApiUrl(API_ENDPOINTS.TOUCH_CRYSTAL_CONSUME_ENERGY),
           method: 'POST',
           header: {
               'accept': 'application/json',

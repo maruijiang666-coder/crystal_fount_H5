@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import Taro, { useRouter } from '@tarojs/taro'
 import { View, Text, Image, Input, Textarea, Picker, Swiper, SwiperItem, ScrollView } from '@tarojs/components'
+import { getApiUrl, API_ENDPOINTS } from '../../utils/api.config.js'
 import styles from './index.module.css'
 
 // MBTI Choices defined in the model
@@ -402,9 +403,9 @@ export default function LoginGuide() {
 
       Taro.showLoading({ title: isEditMode ? '更新中...' : '保存中...' });
 
-      const url = isEditMode && profileId 
-        ? `https://crystal.quant-speed.com/api/profiles/${profileId}/`
-        : 'https://crystal.quant-speed.com/api/profiles/';
+      const url = isEditMode && profileId
+        ? getApiUrl(`${API_ENDPOINTS.PROFILES}${profileId}/`)
+        : getApiUrl(API_ENDPOINTS.PROFILES);
       
       const method = isEditMode && profileId ? 'PATCH' : 'POST';
 

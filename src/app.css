@@ -7,7 +7,12 @@
 @import './styles/fonts.css';
 
 html {
-  font-size: 16px;
+  font-size: var(--app-font-size, 20px);
+  min-height: 100%;
+  height: 100%;
+  background: #0b1411;
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
 }
 
 body {
@@ -16,6 +21,10 @@ body {
     'Droid Sans', 'Helvetica Neue', 'Microsoft Yahei', sans-serif);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  min-height: 100%;
+  min-height: calc(var(--app-vh, 1vh) * 100);
+  overflow-x: hidden;
+  background: #0b1411;
 }
 
 view,
@@ -25,9 +34,115 @@ text {
   flex-shrink: 0;
 }
 
+/* Ensure Taro H5 Image respects the size set on the component wrapper. */
+taro-image-core,
+.taro-img,
+.taro-img__mode-scaleToFill,
+.taro-img__mode-aspectFit,
+.taro-img__mode-aspectFill,
+.taro-img__mode-widthFix,
+.taro-img__mode-heightFix {
+  box-sizing: border-box;
+}
+
+taro-image-core {
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+taro-image-core img,
+taro-image-core image,
+.taro-img img,
+.taro-img image {
+  display: block;
+  width: 100%;
+  height: 100%;
+  max-width: 100%;
+  max-height: 100%;
+}
+
 #app {
-  width: 100vw;
-  height: 100vh;
+  width: 100%;
+  min-height: 100vh;
+  min-height: calc(var(--app-vh, 1vh) * 100);
+}
+
+html,
+body,
+#app,
+.taro_router,
+.taro_page {
+  min-height: 100%;
+}
+
+#app,
+.taro_router,
+.taro_page {
+  width: 100%;
+}
+
+.taro_page {
+  min-height: 100vh;
+  min-height: calc(var(--app-vh, 1vh) * 100);
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+body,
+#app,
+.taro_router {
+  padding-left: env(safe-area-inset-left);
+  padding-right: env(safe-area-inset-right);
+}
+
+/* H5 tabBar readability */
+.weui-tabbar,
+.taro-tabbar__tabbar,
+.taro_router .weui-tabbar,
+.taro_router .taro-tabbar__tabbar {
+  min-height: 112px;
+  height: 112px;
+  padding-bottom: env(safe-area-inset-bottom);
+  background: #111313;
+}
+
+.weui-tabbar__item,
+.taro-tabbar__tabbar .weui-tabbar__item,
+.taro-tabbar__tabbar-item {
+  padding-top: 10px;
+  padding-bottom: 8px;
+}
+
+.weui-tabbar__icon,
+.taro-tabbar__icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px !important;
+  height: 44px !important;
+  overflow: hidden;
+}
+
+.weui-tabbar__icon image,
+.weui-tabbar__icon img,
+.taro-tabbar__icon image,
+.taro-tabbar__icon img,
+.weui-tabbar__icon taro-image-core,
+.taro-tabbar__icon taro-image-core {
+  width: 100% !important;
+  height: 100% !important;
+  max-width: 100% !important;
+  max-height: 100% !important;
+}
+
+.weui-tabbar__label,
+.taro-tabbar__label,
+.taro-tabbar__tabbar .weui-tabbar__label {
+  margin-top: 6px;
+  font-size: 20px !important;
+  line-height: 1.2;
+  transform: none;
 }
 
 .flex-row {

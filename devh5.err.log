@@ -2,22 +2,22 @@
 [baseline-browser-mapping] The data in this module is over two months old.  To ensure accurate Baseline data, please update: `npm i baseline-browser-mapping@latest -D`
 - Compiling...
 - Compiling...
-(node:5464) [DEP0111] DeprecationWarning: Access to process.binding('http_parser') is deprecated.
+(node:12120) [DEP0111] DeprecationWarning: Access to process.binding('http_parser') is deprecated.
 (Use `node --trace-deprecation ...` to show where the warning was created)
 ✅  Compiled successfully!
 
-^Cnode:internal/child_process:502
-      throw errnoException(err, 'kill');
-      ^
+- Compiling...
+- Compiling...
+- Compiling...
+✅  Compiled successfully!
 
-Error: kill ENOSYS
-    at ChildProcess.kill (node:internal/child_process:502:13)
-    at process.<anonymous> (file:///F:/crystal_fount/node_modules/cross-env/dist/index.js:23:41)
-    at process.emit (node:events:517:28) {
-  errno: -4054,
-  code: 'ENOSYS',
-  syscall: 'kill'
-}
+- Compiling...
+- Compiling...
+- Compiling...
+✅  Compiled successfully!
 
-Node.js v18.20.8
-^C
+- Compiling...
+- Compiling...
+- Compiling...
+✅  Compiled successfully!
+

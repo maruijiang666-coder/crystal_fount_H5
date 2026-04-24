@@ -55,12 +55,81 @@ export default function TaLuo(props) {
   const cardSliderRef = useRef(null);
   const isTouchingCardSlider = useRef(false);
 
+  const resetSpreadState = (showToast = false) => {
+    setSelectedCardIndex(null);
+    setSelectedCards([]);
+    setDrawnCards([]);
+    setFlippedStatus([false, false, false]);
+    setCurrentSpreadIndex(0);
+    setCardOrder([0, 1, 2]);
+    setIsSpreadConfirmed(false);
+    isTouchingCardSlider.current = false;
+    touchStartRef.current = { x: 0, y: 0 };
+    Taro.removeStorageSync('last_tarot_reading');
+
+    if (showToast) {
+      Taro.showToast({
+        title: '已重置',
+        icon: 'none',
+        duration: 1000
+      });
+    }
+  };
+
   const handleCardSelect = (index) => {
     setSelectedCardIndex(index);
     console.log('[TaLuo] onCardSelect', {
       index,
       selectedCardsLength: selectedCards.length,
       isSpreadConfirmed,
+    });
+  };
+
+  const handlePickCurrentCard = () => {
+    if (!isSpreadConfirmed) {
+      return;
+    }
+
+    if (selectedCardIndex === null) {
+      Taro.showToast({
+        title: '请先选中一张牌',
+        icon: 'none',
+        duration: 1000
+      });
+      return;
+    }
+
+    if (selectedCards.length >= 3) {
+      Taro.showToast({
+        title: '已达到3张上限',
+        icon: 'none',
+        duration: 1000
+      });
+      return;
+    }
+
+    if (selectedCards.includes(selectedCardIndex)) {
+      Taro.showToast({
+        title: '此卡片已选择',
+        icon: 'none',
+        duration: 1000
+      });
+      return;
+    }
+
+    console.log('准备添加第', selectedCards.length + 1, '张卡');
+    setSelectedCards(prevSelectedCards => [...prevSelectedCards, selectedCardIndex]);
+
+    const newCard = getRandomCard(drawnCards);
+    if (newCard) {
+      setDrawnCards(prevDrawnCards => [...prevDrawnCards, newCard]);
+    }
+
+    console.log('添加卡片到顶部，当前已选:', selectedCards.length + 1);
+    Taro.showToast({
+      title: `已选择第${selectedCards.length + 1}张牌`,
+      icon: 'none',
+      duration: 1000
     });
   };
 
@@ -120,40 +189,9 @@ export default function TaLuo(props) {
       selectedCardsLength: selectedCards.length,
     });
 
-    // 向上滑动超过100px，且有选中的卡片，且未达到3张上限
-    if (deltaY > 100 && selectedCardIndex !== null && selectedCards.length < 3) {
-      // 检查是否已经选过这张卡 (Visual Check)
-      if (!selectedCards.includes(selectedCardIndex)) {
-        
-        console.log('准备添加第', selectedCards.length + 1, '张卡');
-        setSelectedCards(prevSelectedCards => [...prevSelectedCards, selectedCardIndex]);
-        
-        // 2. Draw a Random Tarot Card
-        const newCard = getRandomCard(drawnCards);
-        if (newCard) {
-            setDrawnCards(prevDrawnCards => [...prevDrawnCards, newCard]);
-        }
-
-        console.log('添加卡片到顶部，当前已选:', selectedCards.length + 1);
-
-        Taro.showToast({
-          title: `已选择第${selectedCards.length + 1}张牌`,
-          icon: 'none',
-          duration: 1000
-        });
-      } else {
-        Taro.showToast({
-          title: '此卡片已选择',
-          icon: 'none',
-          duration: 1000
-        });
-      }
-    } else if (selectedCards.length >= 3) {
-      Taro.showToast({
-        title: '已达到3张上限',
-        icon: 'none',
-        duration: 1000
-      });
+    // 向上滑动在卡片选择器区域内时，直接触发选牌
+    if (deltaY > 100) {
+      handlePickCurrentCard();
     }
   };
 
@@ -228,16 +266,7 @@ export default function TaLuo(props) {
 
   // 重置选择
   const handleReset = () => {
-    setSelectedCards([]);
-    setDrawnCards([]);
-    setFlippedStatus([false, false, false]);
-    setCardOrder([0, 1, 2]); // 重置顺序
-    setIsSpreadConfirmed(false); // 重置时同时也重置牌阵确认状态
-    Taro.showToast({
-      title: '已重置',
-      icon: 'none',
-      duration: 1000
-    });
+    resetSpreadState(true);
   };
 
   const handleSpreadChange = (e) => {
@@ -247,6 +276,11 @@ export default function TaLuo(props) {
   const handleConfirmSpread = () => {
     setIsSpreadConfirmed(true);
   };
+
+  Taro.useDidShow(() => {
+    // 进入页面时强制重开一局，避免上一次的抽牌状态残留
+    resetSpreadState(false);
+  });
 
   return (
     <>
@@ -279,18 +313,18 @@ export default function TaLuo(props) {
                 circular
                 current={currentSpreadIndex}
                 onChange={handleSpreadChange}
-                style={{ width: '90%', height: '300px', marginTop: '20px' }}
+                style={{ width: '100%', height: 'auto', minHeight: '300px', marginTop: '20px' }}
                 >
                 {SPREAD_TYPES.map((spread) => (
                     <SwiperItem key={spread.id}>
-                    <View className='flex-col items-center justify-center' style={{ height: '100%', padding: '0 20px' }}>
-                        <Text className={styles.spreadTitle} style={{ color: '#D4AF37', fontSize: '32px', fontWeight: 'bold', marginBottom: '10px' }}>
+                    <View className='flex-col items-center justify-center' style={{ height: '100%', padding: '0 10px' }}>
+                        <Text className={styles.spreadTitle} style={{ color: '#D4AF37', fontSize: '25px', fontWeight: 'bold', marginBottom: '5px' }}>
                         {spread.name}
                         </Text>
-                        <Text style={{ color: '#aaa', fontSize: '24px', marginBottom: '10px' }}>
-                        {spread.subTitle}
+                        <Text style={{ color: '#aaa', fontSize: '26px', marginBottom: '12px' }}>
+                          {spread.subTitle}
                         </Text>
-                        <Text style={{ color: '#fff', fontSize: '22px', textAlign: 'center', lineHeight: '30px', whiteSpace: 'pre-wrap' }}>
+                        <Text style={{ color: '#fff', fontSize: '16px', textAlign: 'center', lineHeight: '1.5', whiteSpace: 'pre-wrap' }}>
                         {spread.description}
                         </Text>
                     </View>
@@ -335,11 +369,14 @@ export default function TaLuo(props) {
 
         {/* 卡片选择器 - Only show when spread is confirmed */}
         {isSpreadConfirmed && (
-            <View style={{ width: '100%', height: '520px', flexShrink: 0 }}>
+            <View style={{ width: '100%', height: '200px', flexShrink: 0, marginTop: '-6px' }}>
             <CardSlider
                 ref={cardSliderRef}
                 style={{ width: '100%', height: '100%' }}
+                cardWidth={124}
+                cardHeight={186}
                 onCardSelect={handleCardSelect}
+                onSwipeUp={handlePickCurrentCard}
                 onInSliderChange={(isInside) => {
                   isTouchingCardSlider.current = isInside;
                 }}

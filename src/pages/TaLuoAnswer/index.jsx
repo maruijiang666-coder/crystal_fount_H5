@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import Taro from '@tarojs/taro';
 import { View, Text, Image, ScrollView, Swiper, SwiperItem, MovableArea, MovableView } from '@tarojs/components';
 import { getOssImageUrl } from '../../utils/config.js';
+import { getApiUrl, API_ENDPOINTS } from '../../utils/api.config.js';
 import styles from './index.module.css';
 import tarotMapping from '../TaLuo/tarot_mapping.json';
 
@@ -577,7 +578,7 @@ export default function TaLuoAnswer(props) {
 
       try {
           const res = await Taro.request({
-              url: `https://crystal.quant-speed.com/api/yunshi/fortune/tasks/${taskId}/`,
+               url: getApiUrl(`${API_ENDPOINTS.YUNSHI_TASKS}${taskId}/`),
               method: 'GET',
               header: {
                   'accept': 'application/json',
@@ -820,7 +821,7 @@ export default function TaLuoAnswer(props) {
 
     try {
         const res = await Taro.request({
-            url: 'https://crystal.quant-speed.com/api/yunshi/fortune/report/?async=1',
+             url: `${getApiUrl(API_ENDPOINTS.YUNSHI_REPORT)}?async=1`,
             method: 'POST',
             header: {
                 'accept': 'application/json',
@@ -896,7 +897,7 @@ export default function TaLuoAnswer(props) {
 
       // 1. Consume Energy
       Taro.request({
-          url: 'https://crystal.quant-speed.com/api/touch_crystal/consume_energy/',
+           url: getApiUrl(API_ENDPOINTS.TOUCH_CRYSTAL_CONSUME_ENERGY),
           method: 'POST',
           header: headers,
           data: {
@@ -914,7 +915,7 @@ export default function TaLuoAnswer(props) {
                   // 2. Generate Podcast
                   setTimeout(() => {
                       Taro.request({
-                          url: 'https://crystal.quant-speed.com/api/yunshi/fortune/podcast/',
+                           url: getApiUrl(API_ENDPOINTS.YUNSHI_PODCAST),
                           method: 'GET',
                           header: headers,
                           success: (podcastRes) => {

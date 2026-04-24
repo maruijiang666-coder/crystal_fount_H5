@@ -1,12 +1,12 @@
 .page {
   display: flex;
   flex-direction: column;
-  height: 100vh;
+  min-height: 100vh;
   background-color: #f8f8f8;
 }
 
 .header {
-  padding: 30px;
+  padding: 18px 16px;
   background-color: #ffffff;
   border-bottom: 1px solid #e0e0e0;
   display: flex;
@@ -14,42 +14,42 @@
 }
 
 .title {
-  font-size: 36px;
+  font-size: 24px;
   font-weight: bold;
   color: #333333;
 }
 
 .content {
   flex: 1;
-  padding: 30px 40px;
+  padding: 18px 16px 28px;
   box-sizing: border-box;
 }
 
 .section {
-  margin-bottom: 40px;
+  margin-bottom: 24px;
 }
 
 .sectionTitle {
-  font-size: 32px;
+  font-size: 18px;
   font-weight: bold;
   color: #333333;
-  margin-bottom: 20px;
+  margin-bottom: 10px;
   display: block;
 }
 
 .paragraph {
-  font-size: 28px;
+  font-size: 14px;
   color: #666666;
-  line-height: 1.8;
+  line-height: 1.75;
   margin-bottom: 10px;
   display: block;
   text-align: justify;
 }
 
 .listItem {
-  font-size: 28px;
+  font-size: 14px;
   color: #666666;
-  line-height: 1.8;
-  padding-left: 20px;
+  line-height: 1.75;
+  padding-left: 12px;
   display: block;
 }

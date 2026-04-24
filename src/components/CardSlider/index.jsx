@@ -9,9 +9,10 @@ const CardSlider = forwardRef((props, ref) => {
     visibleCount = 11, 
     imageUrl = "https://tangledup-ai-staging.oss-cn-shanghai.aliyuncs.com/mini_app/crystal_mini_app/assets/TaLuo/oneCard.png",
     onCardSelect,
+    onSwipeUp,
     onInSliderChange,
-    cardWidth = 320,
-    cardHeight = 480
+    cardWidth = 124,
+    cardHeight = 186
   } = props;
 
   const [selectedIndex, setSelectedIndex] = useState(defaultSelectedIndex);
@@ -44,6 +45,7 @@ const CardSlider = forwardRef((props, ref) => {
     touchStartYRef.current = touch.clientY;
     isTouchingRef.current = true;
     gestureIntentRef.current = 'pending';
+    if (onInSliderChange) onInSliderChange(true);
     console.log('[CardSlider] touchstart', {
       x: touchStartXRef.current,
       y: touchStartYRef.current,
@@ -53,7 +55,6 @@ const CardSlider = forwardRef((props, ref) => {
 
   const handleTouchMove = (e) => {
     if (!isTouchingRef.current) return;
-    
     const touch = e.touches[0];
     const deltaX = touch.clientX - touchStartXRef.current;
     const deltaY = touch.clientY - touchStartYRef.current;
@@ -85,9 +86,6 @@ const CardSlider = forwardRef((props, ref) => {
     });
     
     if (gestureIntentRef.current === 'horizontal') {
-      if (e?.stopPropagation) {
-        e.stopPropagation();
-      }
       try {
         e.preventDefault();
       } catch (err) {
@@ -99,7 +97,6 @@ const CardSlider = forwardRef((props, ref) => {
 
   const handleTouchEnd = (e) => {
     if (!isTouchingRef.current) return;
-    
     const touch = e.changedTouches[0];
     const deltaX = touch.clientX - touchStartXRef.current;
     const deltaY = touch.clientY - touchStartYRef.current;
@@ -117,9 +114,8 @@ const CardSlider = forwardRef((props, ref) => {
       rightCount,
     });
     
-    const minSwipeDistance = 50;
-    
-    const isHorizontalSwipe = gestureIntentRef.current === 'horizontal' || Math.abs(deltaX) > Math.abs(deltaY);
+    const minSwipeDistance = 24;
+    const isHorizontalSwipe = gestureIntentRef.current === 'horizontal' || Math.abs(deltaX) > Math.abs(deltaY) * 0.8;
     if (isHorizontalSwipe && Math.abs(deltaX) > minSwipeDistance) {
       const swipeIntensity = Math.abs(deltaX);
       let cardChangeCount = 1;
@@ -147,13 +143,16 @@ const CardSlider = forwardRef((props, ref) => {
         horizontal: Math.abs(deltaX) > Math.abs(deltaY),
         distance: Math.abs(deltaX),
       });
+      if (deltaY > 100 && onSwipeUp) {
+        onSwipeUp(selectedIndex);
+      }
     }
     
     isTouchingRef.current = false;
     gestureIntentRef.current = 'pending';
     setDragOffsetX(0);
     if (onInSliderChange) {
-      setTimeout(() => onInSliderChange(false), 0);
+      onInSliderChange(false);
     }
   };
 
@@ -162,7 +161,7 @@ const CardSlider = forwardRef((props, ref) => {
     gestureIntentRef.current = 'pending';
     setDragOffsetX(0);
     if (onInSliderChange) {
-      setTimeout(() => onInSliderChange(false), 0);
+      onInSliderChange(false);
     }
   };
 
@@ -248,8 +247,8 @@ const CardSlider = forwardRef((props, ref) => {
         // 弧形分布算法
         const displayCenterIndex = leftCount;
         const distanceFromCenter = displayIndex - displayCenterIndex;
-        const x = distanceFromCenter * 55;
-        const y = Math.abs(distanceFromCenter) * Math.abs(distanceFromCenter) * 3;
+        const x = distanceFromCenter * 34;
+        const y = Math.abs(distanceFromCenter) * Math.abs(distanceFromCenter) * 2.2;
         const dragFollow = dragOffsetX * 0.22;
         
         return (
@@ -259,16 +258,16 @@ const CardSlider = forwardRef((props, ref) => {
             src={imageUrl}
             style={{
               position: 'absolute',
-              left: `calc(50% + ${x}rpx)`,
-              top: `calc(50% + ${y}rpx)`,
+              left: `calc(50% + ${x}px)`,
+              top: `calc(52% + ${y}px)`,
               transform: displayIndex === leftCount
                 ? `translate(-50%, -50%) translateX(${dragFollow}px) scale(1.05)`
                 : `translate(-50%, -50%) translateX(${dragFollow}px)`,
               zIndex: (leftCount + rightCount) - displayIndex,
               filter: displayIndex === leftCount ? 'none' : 'grayscale(50%) brightness(70%)',
               transition: 'all 0.5s ease-in-out',
-              width: `${cardWidth}rpx`,
-              height: `${cardHeight}rpx`
+              width: `${cardWidth}px`,
+              height: `${cardHeight}px`
             }}
           />
         );
@@ -278,7 +277,7 @@ const CardSlider = forwardRef((props, ref) => {
       <View style={{
         position: 'absolute',
         left: '50%',
-        top: 'calc(50% - 260px)',
+        top: 'calc(50% - 170px)',
         transform: 'translateX(-50%)',
         zIndex: 9999,
         pointerEvents: 'none',
@@ -301,8 +300,8 @@ CardSlider.defaultProps = {
   totalCards: 78,
   defaultSelectedIndex: 60,
   visibleCount: 11,
-  cardWidth: 320,
-  cardHeight: 480
+  cardWidth: 124,
+  cardHeight: 186
 };
 
 CardSlider.displayName = 'CardSlider';

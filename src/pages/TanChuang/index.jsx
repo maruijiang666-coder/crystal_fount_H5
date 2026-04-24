@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import Taro from '@tarojs/taro';
 import { View, Text, Image, Input } from '@tarojs/components';
+import { getApiUrl, API_ENDPOINTS } from '../../utils/api.config.js';
 import styles from './index.module.css';
 
 export default function TanChuang(props) {
@@ -28,7 +29,7 @@ export default function TanChuang(props) {
     }
     
     Taro.request({
-      url: 'https://crystal.quant-speed.com/api/touch_crystal/consume_energy/',
+      url: getApiUrl(API_ENDPOINTS.TOUCH_CRYSTAL_CONSUME_ENERGY),
       method: 'POST',
       header: {
         'accept': 'application/json',

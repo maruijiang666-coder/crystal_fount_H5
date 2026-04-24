@@ -10,30 +10,30 @@
 }
 
 .page-logged-in {
-  padding: 80px 0 40px;
+  padding: 36px 0 24px;
 }
 
 /* 已登录状态样式 */
 .logged-in-container {
-  padding: 40px 38px;
+  padding: 18px 16px 140px;
 }
 
 .user-card {
   background: linear-gradient(135deg, rgba(165, 134, 77, 0.2) 0%, rgba(165, 134, 77, 0.05) 100%);
   border-radius: 20px;
   padding: 40px;
-  margin-bottom: 40px;
+  margin-bottom: 30px;
   border: 1px solid rgba(165, 134, 77, 0.3);
 }
 
 .user-info {
-  gap: 24px;
+  gap: 14px;
 }
 
 .avatar-wrapper {
-  width: 120px;
-  height: 120px;
-  border-radius: 60px;
+  width: 160px;
+  height: 160px;
+  border-radius: 80px;
   overflow: hidden;
   border: 3px solid #a5864d;
 }
@@ -54,55 +54,55 @@
 
 .avatar-text {
   color: #ffffff;
-  font-size: 48px;
+  font-size: 28px;
   font-weight: bold;
 }
 
 .user-details {
   flex: 1;
-  gap: 12px;
+  gap: 6px;
 }
 
 .user-nickname {
   color: #fbbc05;
-  font-size: 40px;
+  font-size: 48px;
   font-weight: bold;
-  line-height: 48px;
+  line-height: 52px;
 }
 
 .user-phone {
   color: #dadada;
   font-size: 28px;
-  line-height: 36px;
+  line-height: 32px;
 }
 
 .menu-section {
   background: rgba(255, 255, 255, 0.05);
   border-radius: 20px;
-  padding: 0 40px;
-  margin-bottom: 40px;
+  padding: 0 24px;
+  margin-bottom: 30px;
 }
 
 .menu-item {
-  padding: 40px 0;
+  padding: 30px 0;
   justify-content: space-between;
 }
 
 .menu-icon {
-  font-size: 40px;
-  margin-right: 24px;
+  font-size: 36px;
+  margin-right: 18px;
 }
 
 .menu-text {
   flex: 1;
   color: #dadada;
   font-size: 32px;
-  line-height: 40px;
+  line-height: 36px;
 }
 
 .menu-arrow {
   color: #a5864d;
-  font-size: 48px;
+  font-size: 28px;
   font-weight: 300;
 }
 
@@ -112,11 +112,11 @@
 }
 
 .logout-section {
-  margin-top: 60px;
+  margin-top: 24px;
 }
 
 .logout-button {
-  padding: 36px 0;
+  padding: 24px 0;
   background: rgba(165, 134, 77, 0.1);
   border-radius: 20px;
   border: 1px solid rgba(165, 134, 77, 0.3);
@@ -142,9 +142,9 @@
 
 .modal-content {
   background-image: linear-gradient(200.5deg, #3d6650 -28.1%, #273d31 121.1%);
-  width: 600px;
+  width: 320px;
   border-radius: 20px;
-  padding: 40px;
+  padding: 20px;
   display: flex;
   flex-direction: column;
   border: 2px solid #666666;
@@ -154,26 +154,26 @@
 .modal-header {
   display: flex;
   flex-direction: column;
-  margin-bottom: 40px;
+  margin-bottom: 20px;
 }
 
 .modal-title {
-  font-size: 36px;
+  font-size: 22px;
   color: #fbbc05;
   font-weight: bold;
-  margin-bottom: 20px;
+  margin-bottom: 12px;
   text-align: center;
 }
 
 .modal-subtitle {
-  font-size: 40px;
+  font-size: 24px;
   color: #ffffff;
   font-weight: bold;
   margin-bottom: 10px;
 }
 
 .modal-desc {
-  font-size: 28px;
+  font-size: 16px;
   color: #dadada;
 }
 
@@ -187,7 +187,7 @@
   flex-direction: row;
   align-items: center;
   justify-content: space-between;
-  padding: 30px 0;
+  padding: 16px 0;
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 
@@ -196,7 +196,7 @@
 }
 
 .form-label {
-  font-size: 32px;
+  font-size: 18px;
   color: #dadada;
 }
 
@@ -204,8 +204,8 @@
   background: none;
   padding: 0;
   margin: 0;
-  width: 80px;
-  height: 80px;
+  width: 56px;
+  height: 56px;
   border-radius: 10px;
   overflow: hidden;
   display: flex;
@@ -231,25 +231,25 @@
 
 .nickname-input {
   text-align: right;
-  font-size: 32px;
+  font-size: 18px;
   color: #ffffff;
-  width: 300px;
+  width: 160px;
 }
 
 .modal-footer {
   display: flex;
   flex-direction: row;
   justify-content: space-between;
-  margin-top: 40px;
-  gap: 30px;
+  margin-top: 20px;
+  gap: 12px;
 }
 
 .btn-refuse {
   flex: 1;
   background-color: rgba(255, 255, 255, 0.1);
   color: #dadada;
-  font-size: 32px;
-  padding: 24px 0;
+  font-size: 18px;
+  padding: 14px 0;
   border-radius: 8px;
   text-align: center;
   line-height: 1.4;

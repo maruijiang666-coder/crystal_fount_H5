@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import Taro, { useDidShow } from '@tarojs/taro';
 import { View, Text, Image } from '@tarojs/components';
 import { getOssImageUrl } from '../../utils/config.js';
+import { getApiUrl, API_ENDPOINTS } from '../../utils/api.config.js';
 import GLBViewer from '../../components/GLBViewer';
 import styles from './xiangxi.module.css';
 
@@ -140,7 +141,7 @@ export default function Xiangxi(props) {
     const fetchFortuneData = async () => {
       try {
         const res = await Taro.request({
-          url: 'https://crystal.quant-speed.com/api/fortune_report/',
+           url: getApiUrl(API_ENDPOINTS.FORTUNE_REPORT),
           method: 'GET',
           header: {
             'accept': 'application/json',
@@ -215,7 +216,7 @@ export default function Xiangxi(props) {
 
   const fetchCrystalCount = () => {
     Taro.request({
-      url: 'https://crystal.quant-speed.com/api/activate_crystal/user_nfc_tags/',
+       url: getApiUrl(API_ENDPOINTS.ACTIVATE_CRYSTAL_USER_TAGS),
       method: 'GET',
       header: {
         'accept': 'application/json',

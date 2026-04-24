@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import Taro, { useShareAppMessage, useShareTimeline } from '@tarojs/taro';
 import { View, Text, Image, ScrollView, Button } from '@tarojs/components';
 import { getOssImageUrl } from '../../utils/config.js';
+import { getApiUrl, API_ENDPOINTS } from '../../utils/api.config.js';
 import styles from './yunshi.module.css';
 import ShiYeCard from '../../components/Cards/ShiYeCard/index.jsx'
 import CaiFuCard from '../../components/Cards/CaiFuCard/index.jsx';
@@ -81,7 +82,7 @@ export default function Yunshi(props) {
       // 3. 最后尝试请求 API
       try {
         const res = await Taro.request({
-          url: 'https://crystal.quant-speed.com/api/fortune_report/',
+           url: getApiUrl(API_ENDPOINTS.FORTUNE_REPORT),
           method: 'GET',
           header: {
             'accept': 'application/json',
@@ -114,7 +115,7 @@ export default function Yunshi(props) {
       try {
         const nfcId = Taro.getStorageSync('nfc_tag_id') || 'NFC__004';
         const res = await Taro.request({
-          url: 'https://crystal.quant-speed.com/api/touch_crystal/',
+           url: getApiUrl(API_ENDPOINTS.TOUCH_CRYSTAL),
           method: 'GET',
           data: { nfc_tag_id: nfcId },
           header: {

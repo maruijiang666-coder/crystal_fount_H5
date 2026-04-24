@@ -18,23 +18,25 @@
   flex-direction: column;
 }
 .group_1 {
-  padding-bottom: 90px;
+  padding-bottom: 54px;
   overflow-y: auto;
 }
 .group {
-  padding: 20px 0;
+  padding: 12px 0;
 }
 .image {
-  margin-left: 32px;
-  width: 100px;
-  height: 100px;
+  margin-left: 18px;
+  width: 64px;
+  height: 64px;
 }
 .section {
-  padding: 140px 60px 40px 60px;
-  background-image: url('https://ide.code.fun/api/image?token=69212ff7043f1900118e7765&name=1e734912a97ed8f162bfe0b3fe1f74f7.png');
+  padding: 60px 20px 40px;
   background-size: 100% 100%;
   background-repeat: no-repeat;
   flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 .pos {
   position: absolute;
@@ -44,13 +46,14 @@
   bottom: 0;
 }
 .font {
-  font-size: 64px;
-  font-family: Homemade Apple;
-  line-height: 68.62px;
+  font-size: 48px;
+  font-family: 'Serif', 'Georgia', 'Times New Roman';
+  line-height: 1.2;
   color: #d6a207;
+  font-weight: bold;
 }
 .group_2 {
-  margin-top: 46px;
+  margin-top: 24px;
 }
 .text {
   color: #ffffff;
@@ -83,9 +86,8 @@
   top: 0;
 }
 .font_2 {
-  font-size: 25;
-  font-family: Iceland;
-  /* line-height: 27.84px; */
+  font-size: 32px;
+  font-family: 'Serif', 'Georgia';
   color: transparent;
 }
 .text_2 {
@@ -93,9 +95,8 @@
   -webkit-background-clip: text;
 }
 .font_3 {
-  font-size: 25px;
-  font-family: Iceland;
-  /* line-height: 37.92px; */
+  font-size: 28px;
+  font-family: 'Serif', 'Georgia';
   color: #828282;
 }
 .text_3 {
@@ -117,18 +118,18 @@
   line-height: 23.2px;
 }
 .group_4 {
-  margin-top: 56px;
-  padding-left: 74px;
-  padding-right: 66px;
+  margin-top: 28px;
+  padding-left: 18px;
+  padding-right: 18px;
 }
 .group_5 {
-  padding-bottom: 40px;
+  padding-bottom: 24px;
   display: flex;
   flex-direction: column;
   align-items: center;
   flex: 1;
   justify-content: center;
-  gap: 30px;
+  gap: 24px;
   min-height: 0;
 }
 .resultItem {
@@ -154,48 +155,48 @@
   max-width: calc(50% - 16px);
 }
 .section_3 {
-  padding: 2px 16px;
+  padding: 4px 12px;
   background-color: #161819;
-  border-radius: 40px;
+  border-radius: 24px;
   box-shadow: 0px 8px 8px #00000040 inset;
   border-image-slice: 1;
-  height: 88px;
-  border: solid 4px #dea353;
+  height: 64px;
+  border: solid 2px #dea353;
   width: 100%;
   box-sizing: border-box;
 }
 .image_6 {
-  width: 100px;
-  height: 76px;
+  width: 70px;
+  height: 52px;
 }
 .equal-division-item_2 {
   flex: 1 0 320px;
   max-width: calc(50% - 16px);
 }
 .section_4 {
-  padding: 0 32px 4px;
+  padding: 0 16px 4px;
   background-color: #161819;
-  border-radius: 40px;
+  border-radius: 24px;
   box-shadow: 0px 8px 8px #00000040 inset;
   border-image-slice: 1;
-  height: 88px;
-  border: solid 4px #50361c;
+  height: 64px;
+  border: solid 2px #50361c;
   width: 100%;
   box-sizing: border-box;
 }
 .image_5 {
-  width: 80px;
-  height: 80px;
+  width: 56px;
+  height: 56px;
 }
 .image_7 {
-  width: 112px;
-  height: 46px;
+  width: 78px;
+  height: 32px;
 }
 /*
  悬浮卡片组容器 - 固定在顶部，横向排列 */
 .floatingCardsContainer {
   position: fixed;
-  top: 150px;
+  top: 120px;
   left: 50%;
   transform: translateX(-50%);
   z-index: 1000;
@@ -214,7 +215,7 @@
   flex-direction: column;
   align-items: center;
   animation: floatIn 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) both;
-  width: 180px;
+  width: 200px;
 }
 
 .floatingCardText {
@@ -232,8 +233,8 @@
 }
 
 .confirmButton {
-  margin-top: 30px;
-  padding: 16px 48px;
+  margin-top: 40px;
+  padding: 20px 60px;
   background: linear-gradient(90deg, #D4AF37 0%, #F8D96D 100%);
   border-radius: 40px;
   box-shadow: 0 4px 12px rgba(212, 175, 55, 0.3);
@@ -267,7 +268,7 @@
 
 .confirmButtonText {
   color: #1a1a1a;
-  font-size: 28px;
+  font-size: 32px;
   font-weight: bold;
   letter-spacing: 1px;
 }
@@ -285,8 +286,8 @@
 
 /* 3D Flip Scene */
 .flipScene {
-  width: 180px;
-  height: 270px;
+  width: 200px;
+  height: 300px;
   position: relative;
   /* 悬浮动画移到这里 */
   animation: cardFloat 3s ease-in-out infinite;
@@ -379,11 +380,11 @@
 /* 重置按钮 - 优雅的暗黑风格 */
 .resetButton {
   position: fixed;
-  top: 450px;
+  top: 480px;
   left: 50%;
   transform: translateX(-50%);
   z-index: 1001;
-  padding: 10px 20px;
+  padding: 12px 24px;
   background: linear-gradient(135deg, rgba(30, 41, 59, 0.95) 0%, rgba(15, 23, 42, 0.95) 100%);
   border-radius: 48px;
   border: 2px solid rgba(148, 163, 184, 0.3);
@@ -429,19 +430,19 @@
 
 /* User Question Display */
 .userQuestionContainer {
-  margin-top: 10px;
-  padding: 10px 30px;
+  margin-top: 16px;
+  padding: 12px 36px;
   background: rgba(255, 255, 255, 0.05);
-  border-radius: 20px;
+  border-radius: 999px;
   border: 1px solid rgba(212, 175, 55, 0.3);
   max-width: 90%;
 }
 
 .userQuestionText {
   color: #D4AF37;
-  font-size: 26px;
+  font-size: 32px;
   text-align: center;
-  font-family: Iceland;
+  font-family: 'Serif', 'Georgia';
   letter-spacing: 1px;
   line-height: 1.4;
 }
@@ -456,4 +457,11 @@
     opacity: 1;
     transform: translateX(-50%) translateY(0);
   }
+}
+
+.spreadTitle {
+  color: #D4AF37;
+  font-size: 36px;
+  font-weight: bold;
+  margin-bottom: 10px;
 }

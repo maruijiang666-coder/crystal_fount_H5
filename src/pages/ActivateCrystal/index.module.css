@@ -32,7 +32,7 @@
 
 .mainTitle {
   color: #ffffff;
-  font-size: 28px;
+  font-size: 60px;
   text-align: center;
   font-weight: bold;
   letter-spacing: 6px;
@@ -43,7 +43,7 @@
 
 .subText {
   color: #a0a0cc;
-  font-size: 14px;
+  font-size: 30px;
   text-align: center;
   margin-top: 16px;
   opacity: 0.9;
@@ -53,8 +53,8 @@
 /* Main Crystal Area */
 .crystalContainer {
   position: relative;
-  width: 280px;
-  height: 280px;
+  width: 480px;
+  height: 480px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -452,7 +452,7 @@
 }
 
 .rewardTitle {
-  font-size: 24px;
+  font-size: 42px;
   font-weight: bold;
   color: #fff;
   margin-bottom: 20px;
@@ -490,7 +490,7 @@
 
 .rewardDesc {
   color: #a0a0a0;
-  font-size: 14px;
+  font-size: 28px;
   text-align: center;
   line-height: 1.5;
   margin-bottom: 20px;
@@ -506,13 +506,13 @@
 
 .confirmBtn {
   width: 100%;
-  padding: 14px 0;
+  padding: 24px 0;
   background: linear-gradient(90deg, #4a90e2, #8e44ad);
   border-radius: 30px;
   color: #fff;
   text-align: center;
   font-weight: bold;
-  font-size: 16px;
+  font-size: 32px;
   box-shadow: 0 4px 15px rgba(142, 68, 173, 0.4);
 }
 
@@ -564,4 +564,190 @@
     font-size: 14px;
     margin-bottom: 20px;
     box-sizing: border-box;
+}
+
+.nfcPanel {
+  width: 100%;
+  padding: 0 20px 20px;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  z-index: 10;
+}
+
+.nfcAction {
+  width: 100%;
+  max-width: 320px;
+  height: 96px;
+  line-height: 96px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #f1c75b, #f7de9b);
+  color: #1a1a1a;
+  text-align: center;
+  font-size: 32px;
+  font-weight: 600;
+  letter-spacing: 2px;
+  box-shadow: 0 12px 30px rgba(241, 199, 91, 0.18);
+}
+
+.nfcAction::after {
+  border: none;
+}
+
+.nfcActionDisabled {
+  opacity: 0.6;
+}
+
+.nfcTip {
+  color: #8f8f98;
+  font-size: 24px;
+  text-align: center;
+  line-height: 1.5;
+}
+
+.currentContentCard {
+  width: 100%;
+  margin-top: 12px;
+  padding: 14px 16px;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-sizing: border-box;
+}
+
+.currentContentLabel {
+  display: block;
+  color: #f5d67a;
+  font-size: 12px;
+  margin-bottom: 6px;
+}
+
+.currentContentText {
+  display: block;
+  color: #f0f0f0;
+  font-size: 13px;
+  line-height: 1.6;
+  word-break: break-all;
+}
+
+.recordList {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.recordItem {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  box-sizing: border-box;
+}
+
+.recordIndex {
+  flex: 0 0 auto;
+  width: 20px;
+  height: 20px;
+  line-height: 20px;
+  border-radius: 50%;
+  background: rgba(241, 199, 91, 0.16);
+  color: #f5d67a;
+  font-size: 11px;
+  text-align: center;
+  margin-top: 1px;
+}
+
+.recordText {
+  flex: 1;
+  color: #d8d8de;
+  font-size: 12px;
+  line-height: 1.5;
+  word-break: break-all;
+}
+
+.manualSection {
+  width: 100%;
+  margin-top: 8px;
+  padding: 16px 14px 14px;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  box-sizing: border-box;
+}
+
+.manualTitle {
+  display: block;
+  color: #f5d67a;
+  font-size: 32px;
+  font-weight: 600;
+  margin-bottom: 16px;
+}
+
+.manualRow {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  min-width: 0;
+  width: 100%;
+}
+
+.manualInput {
+  flex: 1;
+  min-width: 0;
+  width: 100%;
+  height: 80px;
+  padding: 0 24px;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.06);
+  color: #ffffff;
+  font-size: 32px;
+  user-select: text;
+  -webkit-user-select: text;
+  -webkit-appearance: none;
+  appearance: none;
+  caret-color: #f5d67a;
+  box-sizing: border-box;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.manualInput:focus {
+  border-color: rgba(245, 214, 122, 0.55);
+  box-shadow: 0 0 0 2px rgba(245, 214, 122, 0.12);
+}
+
+.manualButton {
+  flex-shrink: 0;
+  width: 100%;
+  height: 80px;
+  line-height: 80px;
+  padding: 0 16px;
+  border-radius: 14px;
+  background: linear-gradient(90deg, #f1c75b, #f7de9b);
+  color: #1a1a1a;
+  font-size: 32px;
+  font-weight: 600;
+  box-sizing: border-box;
+}
+
+.manualButton::after {
+  border: none;
+}
+
+.manualButton[disabled] {
+  opacity: 0.55;
+}
+
+.manualTip {
+  display: block;
+  margin-top: 16px;
+  color: #8f8f98;
+  font-size: 24px;
+  line-height: 1.5;
 }

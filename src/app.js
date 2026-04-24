@@ -2,7 +2,42 @@ import { Component } from 'react'
 import Taro from '@tarojs/taro'
 import './app.css'
 
+if (process.env.TARO_ENV === 'h5' && typeof window !== 'undefined') {
+  const hostname = window.location?.hostname || ''
+  const isLocalH5 =
+    hostname === 'localhost' ||
+    hostname === '127.0.0.1' ||
+    hostname === '6.6.6.123'
+
+  window.__API_BASE_URL__ = isLocalH5 ? '' : API_BASE_URL
+}
+
 class App extends Component {
+
+  resizeHandler = null
+
+  syncH5Viewport = () => {
+    if (process.env.TARO_ENV !== 'h5' || typeof window === 'undefined') {
+      return
+    }
+
+    const docEl = window.document.documentElement
+    const body = window.document.body
+    const bodyWidth = body ? body.getBoundingClientRect().width : 0
+    const viewportWidth = Math.min(
+      docEl.getBoundingClientRect().width || window.innerWidth || 375,
+      bodyWidth || window.innerWidth || 375,
+      window.innerWidth || 375
+    )
+    const safeWidth = Math.max(320, Math.min(viewportWidth, 540))
+    const rootFontSize = (safeWidth / 375) * 20
+    const viewportHeight = window.innerHeight || docEl.clientHeight || 667
+
+    docEl.style.fontSize = `${rootFontSize}px`
+    docEl.style.setProperty('--app-font-size', `${rootFontSize}px`)
+    docEl.style.setProperty('--app-safe-width', `${safeWidth}px`)
+    docEl.style.setProperty('--app-vh', `${viewportHeight * 0.01}px`)
+  }
 
   // 全局数据
   globalData = {
@@ -10,6 +45,15 @@ class App extends Component {
   }
 
   componentDidMount () {
+    this.syncH5Viewport()
+
+    if (process.env.TARO_ENV === 'h5' && typeof window !== 'undefined') {
+      this.resizeHandler = () => this.syncH5Viewport()
+      window.addEventListener('resize', this.resizeHandler)
+      window.addEventListener('orientationchange', this.resizeHandler)
+      window.addEventListener('pageshow', this.resizeHandler)
+    }
+
     // 添加请求拦截器，打印所有 API 请求和响应
     Taro.addInterceptor((chain) => {
       const requestParams = chain.requestParams
@@ -46,7 +90,17 @@ class App extends Component {
     })
   }
 
-  componentDidShow () {}
+  componentDidShow () {
+    this.syncH5Viewport()
+  }
+
+  componentWillUnmount () {
+    if (this.resizeHandler && typeof window !== 'undefined') {
+      window.removeEventListener('resize', this.resizeHandler)
+      window.removeEventListener('orientationchange', this.resizeHandler)
+      window.removeEventListener('pageshow', this.resizeHandler)
+    }
+  }
 
   componentDidHide () {}
 

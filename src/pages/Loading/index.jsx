@@ -1,6 +1,7 @@
 import { useEffect, useMemo } from 'react';
 import { View, Text } from '@tarojs/components';
 import Taro from '@tarojs/taro';
+import { getApiUrl, API_ENDPOINTS } from '../../utils/api.config.js';
 import styles from './index.module.css';
 
 export default function Loading() {
@@ -29,7 +30,7 @@ export default function Loading() {
 
       // 验证 token 有效性
       const validateRes = await Taro.request({
-        url: 'https://crystal.quant-speed.com/api/auth/wx/validate/',
+        url: getApiUrl(API_ENDPOINTS.WX_VALIDATE),
         method: 'POST',
         header: {
           'accept': 'application/json',

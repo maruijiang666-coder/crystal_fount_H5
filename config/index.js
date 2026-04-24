@@ -1,7 +1,7 @@
 const config = {
   projectName: 'codefun',
   date: '2022-2-23',
-  designWidth: 375,
+  designWidth: 750,
   deviceRatio: {
     375: 2 / 1,
     640: 2.34 / 2,
