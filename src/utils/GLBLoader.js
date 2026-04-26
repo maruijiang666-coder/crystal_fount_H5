@@ -45,26 +45,48 @@ export class GLBLoader {
   }
 
   load(url, onLoad, onProgress, onError) {
-    wx.request({
-      url,
-      responseType: 'arraybuffer',
-      success: (res) => {
-        if (res.statusCode === 200) {
+    // H5 使用 fetch API，小程序使用 wx.request
+    if (typeof wx !== 'undefined' && wx.request) {
+      wx.request({
+        url,
+        responseType: 'arraybuffer',
+        success: (res) => {
+          if (res.statusCode === 200) {
+            try {
+              const result = this.parse(res.data);
+              if (onLoad) onLoad(result);
+            } catch (error) {
+              console.error('GLB parse error:', error);
+              if (onError) onError(error);
+            }
+          } else {
+            if (onError) onError(new Error(`HTTP ${res.statusCode}`));
+          }
+        },
+        fail: (error) => {
+          if (onError) onError(error);
+        }
+      });
+    } else {
+      fetch(url)
+        .then(res => {
+          if (!res.ok) throw new Error(`HTTP ${res.status}`);
+          return res.arrayBuffer();
+        })
+        .then(data => {
           try {
-            const result = this.parse(res.data);
+            const result = this.parse(data);
             if (onLoad) onLoad(result);
           } catch (error) {
             console.error('GLB parse error:', error);
             if (onError) onError(error);
           }
-        } else {
-          if (onError) onError(new Error(`HTTP ${res.statusCode}`));
-        }
-      },
-      fail: (error) => {
-        if (onError) onError(error);
-      }
-    });
+        })
+        .catch(error => {
+          console.error('GLB fetch error:', error);
+          if (onError) onError(error);
+        });
+    }
   }
 
   parse(arrayBuffer) {
@@ -185,21 +207,25 @@ export class GLBLoader {
   parsePrimitive(gltf, primitive, bufferData) {
     const THREE = this.THREE;
     const geometry = new THREE.BufferGeometry();
-    
+
+    // 兼容新旧 Three.js API（r125+ 使用 setAttribute，旧版使用 addAttribute）
+    if (!geometry.setAttribute && geometry.addAttribute) {
+      geometry.setAttribute = geometry.addAttribute;
+    }
+
     // 解析顶点属性
     for (const [attrName, accessorIndex] of Object.entries(primitive.attributes)) {
       const accessor = gltf.accessors[accessorIndex];
       const bufferView = gltf.bufferViews[accessor.bufferView];
-      
+
       const data = this.getAccessorData(accessor, bufferView, bufferData);
-      
-      // threejs-miniprogram 使用旧版 API
+
       if (attrName === 'POSITION') {
-        geometry.addAttribute('position', new THREE.BufferAttribute(data, 3));
+        geometry.setAttribute('position', new THREE.BufferAttribute(data, 3));
       } else if (attrName === 'NORMAL') {
-        geometry.addAttribute('normal', new THREE.BufferAttribute(data, 3));
+        geometry.setAttribute('normal', new THREE.BufferAttribute(data, 3));
       } else if (attrName === 'TEXCOORD_0') {
-        geometry.addAttribute('uv', new THREE.BufferAttribute(data, 2));
+        geometry.setAttribute('uv', new THREE.BufferAttribute(data, 2));
       }
     }
     

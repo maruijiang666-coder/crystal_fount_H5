@@ -1,0 +1,4 @@
+[    1768ms] [LOG] [HMR] Waiting for update signal from WDS... @ webpack-internal:///./node_modules/webpack/hot/log.js:23
+[    9947ms] [ERROR] [WDS] Disconnected! @ webpack-internal:///./node_modules/webpack-dev-server/client/index.js?http://6.6.6.123:10086:171
+[   64585ms] [LOG] [CardSlider] selectedIndex changed {selectedIndex: 60, leftCount: 5, rightCount: 5} @ webpack-internal:///./src/components/CardSlider/index.jsx:192
+[   64585ms] [LOG] [TaLuo] onCardSelect {index: 60, selectedCardsLength: 0, isSpreadConfirmed: true} @ webpack-internal:///./src/pages/TaLuo/index.jsx:125

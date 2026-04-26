@@ -93,12 +93,12 @@ export default function SJShouYe(props) {
               // Note: nfc_tag_id is inside crystal_tag object based on the user provided response structure
               // Structure: item.crystal_tag.nfc_tag_id
               const currentTag = res.data.results.find(item => {
-                 const tagId = item.crystal_tag && item.crystal_tag.nfc_tag_id;
-                 // Compare as strings to avoid type mismatch
-                 return String(tagId) === String(currentNfcTagId);
+                const tagId = item.crystal_tag && item.crystal_tag.nfc_tag_id;
+                // Compare as strings to avoid type mismatch
+                return String(tagId) === String(currentNfcTagId);
               });
               console.log('debugSJSY: currentTag found:', currentTag);
-               
+
               if (currentTag) {
                 Taro.setStorageSync('bindBrad', currentTag);
               }
@@ -234,20 +234,7 @@ export default function SJShouYe(props) {
 
   const handleEntertainmentReferenceClick = () => {
     if (!checkCrystalActivation()) return;
-
-    Taro.showModal({
-      title: '娱乐参考说明',
-      content: '虚拟解读，娱乐为主，娱乐心理为主。\n内容仅供放松与自我观察参考，请勿替代现实决策。',
-      showCancel: true,
-      cancelText: '取消',
-      confirmText: '我已知晓',
-      confirmColor: '#D4AF37',
-      success: (res) => {
-        if (res.confirm) {
-          Taro.navigateTo({ url: '/pages/yunshi/yunshi?source=entertainment' });
-        }
-      }
-    });
+    Taro.navigateTo({ url: '/pages/yunshi/yunshi?source=entertainment' });
   };
 
   // 分享给朋友
@@ -270,13 +257,13 @@ export default function SJShouYe(props) {
 
   return (
     <View className={`flex-col ${styles['page']} ${props.className}`}>
-      <View 
+      <View
         className={`flex-row ${styles['section']}`}
-        style={{backgroundImage: `url(${getOssImageUrl('SJSY/2ef0ed71548c576fd256d13e2f016096.png')})`}}
+        style={{ backgroundImage: `url(${getOssImageUrl('SJSY/2ef0ed71548c576fd256d13e2f016096.png')})` }}
       >
-      <Text className={`self-start ${styles['deerTitle']} ${styles['ml-11']}`} style={{fontFamily: 'HanyiXuejunFanti', letterSpacing: '4px'}}>遣山小鹿</Text>
-        <Text className={`self-start ${styles['text']} ${styles['ml-11']}`} style={{fontFamily: 'HanyiXuejunFanti',fontSize: '24px',letterSpacing: '2px'}}>运势金</Text>
-          <Image
+        <Text className={`self-start ${styles['deerTitle']} ${styles['ml-11']}`} style={{ fontFamily: 'HanyiXuejunFanti', letterSpacing: '4px' }}>遣山小鹿</Text>
+        <Text className={`self-start ${styles['text']} ${styles['ml-11']}`} style={{ fontFamily: 'HanyiXuejunFanti', fontSize: '24px', letterSpacing: '2px' }}>运势金</Text>
+        <Image
           mode="aspectFit"
           className={`flex-1 ${styles['image']} ${styles['ml-11']}`}
           src="https://tangledup-ai-staging.oss-cn-shanghai.aliyuncs.com/mini_app/crystal_mini_app/crystallogo/onlyxiaolu.png"
@@ -285,9 +272,9 @@ export default function SJShouYe(props) {
       </View>
       <View className={`flex-col ${styles['group']} ${styles['mt-3']}`}>
         <View className={`flex-col`}>
-          <View 
+          <View
             className={`flex-col ${styles['section_2']}`}
-            style={{backgroundImage: `url(${getOssImageUrl('SJSY/b006026aece6a0992802b69125015c60.png')})`}}
+            style={{ backgroundImage: `url(${getOssImageUrl('SJSY/b006026aece6a0992802b69125015c60.png')})` }}
           >
             <View className={styles.statsRow}>
               <View className={`flex-col items-center ${styles['section_3']} ${styles['equal-division-item']}`}
@@ -301,7 +288,7 @@ export default function SJShouYe(props) {
                   opacity: pressedCard === 'activateDate' ? 0.8 : 1,
                   transition: 'all 0.1s ease'
                 }}
-                >
+              >
                 <Image
                   className={`${styles['image_3']}`}
                   src={getOssImageUrl('SJSY/02e9c80f98203eea1bf0746e95d7f428.png')}
@@ -322,7 +309,7 @@ export default function SJShouYe(props) {
                     boxShadow: '0 4px 8px rgba(0,0,0,0.5)'
                   }}>
                     <Text style={{
-                      color: '#fff', 
+                      color: '#fff',
                       fontSize: '24px',
                       whiteSpace: 'nowrap',
                       fontWeight: 'bold'
@@ -363,7 +350,7 @@ export default function SJShouYe(props) {
                     boxShadow: '0 4px 8px rgba(0,0,0,0.5)'
                   }}>
                     <Text style={{
-                      color: '#fff', 
+                      color: '#fff',
                       fontSize: '24px',
                       whiteSpace: 'nowrap',
                       fontWeight: 'bold'
@@ -404,7 +391,7 @@ export default function SJShouYe(props) {
                     boxShadow: '0 4px 8px rgba(0,0,0,0.5)'
                   }}>
                     <Text style={{
-                      color: '#fff', 
+                      color: '#fff',
                       fontSize: '24px',
                       whiteSpace: 'nowrap',
                       fontWeight: 'bold'
@@ -444,7 +431,7 @@ export default function SJShouYe(props) {
                     boxShadow: '0 4px 8px rgba(0,0,0,0.5)'
                   }}>
                     <Text style={{
-                      color: '#fff', 
+                      color: '#fff',
                       fontSize: '24px',
                       whiteSpace: 'nowrap',
                       fontWeight: 'bold'
@@ -459,9 +446,9 @@ export default function SJShouYe(props) {
                 <Text className={`mt-20 ${styles['font_4']} ${styles['text_4']}`}>揭开水晶的神秘面纱</Text>
               </View>
               <View className={`flex-col justify-start items-center ${styles['text-wrapper']}`}
-              onClick={() => {
-                Taro.switchTab({ url: `/pages/xiangxi/xiangxi` })
-              }}
+                onClick={() => {
+                  Taro.switchTab({ url: `/pages/xiangxi/xiangxi` })
+                }}
               >
                 <Text className={`${styles['font_3']} ${styles['text_3']}`}>去查看</Text>
               </View>
@@ -480,7 +467,7 @@ export default function SJShouYe(props) {
                   className={`${styles['image_4']}`}
                   src={getOssImageUrl('SJSY/1e467fc804d0fd434a82a6706adadf24.png')}
                 />
-                <View 
+                <View
                   className={`flex-col items-start ${styles['group_3']}`}>
                   <Text className={`${styles['font_5']} ${styles['text_6']}`}>迷你鹿</Text>
                   <Text className={`mt-14 ${styles['font_3']} ${styles['text_7']}`}>
@@ -490,14 +477,14 @@ export default function SJShouYe(props) {
               </View>
               <View className={`mt-22 ${styles['progress_container']}`}>
                 {/* Total Energy Bar (Grey) */}
-                <View 
+                <View
                   className={`${styles['section_6']}`}
                   style={{
                     width: crystalData ? `${Math.min((crystalData.total_energy / crystalData.level_info.threshold) * 100, 100)}%` : '50%'
                   }}
                 >
                   {/* Current Energy Bar (Yellow) */}
-                  <View 
+                  <View
                     className={`${styles['section_7']}`}
                     style={{
                       width: crystalData && crystalData.total_energy > 0 ? `${Math.min((crystalData.current_energy / crystalData.total_energy) * 100, 100)}%` : '0%',
@@ -510,7 +497,7 @@ export default function SJShouYe(props) {
                 <Text className={`${styles['font_3']} ${styles['text_8']}`}>进化完成度</Text>
 
                 {/* Right Text */}
-                <View className={`flex-1 flex-row justify-end items-center`} style={{zIndex: 3}}>
+                <View className={`flex-1 flex-row justify-end items-center`} style={{ zIndex: 3 }}>
                   <Text className={`${styles['font_2']} ${styles['text_9']}`}>
                     {crystalData ? `${crystalData.current_energy}/${crystalData.total_energy}/${crystalData.level_info.threshold}` : '666/1500/2000'}
                   </Text>
@@ -527,13 +514,13 @@ export default function SJShouYe(props) {
             }}>全部</Text>
           </View>
           <Text className={`self-start ${styles['font_4']} ${styles['text_12']}`}>暂未开放线上调节</Text>
-          <ScrollView 
+          <ScrollView
             scrollX
             enableFlex
             showScrollbar={false}
             className={`flex-row ${styles['equal-division']}`}
           >
-            <View 
+            <View
               className={`flex-col items-start ${styles['equal-division-item_2']} ${styles['section_8']}`}
               onTouchStart={() => setPressedCard('card1')}
               onTouchEnd={() => setPressedCard(null)}
@@ -556,7 +543,7 @@ export default function SJShouYe(props) {
                 触碰睡觉可以加速宠物的进化
               </Text>
             </View>
-            {/* <View 
+            <View
               className={`ml-14 flex-col items-start ${styles['equal-division-item_3']} ${styles['section_9']}`}
               onTouchStart={() => setPressedCard('card2')}
               onTouchEnd={() => setPressedCard(null)}
@@ -571,12 +558,12 @@ export default function SJShouYe(props) {
                 opacity: pressedCard === 'card2' ? 0.9 : 1
               }}
             >
-              <Text className={`${styles['font']}`}>娱乐参考</Text>
+              <Text className={`${styles['font']}`}>运势</Text>
               <Text className={`${styles['font_7']} ${styles['text_14']} ${styles['mt-13']}`}>
-                娱乐参考，探索ai边界
+                运势解读
               </Text>
-            </View> */}
-            <View 
+            </View>
+            <View
               className={`ml-14 flex-col items-start ${styles['equal-division-item_2']} ${styles['section_10']}`}
               onTouchStart={() => setPressedCard('card3')}
               onTouchEnd={() => setPressedCard(null)}
@@ -594,13 +581,13 @@ export default function SJShouYe(props) {
                 transition: 'all 0.1s ease',
                 opacity: pressedCard === 'card3' ? 0.9 : 1
               }}
-              >
+            >
               <Text className={`${styles['font']}`}>抽牌</Text>
               <Text className={`${styles['font_7']} ${styles['text_14']} ${styles['mt-11']}`}>
                 塔罗牌占卜，探索内心答案
               </Text>
             </View>
-            <View 
+            <View
               className={`ml-14 flex-col items-start ${styles['equal-division-item_2']} ${styles['section_8']}`}
               onTouchStart={() => setPressedCard('card4')}
               onTouchEnd={() => setPressedCard(null)}
@@ -610,56 +597,56 @@ export default function SJShouYe(props) {
                   // Check podcast status
                   const token = Taro.getStorageSync("importcode");
                   if (!token) {
-                      Taro.showToast({ title: '请先登录', icon: 'none' });
-                      setTimeout(() => Taro.switchTab({ url: '/pages/My/index' }), 1500);
-                      return;
+                    Taro.showToast({ title: '请先登录', icon: 'none' });
+                    setTimeout(() => Taro.switchTab({ url: '/pages/My/index' }), 1500);
+                    return;
                   }
 
                   Taro.showLoading({ title: '检查播客状态...' });
                   Taro.request({
-                      url: getApiUrl(API_ENDPOINTS.YUNSHI_PODCAST),
-                      method: 'GET',
-                      header: {
-                          'accept': 'application/json',
-                          'X-Login-Token': token,
-                          'X-CSRFTOKEN': 'fS8jFu61Kent0PmzjTSw7UpYtWCRW7Lk'
-                      },
-                      success: (res) => {
-                          Taro.hideLoading();
-                          console.log('Podcast Check Res:', res.data);
-                          if (res.statusCode === 200) {
-                              const { audio_url, subtitle_url, status } = res.data;
-                              
-                              if (status === 'finish' && audio_url && audio_url.startsWith('https')) {
-                                  // Podcast ready
-                                  const reportDate = res.data.report_date || '';
-                                  let url = `/pages/Podcast/index?audio_url=${encodeURIComponent(audio_url)}&report_date=${encodeURIComponent(reportDate)}`;
-                                  if (subtitle_url) {
-                                      url += `&subtitle_url=${encodeURIComponent(subtitle_url)}`;
-                                  }
-                                  Taro.navigateTo({ url });
-                              } else {
-                                  // Generating or not started
-                                  Taro.showModal({
-                                      title: '播客生成中',
-                                      content: '您的专属运势播客正在后台生成，预计需要2-3分钟，请稍后再试。',
-                                      showCancel: false,
-                                      confirmText: '我知道了',
-                                      confirmColor: '#D4AF37'
-                                  });
-                              }
-                          } else {
-                              // Handle other statuses (e.g. 404 not found -> maybe user never generated one)
-                              // Assuming if not found or error, we might guide user to generate or show empty state
-                              // For now, simple error toast or navigate to empty podcast page
-                              Taro.navigateTo({ url: '/pages/Podcast/index' });
+                    url: getApiUrl(API_ENDPOINTS.YUNSHI_PODCAST),
+                    method: 'GET',
+                    header: {
+                      'accept': 'application/json',
+                      'X-Login-Token': token,
+                      'X-CSRFTOKEN': 'fS8jFu61Kent0PmzjTSw7UpYtWCRW7Lk'
+                    },
+                    success: (res) => {
+                      Taro.hideLoading();
+                      console.log('Podcast Check Res:', res.data);
+                      if (res.statusCode === 200) {
+                        const { audio_url, subtitle_url, status } = res.data;
+
+                        if (status === 'finish' && audio_url && audio_url.startsWith('https')) {
+                          // Podcast ready
+                          const reportDate = res.data.report_date || '';
+                          let url = `/pages/Podcast/index?audio_url=${encodeURIComponent(audio_url)}&report_date=${encodeURIComponent(reportDate)}`;
+                          if (subtitle_url) {
+                            url += `&subtitle_url=${encodeURIComponent(subtitle_url)}`;
                           }
-                      },
-                      fail: (err) => {
-                          Taro.hideLoading();
-                          console.error('Podcast Check Error:', err);
-                          Taro.showToast({ title: '网络错误', icon: 'none' });
+                          Taro.navigateTo({ url });
+                        } else {
+                          // Generating or not started
+                          Taro.showModal({
+                            title: '播客生成中',
+                            content: '您的专属运势播客正在后台生成，预计需要2-3分钟，请稍后再试。',
+                            showCancel: false,
+                            confirmText: '我知道了',
+                            confirmColor: '#D4AF37'
+                          });
+                        }
+                      } else {
+                        // Handle other statuses (e.g. 404 not found -> maybe user never generated one)
+                        // Assuming if not found or error, we might guide user to generate or show empty state
+                        // For now, simple error toast or navigate to empty podcast page
+                        Taro.navigateTo({ url: '/pages/Podcast/index' });
                       }
+                    },
+                    fail: (err) => {
+                      Taro.hideLoading();
+                      console.error('Podcast Check Error:', err);
+                      Taro.showToast({ title: '网络错误', icon: 'none' });
+                    }
                   });
                 }
               }}
@@ -671,7 +658,7 @@ export default function SJShouYe(props) {
                 transition: 'all 0.1s ease',
                 opacity: pressedCard === 'card4' ? 0.9 : 1
               }}
-              >
+            >
               <Text className={`${styles['font']}`}>播客</Text>
               <Text className={`${styles['font_7']} ${styles['text_14']} ${styles['mt-11']}`}>
                 运势解析播客

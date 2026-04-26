@@ -1,0 +1,2 @@
+[     924ms] [LOG] [HMR] Waiting for update signal from WDS... @ webpack-internal:///./node_modules/webpack/hot/log.js:23
+[    9068ms] [ERROR] [WDS] Disconnected! @ webpack-internal:///./node_modules/webpack-dev-server/client/index.js?http://6.6.6.123:10086:171

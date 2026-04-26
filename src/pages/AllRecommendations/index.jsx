@@ -16,13 +16,13 @@ export default function AllRecommendations() {
       bg: 'SJSY/sjsy_bc1.png',
       url: '/pages/NFCTouch/index'
     },
-    // {
-    //   id: 'card2',
-    //   title: '娱乐参考',
-    //   desc: '娱乐参考，探索ai边界',
-    //   bg: 'SJSY/sjsy_bc2.png',
-    //   url: '/pages/yunshi/yunshi'
-    // },
+    {
+      id: 'card2',
+      title: '运势',
+      desc: '运势解读',
+      bg: 'SJSY/sjsy_bc2.png',
+      url: '/pages/yunshi/yunshi'
+    },
     {
       id: 'card3',
       title: '抽牌',

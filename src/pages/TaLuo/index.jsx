@@ -277,6 +277,8 @@ export default function TaLuo(props) {
     setIsSpreadConfirmed(true);
   };
 
+  const canShowPlacementButton = flippedStatus.every(status => status) && drawnCards.length === 3;
+
   Taro.useDidShow(() => {
     // 进入页面时强制重开一局，避免上一次的抽牌状态残留
     resetSpreadState(false);
@@ -305,6 +307,7 @@ export default function TaLuo(props) {
           {/* Spread Selector - Only show full swiper when spread is not confirmed */}
           {!isSpreadConfirmed ? (
             <>
+              <View style={{ width: '100%', overflow: 'hidden' }}>
                 <Swiper
                 className={styles.spreadSwiper}
                 indicatorDots
@@ -331,6 +334,7 @@ export default function TaLuo(props) {
                     </SwiperItem>
                 ))}
                 </Swiper>
+              </View>
                 
                 {/* Confirm Button */}
                 <View 
@@ -431,45 +435,35 @@ export default function TaLuo(props) {
           </View>
         </View>
 
-        {flippedStatus.every(status => status) && drawnCards.length === 3 && (
-          <View
-            className={`flex-row ${styles['equal-division-item']} ${styles['section_3']}`}
-            style={{
-              position: 'fixed',
-              bottom: '20px',
-              left: '50%',
-              transform: 'translateX(-50%)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              opacity: 0,
-              animation: 'fadeIn 0.5s ease-in-out forwards',
-              zIndex: 1002
-            }}
-            onClick={() => {
-              const readingData = {
-                question: userQuestion || '',
-                spread_type: SPREAD_TYPES[currentSpreadIndex].id,
-                cards: cardOrder.map(index => {
-                  const drawn = drawnCards[index];
-                  if (drawn && drawn.card) {
-                    return `${getCardDisplayName(drawn.card)} (${drawn.isReversed ? '逆位' : '正位'})`;
-                  }
-                  return 'Unknown';
-                })
-              };
-              Taro.setStorageSync('last_tarot_reading', readingData);
-              
-              Taro.navigateTo({ url: `/pages/TaLuoAnswer/index?skipPlacement=1` });
-            }}
-          >
-            <Image
-              className={`shrink-0 ${styles['image_6']}`}
-              src={getOssImageUrl('TaLuo/30a17279e1f392df2783a8abb3ab03ac.png')}
-            />
-            <Text className={`${styles['font_2']} ${styles['text_2']} ${styles['ml-13']}`}>
-              牌阵就位
-            </Text>
+        {canShowPlacementButton && (
+          <View className={styles.placementButtonWrap}>
+            <View
+              className={`flex-row ${styles['section_3']}`}
+              onClick={() => {
+                const readingData = {
+                  question: userQuestion || '',
+                  spread_type: SPREAD_TYPES[currentSpreadIndex].id,
+                  cards: cardOrder.map(index => {
+                    const drawn = drawnCards[index];
+                    if (drawn && drawn.card) {
+                      return `${getCardDisplayName(drawn.card)} (${drawn.isReversed ? '逆位' : '正位'})`;
+                    }
+                    return 'Unknown';
+                  })
+                };
+                Taro.setStorageSync('last_tarot_reading', readingData);
+                
+                Taro.navigateTo({ url: `/pages/TaLuoAnswer/index?skipPlacement=1` });
+              }}
+            >
+              <Image
+                className={`shrink-0 ${styles['image_6']}`}
+                src={getOssImageUrl('TaLuo/30a17279e1f392df2783a8abb3ab03ac.png')}
+              />
+              <Text className={`${styles['font_2']} ${styles['text_2']} ${styles['placementButtonText']}`}>
+                牌阵就位
+              </Text>
+            </View>
           </View>
         )}
       </View>

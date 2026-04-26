@@ -247,7 +247,7 @@ const CardSlider = forwardRef((props, ref) => {
         // 弧形分布算法
         const displayCenterIndex = leftCount;
         const distanceFromCenter = displayIndex - displayCenterIndex;
-        const x = distanceFromCenter * 34;
+        const x = distanceFromCenter * 50;
         const y = Math.abs(distanceFromCenter) * Math.abs(distanceFromCenter) * 2.2;
         const dragFollow = dragOffsetX * 0.22;
         
@@ -265,7 +265,7 @@ const CardSlider = forwardRef((props, ref) => {
                 : `translate(-50%, -50%) translateX(${dragFollow}px)`,
               zIndex: (leftCount + rightCount) - displayIndex,
               filter: displayIndex === leftCount ? 'none' : 'grayscale(50%) brightness(70%)',
-              transition: 'all 0.5s ease-in-out',
+              transition: 'all 0.2s ease-out',
               width: `${cardWidth}px`,
               height: `${cardHeight}px`
             }}

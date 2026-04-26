@@ -1,5 +1,7 @@
 import { Component } from 'react';
-import { Canvas } from '@tarojs/components';
+import { Canvas, View } from '@tarojs/components';
+const IS_H5 = process.env.TARO_ENV === 'h5';
+const IS_MINI = process.env.TARO_ENV === 'weapp' || process.env.TARO_ENV === 'alipay' || process.env.TARO_ENV === 'swan';
 
 /**
  * GLB 3D模型查看器组件
@@ -52,7 +54,7 @@ export default class GLBViewer extends Component {
     super(props);
     // 在构造函数中生成唯一ID
     this.canvasId = `glb-canvas-${Math.random().toString(36).substring(2, 11)}`;
-    
+
     // Touch interaction state
     this.isDragging = false;
     this.lastTouchX = 0;
@@ -124,18 +126,22 @@ export default class GLBViewer extends Component {
 
   componentDidMount() {
     console.log('GLBViewer mounted, canvasId:', this.canvasId);
+    this._isMounted = true;
     this.initScene();
   }
 
   componentWillUnmount() {
     console.log('GLBViewer unmounting, cleaning up...');
+    this._isMounted = false;
     this.stopAnimation();
     this.cleanupScene();
   }
 
   stopAnimation = () => {
     if (this.frameId) {
-      if (this.renderer && this.renderer.domElement) {
+      if (IS_H5) {
+        cancelAnimationFrame(this.frameId);
+      } else if (this.renderer && this.renderer.domElement) {
         const canvas = this.renderer.domElement;
         if (canvas.cancelAnimationFrame) {
           canvas.cancelAnimationFrame(this.frameId);
@@ -188,35 +194,70 @@ export default class GLBViewer extends Component {
 
   initScene = () => {
     setTimeout(() => {
-      wx.createSelectorQuery()
-        .select(`#${this.canvasId}`)
-        .fields({ node: true, size: true })
-        .exec((res) => {
-          console.log('Query result for', this.canvasId, ':', res);
-          if (!res || !res[0] || !res[0].node) {
-            console.error('Canvas not found, retrying...');
-            setTimeout(this.initScene, 500);
-            return;
-          }
-
-          const canvas = res[0].node;
-          const { width, height } = res[0];
-
-          this.setupThreeJS(canvas, width, height);
-        });
+      if (IS_H5) {
+        this.initSceneH5();
+      } else {
+        this.initSceneMini();
+      }
     }, 100);
+  };
+
+  initSceneH5 = () => {
+    // H5 模式下，通过容器 id 查找 View 容器
+    const container = document.getElementById(this.canvasId);
+    if (!container) {
+      console.error('Container not found on H5, retrying...');
+      setTimeout(this.initScene, 500);
+      return;
+    }
+    // 程序化创建 canvas 元素，避免 Taro Canvas 组件问题
+    const canvas = document.createElement('canvas');
+    canvas.style.cssText = 'width:100%;height:100%;display:block;touch-action:none';
+    container.appendChild(canvas);
+
+    // 给 canvas 绑定触摸事件
+    canvas.addEventListener('touchstart', this.handleTouchStart);
+    canvas.addEventListener('touchmove', this.handleTouchMove);
+    canvas.addEventListener('touchend', this.handleTouchEnd);
+
+    const rect = container.getBoundingClientRect();
+    const width = rect.width || container.parentElement?.clientWidth || 300;
+    const height = rect.height || container.parentElement?.clientHeight || 500;
+    this.setupThreeJS(canvas, width, height);
+  };
+
+  initSceneMini = () => {
+    wx.createSelectorQuery()
+      .select(`#${this.canvasId}`)
+      .fields({ node: true, size: true })
+      .exec((res) => {
+        console.log('Query result for', this.canvasId, ':', res);
+        if (!res || !res[0] || !res[0].node) {
+          console.error('Canvas not found, retrying...');
+          setTimeout(this.initScene, 500);
+          return;
+        }
+
+        const canvas = res[0].node;
+        const { width, height } = res[0];
+
+        this.setupThreeJS(canvas, width, height);
+      });
   };
 
   setupThreeJS = (canvas, width, height) => {
     try {
-      const THREE = require('threejs-miniprogram');
-      
-      if (THREE.createScopedThreejs) {
-        const scopedTHREE = THREE.createScopedThreejs(canvas);
-        this.initWithTHREE(scopedTHREE, canvas, width, height);
+      let THREE;
+      if (IS_H5) {
+        THREE = require('three');
       } else {
-        this.initWithTHREE(THREE, canvas, width, height);
+        THREE = require('threejs-miniprogram');
+        if (THREE.createScopedThreejs) {
+          THREE = THREE.createScopedThreejs(canvas);
+        }
       }
+
+      this.initWithTHREE(THREE, canvas, width, height);
     } catch (error) {
       console.error('Setup error:', error);
       if (this.props.onError) {
@@ -229,8 +270,17 @@ export default class GLBViewer extends Component {
     try {
       this.THREE = THREE;
 
-      const info = wx.getSystemInfoSync();
-      const dpr = info.pixelRatio || 2;
+      let dpr = 2;
+      if (IS_H5) {
+        dpr = window.devicePixelRatio || 2;
+      } else {
+        try {
+          const info = wx.getSystemInfoSync();
+          dpr = info.pixelRatio || 2;
+        } catch (e) {
+          dpr = 2;
+        }
+      }
 
       canvas.width = width * dpr;
       canvas.height = height * dpr;
@@ -264,9 +314,15 @@ export default class GLBViewer extends Component {
       // 启用色调映射和物理正确的光照
       // 应用曝光度倍数
       const exposureMultiplier = this.props.exposureMultiplier || 1.0;
-      renderer.toneMapping = THREE.ACESFilmicToneMapping;
-      renderer.toneMappingExposure = 1.0 * exposureMultiplier;
-      renderer.outputEncoding = THREE.sRGBEncoding;
+      if (renderer.toneMapping) {
+        renderer.toneMapping = THREE.ACESFilmicToneMapping;
+        renderer.toneMappingExposure = 1.0 * exposureMultiplier;
+      }
+      if (THREE.SRGBColorSpace) {
+        renderer.colorSpace = THREE.SRGBColorSpace;
+      } else if (renderer.outputEncoding !== undefined) {
+        renderer.outputEncoding = THREE.sRGBEncoding;
+      }
       
       this.renderer = renderer;
 
@@ -341,6 +397,9 @@ export default class GLBViewer extends Component {
       modelUrl,
       (gltf) => {
         console.log('GLB loaded');
+
+        // 组件已卸载时不再处理模型
+        if (!this._isMounted || !this.scene || !this.renderer) return;
 
         const model = gltf.scene;
 
@@ -498,6 +557,7 @@ export default class GLBViewer extends Component {
       },
       null,
       (error) => {
+        if (!this._isMounted) return;
         console.error('GLB load error:', error);
         if (onError) {
           onError(error);
@@ -509,17 +569,17 @@ export default class GLBViewer extends Component {
   startAnimation = () => {
     // 先停止旧的动画循环
     this.stopAnimation();
-    
-    const canvas = this.renderer.domElement;
+
     const { autoRotate, rotationSpeed } = this.props;
+    const raf = IS_H5 ? requestAnimationFrame : (this.renderer?.domElement?.requestAnimationFrame || requestAnimationFrame);
 
     const animate = () => {
       // 检查组件是否已卸载
-      if (!this.renderer || !this.scene || !this.camera) {
+      if (!this._isMounted || !this.renderer || !this.scene || !this.camera) {
         return;
       }
 
-      this.frameId = canvas.requestAnimationFrame(animate);
+      this.frameId = raf(animate);
 
       if (autoRotate && this.model && !this.isUserInteracting) {
         // 沿水平轴（Y轴）旋转，实现水平旋转效果
@@ -534,11 +594,26 @@ export default class GLBViewer extends Component {
 
   render() {
     const { width, height, backgroundColor } = this.props;
-    
+
     // 将十六进制颜色转换为 CSS 颜色
     const bgColor = backgroundColor !== null && backgroundColor !== undefined
       ? `#${backgroundColor.toString(16).padStart(6, '0')}`
       : 'transparent';
+
+    // H5 模式使用 View 容器 + 程序化创建 canvas（解决 Taro Canvas 组件在 H5 的兼容问题）
+    // 小程序模式使用 Taro Canvas 组件
+    if (IS_H5) {
+      return (
+        <View
+          id={this.canvasId}
+          style={{
+            width,
+            height,
+            backgroundColor: bgColor
+          }}
+        />
+      );
+    }
 
     return (
       <Canvas

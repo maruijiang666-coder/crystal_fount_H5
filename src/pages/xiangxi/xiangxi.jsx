@@ -172,7 +172,7 @@ export default function Xiangxi(props) {
         } else {
           console.error('API fortune_report failed:', res);
           // Fallback to storage if API fails
-          Taro.getStorage({
+          const req1 = Taro.getStorage({
             key: 'fortune_report_data',
             success: (res) => {
               console.log('Fallback to storage fortune_report_data:', res.data);
@@ -188,11 +188,12 @@ export default function Xiangxi(props) {
               console.log('Fallback storage also empty, no fortune data available.');
             }
           });
+          if (req1 && req1.catch) req1.catch(() => {});
         }
       } catch (error) {
         console.error('Fetch fortune data failed:', error);
         // Fallback to storage on error
-        Taro.getStorage({
+        const req2 = Taro.getStorage({
           key: 'fortune_report_data',
           success: (res) => {
              console.log('Fallback to storage due to error:', res.data);
@@ -208,6 +209,7 @@ export default function Xiangxi(props) {
             console.log('Fallback storage also empty (on error), no fortune data available.');
           }
         });
+        if (req2 && req2.catch) req2.catch(() => {});
       }
     };
 
@@ -215,7 +217,7 @@ export default function Xiangxi(props) {
   });
 
   const fetchCrystalCount = () => {
-    Taro.request({
+    const req = Taro.request({
        url: getApiUrl(API_ENDPOINTS.ACTIVATE_CRYSTAL_USER_TAGS),
       method: 'GET',
       header: {
@@ -231,7 +233,7 @@ export default function Xiangxi(props) {
           // Display the first activated crystal from the list as per new logic
           if (Array.isArray(res.data.results) && res.data.results.length > 0) {
             const currentTag = res.data.results[0];
-            
+
             // Set crystal name from the first result
             if (currentTag.crystal_tag && currentTag.crystal_tag.crystal_type) {
               setCrystalName(currentTag.crystal_tag.crystal_type.name);
@@ -259,6 +261,8 @@ export default function Xiangxi(props) {
         console.error('API Error:', err);
       }
     });
+    // H5 模式 Taro.request 返回 Promise，需 catch 避免 unhandledrejection
+    if (req && req.catch) req.catch(() => {});
   };
 
   const handleCouponClick = () => {

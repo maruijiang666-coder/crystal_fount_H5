@@ -177,6 +177,39 @@ const FORTUNE_TASK_ID_STORAGE_KEY = 'TaLuoAnswer_fortune_task_id';
 const FORTUNE_REPORT_STORAGE_KEY = 'TaLuoAnswer';
 const FORTUNE_POLL_INTERVAL_MS = 3000;
 const FORTUNE_POLL_MAX_ATTEMPTS = 60;
+const IS_H5 = process.env.TARO_ENV === 'h5';
+
+const stringifyRejectionReason = (reason) => {
+  if (!reason) return '';
+  if (typeof reason === 'string') return reason;
+  if (typeof reason.message === 'string' && reason.message) return reason.message;
+  if (typeof reason.errMsg === 'string' && reason.errMsg) return reason.errMsg;
+  if (typeof reason.name === 'string' && reason.name) return reason.name;
+
+  try {
+    return JSON.stringify(reason);
+  } catch (err) {
+    return String(reason);
+  }
+};
+
+const shouldIgnoreH5Rejection = (reasonText) => {
+  if (!reasonText) return false;
+
+  return [
+    'AbortError',
+    'NotAllowedError',
+    'The play() request was interrupted',
+    'play() failed',
+    'media resource',
+    'operateAudio',
+    'audio play',
+    'user didn\'t interact',
+    'user gesture',
+    'request was interrupted by a call to pause',
+    'request was interrupted by a new load request'
+  ].some((keyword) => reasonText.includes(keyword));
+};
 
 const normalizeTaskStatus = (status) => {
   if (!status) return '';
@@ -375,6 +408,7 @@ export default function TaLuoAnswer(props) {
 
   // Audio Context Ref
   const audioContext = useRef(null);
+  const audioPlayTimerRef = useRef(null);
 
   // Loading Animation State
   const [chantIndex, setChantIndex] = useState(0);
@@ -382,6 +416,52 @@ export default function TaLuoAnswer(props) {
   const pollAttemptRef = useRef(0);
   const activeTaskIdRef = useRef(null);
   const isMountedRef = useRef(false);
+  const currentReader = READERS.find((reader) => reader.id === selectedReaderId) || READERS[currentReaderIndex] || READERS[0];
+
+  const clearAudioPlayTimer = () => {
+    if (audioPlayTimerRef.current) {
+      clearTimeout(audioPlayTimerRef.current);
+      audioPlayTimerRef.current = null;
+    }
+  };
+
+  const stopAudioSafely = () => {
+    const ctx = audioContext.current;
+    if (!ctx) return;
+
+    try {
+      const stopResult = ctx.stop?.();
+      if (stopResult && typeof stopResult.catch === 'function') {
+        stopResult.catch(() => {});
+      }
+    } catch (err) {
+      console.warn('Stop audio skipped:', err);
+    }
+  };
+
+  const playReaderAudioSafely = (sound, delay = 0) => {
+    const ctx = audioContext.current;
+    if (!ctx || !sound) return;
+
+    clearAudioPlayTimer();
+    stopAudioSafely();
+
+    audioPlayTimerRef.current = setTimeout(() => {
+      if (!audioContext.current) return;
+
+      try {
+        ctx.src = sound;
+        const playResult = ctx.play?.();
+        if (playResult && typeof playResult.catch === 'function') {
+          playResult.catch((err) => {
+            console.warn('Reader audio autoplay skipped:', err);
+          });
+        }
+      } catch (err) {
+        console.warn('Reader audio play skipped:', err);
+      }
+    }, delay);
+  };
 
   useEffect(() => {
     isMountedRef.current = true;
@@ -404,18 +484,25 @@ export default function TaLuoAnswer(props) {
     }
 
     // Initialize Audio Context
-    const context = Taro.createInnerAudioContext();
-    context.obeyMuteSwitch = false;
-    
-    context.onPlay(() => {
-        console.log('Audio started playing');
-    });
-    
-    context.onError((res) => {
-        console.error('Audio play error:', res.errMsg, res.errCode);
-    });
+    try {
+      const context = Taro.createInnerAudioContext();
+      if (!IS_H5) {
+        context.obeyMuteSwitch = false;
+      }
+      
+      context.onPlay(() => {
+          console.log('Audio started playing');
+      });
+      
+      context.onError((res) => {
+          console.error('Audio play error:', res.errMsg, res.errCode);
+      });
 
-    audioContext.current = context;
+      audioContext.current = context;
+    } catch (err) {
+      console.warn('Audio context unavailable on current platform:', err);
+      audioContext.current = null;
+    }
 
     return () => {
       isMountedRef.current = false;
@@ -423,9 +510,33 @@ export default function TaLuoAnswer(props) {
         clearTimeout(pollTimerRef.current);
         pollTimerRef.current = null;
       }
+      clearAudioPlayTimer();
       if (audioContext.current) {
-        audioContext.current.destroy();
+        try {
+          audioContext.current.destroy();
+        } catch (err) {
+          console.warn('Audio destroy skipped:', err);
+        }
       }
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!IS_H5 || typeof window === 'undefined') return undefined;
+
+    const handleUnhandledRejection = (event) => {
+      const reasonText = stringifyRejectionReason(event.reason);
+
+      if (shouldIgnoreH5Rejection(reasonText)) {
+        console.warn('Ignored TaLuoAnswer H5 rejection:', event.reason);
+        event.preventDefault();
+      }
+    };
+
+    window.addEventListener('unhandledrejection', handleUnhandledRejection);
+
+    return () => {
+      window.removeEventListener('unhandledrejection', handleUnhandledRejection);
     };
   }, []);
 
@@ -451,23 +562,22 @@ export default function TaLuoAnswer(props) {
     if (step === 'selecting') {
       const reader = READERS[currentReaderIndex];
           console.log('Entering selection, playing sound for:', reader.name);
-          if (reader && reader.sound && audioContext.current) {
-              const ctx = audioContext.current;
-              ctx.stop();
-              setTimeout(() => {
-                  ctx.src = reader.sound;
-                  ctx.play();
-              }, 500); // Delay to ensure transition completes
+          if (!IS_H5 && reader && reader.sound && audioContext.current) {
+              playReaderAudioSafely(reader.sound, 500);
           }
       } else {
           // Stop sound when leaving selection (e.g. going to loading)
-          if (audioContext.current) {
-              audioContext.current.stop();
-          }
+          clearAudioPlayTimer();
+          stopAudioSafely();
       }
-  }, [step]);
+  }, [step, currentReaderIndex]);
 
   useEffect(() => {
+    if (skipPlacement) {
+      clearFortuneTaskCache();
+      return;
+    }
+
     const cachedTaskId = Taro.getStorageSync(FORTUNE_TASK_ID_STORAGE_KEY);
 
     if (cachedTaskId) {
@@ -476,7 +586,7 @@ export default function TaLuoAnswer(props) {
       pollFortuneTask(cachedTaskId);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [skipPlacement]);
 
   // Measure slots for Game Mode and Calculate Deck Position
   useEffect(() => {
@@ -981,17 +1091,22 @@ export default function TaLuoAnswer(props) {
       console.log('Try to play sound:', reader.sound);
 
       if (reader.sound && audioContext.current) {
-          const ctx = audioContext.current;
-          
-          // Stop strictly before changing src
-          ctx.stop();
-          
-          // Small delay to ensure state reset (sometimes helps in mini-programs)
-          setTimeout(() => {
-              ctx.src = reader.sound;
-              ctx.play();
-          }, 50);
+          playReaderAudioSafely(reader.sound, 50);
       }
+  };
+
+  const handleSelectionBack = () => {
+      try {
+          const pages = Taro.getCurrentPages();
+          if (pages && pages.length > 1) {
+              Taro.navigateBack({ delta: 1 });
+              return;
+          }
+      } catch (err) {
+          console.warn('Navigate back failed, fallback to tarot page.', err);
+      }
+
+      Taro.redirectTo({ url: '/pages/TaLuo/index' });
   };
 
   // --- Render Functions ---
@@ -1000,10 +1115,7 @@ export default function TaLuoAnswer(props) {
       const currentReader = READERS[currentReaderIndex];
 
       return (
-        <View 
-            className={`${styles.selectionContainer} ${styles.page}`} 
-            style={{ width: '100vw', height: '100vh', backgroundColor: '#000', position: 'relative', overflow: 'hidden' }}
-        >
+        <View className={`${styles.selectionContainer} ${styles.page}`}>
             {/* Base Background Image */}
             <Image 
                 className={styles.bgImage}
@@ -1017,114 +1129,134 @@ export default function TaLuoAnswer(props) {
                 <View className={styles.starsLayer}></View>
                 <View className={styles.floatingParticles}></View>
             </View>
-
-            <View className={styles.characterStage}>
-                {/* Magic Circle on Floor (Perspective) */}
-                <View className={styles.floorMagicCircle}>
-                    <Image src={MAGIC_CIRCLE_IMG} className={styles.magicCircleImage} mode="aspectFit" />
+            <View className={styles.selectionHeader}>
+                <View className={styles.headerBack} onClick={handleSelectionBack}>
+                    <View className={styles.headerBackIcon}></View>
                 </View>
-
-                <Swiper
-                    className={styles.characterSwiper}
-                    current={currentReaderIndex}
-                    onChange={handleSwiperChange}
-                    circular
-                    indicatorDots={false}
-                    autoplay={false}
-                    duration={500}
-                >
-                    {READERS.map((reader) => (
-                        <SwiperItem key={reader.id} className={styles.characterSwiperItem}>
-                             <Image
-                                className={styles.characterImage}
-                                src={reader.image} 
-                                mode="aspectFit"
-                            />
-                        </SwiperItem>
-                    ))}
-                </Swiper>
-
-                {/* Stats Panel - Moved to Top Left */}
-                <View 
-                    className={styles.readerStatsContainer}
-                    style={{ top: currentReader.statsTop || '12%' }}
-                >
-                    <View className={styles.readerStats} key={currentReader.id}>
-                        <View className={styles.statRow}>
-                            <Text className={styles.statLabel}>直觉 🔮</Text>
-                            <View className={styles.statBar}>
-                                <View className={`${styles.statFill} ${styles.statFillIntuition}`} style={{ width: `${currentReader.stats.intuition}%` }}></View>
-                            </View>
+                <Text className={styles.headerTitle}>AI 塔罗解读</Text>
+                <View className={styles.headerActions}>
+                    <View className={styles.headerActionCapsule}>
+                        <View className={styles.headerMore}>
+                            <View className={styles.headerDot}></View>
+                            <View className={styles.headerDot}></View>
+                            <View className={styles.headerDot}></View>
                         </View>
-                        <View className={styles.statRow}>
-                            <Text className={styles.statLabel}>逻辑 🧠</Text>
-                            <View className={styles.statBar}>
-                                <View className={`${styles.statFill} ${styles.statFillLogic}`} style={{ width: `${currentReader.stats.logic}%` }}></View>
-                            </View>
-                        </View>
-                        <View className={styles.statRow}>
-                            <Text className={styles.statLabel}>共情 ❤️</Text>
-                            <View className={styles.statBar}>
-                                <View className={`${styles.statFill} ${styles.statFillEmpathy}`} style={{ width: `${currentReader.stats.empathy}%` }}></View>
-                            </View>
+                        <View className={styles.headerDivider}></View>
+                        <View className={styles.headerTarget}>
+                            <View className={styles.headerTargetRing}></View>
                         </View>
                     </View>
-                </View>
-
-                <View className={styles.infoOverlay}>
-                    <Text className={styles.readerName}>{currentReader.name}</Text>
-                    <View className={styles.readerMetaRow}>
-                        {/* Changed to Flag Emoji */}
-                        <Text className={styles.readerFlag}>{currentReader.nationality}</Text>
-                        <Text className={styles.readerTitle}>{currentReader.title}</Text>
-                    </View>
-                    <Text className={styles.readerStory}>{currentReader.story}</Text>
                 </View>
             </View>
 
-            <View className={styles.bottomPanel}>
-                <View className={styles.modeSelector}>
-                    {TEMPLATES.map(t => (
-                        <View 
-                            key={t.type} 
-                            className={`${styles.modeCard} ${selectedTemplateType === t.type ? styles.flipped : ''}`}
-                            onClick={() => setSelectedTemplateType(t.type)}
-                        >
-                            <View className={styles.cardInner}>
-                                <View className={styles.cardFront}>
-                                    <Text className={styles.cardText}>{t.name}</Text>
+            <View className={styles.selectionBody}>
+                <View className={styles.characterStage}>
+                    <View className={styles.floorMagicCircle}>
+                        <Image src={MAGIC_CIRCLE_IMG} className={styles.magicCircleImage} mode="aspectFit" />
+                    </View>
+
+                    <Swiper
+                        className={styles.characterSwiper}
+                        current={currentReaderIndex}
+                        onChange={handleSwiperChange}
+                        circular
+                        indicatorDots={false}
+                        autoplay={false}
+                        duration={200}
+                    >
+                        {READERS.map((reader) => (
+                            <SwiperItem key={reader.id} className={styles.characterSwiperItem}>
+                                <View className={styles.characterFigureWrap}>
+                                    <Image
+                                        className={styles.characterImage}
+                                        src={reader.image}
+                                        mode="aspectFit"
+                                    />
                                 </View>
-                                <View className={styles.cardBack}>
-                                    <Text className={styles.cardTextActive}>{t.name}</Text>
+                            </SwiperItem>
+                        ))}
+                    </Swiper>
+
+                    <View
+                        className={styles.readerStatsContainer}
+                        style={{ top: currentReader.statsTop || '12%' }}
+                    >
+                        <View className={styles.readerStats} key={currentReader.id}>
+                            <View className={styles.statRow}>
+                                <Text className={styles.statLabel}>直觉 🔮</Text>
+                                <View className={styles.statBar}>
+                                    <View className={`${styles.statFill} ${styles.statFillIntuition}`} style={{ width: `${currentReader.stats.intuition}%` }}></View>
+                                </View>
+                            </View>
+                            <View className={styles.statRow}>
+                                <Text className={styles.statLabel}>逻辑 🧠</Text>
+                                <View className={styles.statBar}>
+                                    <View className={`${styles.statFill} ${styles.statFillLogic}`} style={{ width: `${currentReader.stats.logic}%` }}></View>
+                                </View>
+                            </View>
+                            <View className={styles.statRow}>
+                                <Text className={styles.statLabel}>共情 ❤️</Text>
+                                <View className={styles.statBar}>
+                                    <View className={`${styles.statFill} ${styles.statFillEmpathy}`} style={{ width: `${currentReader.stats.empathy}%` }}></View>
                                 </View>
                             </View>
                         </View>
-                    ))}
+                    </View>
+
+                    <View className={styles.infoOverlay}>
+                        <Text className={styles.readerName}>{currentReader.name}</Text>
+                        <View className={styles.readerMetaRow}>
+                            <Text className={styles.readerFlag}>{currentReader.nationality}</Text>
+                            <Text className={styles.readerTitle}>{currentReader.title}</Text>
+                        </View>
+                        <Text className={styles.readerStory}>{currentReader.story}</Text>
+                    </View>
+
+                    <View className={styles.modeSelector}>
+                        {TEMPLATES.map(t => (
+                            <View
+                                key={t.type}
+                                className={`${styles.modeCard} ${selectedTemplateType === t.type ? styles.flipped : ''}`}
+                                onClick={() => setSelectedTemplateType(t.type)}
+                            >
+                                <View className={styles.cardInner}>
+                                    <View className={styles.cardFront}>
+                                        <Text className={styles.cardText}>{t.name}</Text>
+                                    </View>
+                                    <View className={styles.cardBack}>
+                                        <Text className={styles.cardTextActive}>{t.name}</Text>
+                                    </View>
+                                </View>
+                            </View>
+                        ))}
+                    </View>
                 </View>
 
-                <Swiper
-                    className={styles.avatarSwiper}
-                    current={currentReaderIndex}
-                    onChange={handleSwiperChange}
-                    previousMargin="280px"
-                    nextMargin="280px"
-                    circular
-                >
-                    {READERS.map((reader, index) => (
-                        <SwiperItem key={reader.id} className={styles.avatarItem}>
-                            <View className={`${styles.avatarWrapper} ${index === currentReaderIndex ? styles.active : ''}`}>
-                                <Image 
-                                    className={styles.avatarImg}
-                                    src={reader.image} 
-                                    mode="aspectFill"
-                                />
-                            </View>
-                        </SwiperItem>
-                    ))}
-                </Swiper>
+                <View className={styles.bottomPanel}>
+                    <Swiper
+                        className={styles.avatarSwiper}
+                        current={currentReaderIndex}
+                        onChange={handleSwiperChange}
+                        previousMargin="112px"
+                        nextMargin="112px"
+                        circular
+                    >
+                        {READERS.map((reader, index) => (
+                            <SwiperItem key={reader.id} className={styles.avatarItem}>
+                                <View className={`${styles.avatarWrapper} ${index === currentReaderIndex ? styles.active : ''}`}>
+                                    <Image
+                                        className={styles.avatarImg}
+                                        src={reader.image}
+                                        mode="aspectFill"
+                                    />
+                                </View>
+                            </SwiperItem>
+                        ))}
+                    </Swiper>
 
-                <View className={styles.confirmBtn} onClick={handleStart}>
-                    <Text className={styles.confirmText}>塔罗师就位</Text>
+                    <View className={styles.confirmBtn} onClick={handleStart}>
+                        <Text className={styles.confirmText}>塔罗师就位</Text>
+                    </View>
                 </View>
             </View>
         </View>
@@ -1277,7 +1409,7 @@ export default function TaLuoAnswer(props) {
 
         <View className={styles.readerStatus}>
             <Text className={styles.loadingTextMain}>
-                {READERS.find(r => r.id === selectedReaderId)?.name.split(' ')[0]} 正在感应...
+                {(currentReader?.name ? currentReader.name.split(' ')[0] : '塔罗师')} 正在感应...
             </Text>
         </View>
     </View>
@@ -1330,6 +1462,7 @@ export default function TaLuoAnswer(props) {
                 src={getOssImageUrl('TaLuo/907bf205889bf3b23767a6f25e084bab.png')}
                 mode="widthFix"
             />
+            <View className={styles.resultOverlay}></View>
 
             <View className={styles.resultContent}>
                 
