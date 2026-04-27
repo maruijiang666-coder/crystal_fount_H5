@@ -18,8 +18,8 @@ const getApiErrorMessage = (payload, fallback = '请求异常') => {
 };
 
 export default function Login() {
-  const [isAgreed, setIsAgreed] = useState(false);
-  const [showLoginModal, setShowLoginModal] = useState(false);
+  const [isAgreed, setIsAgreed] = useState(true);
+  const [showLoginModal, setShowLoginModal] = useState(true);
   const [phoneNumber, setPhoneNumber] = useState('');
   const [smsCode, setSmsCode] = useState('');
   const [smsCountdown, setSmsCountdown] = useState(0);
@@ -218,58 +218,8 @@ export default function Login() {
     return () => clearSmsTimer();
   }, []);
 
-  const handleLoginClick = () => {
-    if (!isAgreed) {
-      Taro.showToast({ title: '请先阅读并同意协议', icon: 'none' });
-      return;
-    }
-    setShowLoginModal(true);
-  };
-
   return (
     <View className={styles.page}>
-      <View className={`flex-col ${styles.group}`}>
-        <View className='flex-col items-center'>
-          <Text className={styles.text}>谴山国际水晶</Text>
-          <Text className={`${styles.font} ${styles.text_2} ${styles['mt-25']}`}>
-            请完成短信验证码登录以继续使用
-          </Text>
-        </View>
-        <View className='flex-col mt-68'>
-          <View className='flex-col justify-start items-center self-stretch relative'>
-            <View className={styles['login-button']} onClick={handleLoginClick}>
-              <View className={`flex-col justify-start items-center ${styles['text-wrapper']}`}>
-                <Text className={styles.text_3}>登录</Text>
-              </View>
-            </View>
-            <View className={styles['cancel-button']} onClick={() => Taro.navigateBack()}>
-              <Text className={styles['cancel-text']}>取消登录</Text>
-            </View>
-          </View>
-        </View>
-
-        <View className={styles['agreement-container']}>
-          <View className={styles['checkbox-area']} onClick={() => setIsAgreed(!isAgreed)}>
-            <View className={`${styles.checkbox} ${isAgreed ? styles['checkbox-checked'] : ''}`}>
-              {isAgreed && <View className={styles['checkbox-inner']}></View>}
-            </View>
-          </View>
-          <Text className={styles['agreement-text']}>我已阅读并同意</Text>
-          <Text
-            className={styles['agreement-link']}
-            onClick={() => Taro.navigateTo({ url: '/pages/Agreement/index' })}
-          >
-            《用户服务协议》
-          </Text>
-          <Text className={styles['agreement-text']}>与</Text>
-          <Text
-            className={styles['agreement-link']}
-            onClick={() => Taro.navigateTo({ url: '/pages/Privacy/index' })}
-          >
-            《隐私政策》
-          </Text>
-        </View>
-      </View>
 
       {showLoginModal && (
         <View className={styles['modal-overlay']}>

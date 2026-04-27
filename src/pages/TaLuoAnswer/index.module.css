@@ -321,6 +321,13 @@
     transform: rotate(10deg);
 }
 
+/* 4. Single Card (Centered) */
+.spreadSingleCard .slot0 {
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
 
 /* --- Selection Page Styles --- */
 
@@ -634,18 +641,18 @@
     transform-origin: bottom center;
     z-index: 1;
     animation: float 6s ease-in-out infinite;
-    transform: translateY(-8%) scale(2.1);
+    transform: translateY(-8%) scale(1.6);
 }
 
 @keyframes float {
 
     0%,
     100% {
-        transform: translateY(-8%) scale(2.1);
+        transform: translateY(-8%) scale(1.6);
     }
 
     50% {
-        transform: translateY(-10%) scale(2.1);
+        transform: translateY(-10%) scale(1.6);
     }
 }
 
@@ -719,7 +726,7 @@
     top: 8%;
     left: 12px;
     z-index: 10;
-    width: 170px;
+    width: 280px;
     animation: fadeIn 1s ease-out;
 }
 
@@ -738,7 +745,7 @@
 .readerStats {
     width: 100%;
     background: rgba(0, 0, 0, 0.7);
-    padding: 14px 14px 12px;
+    padding: 22px 22px 20px;
     border-radius: 14px;
     border: 1px solid rgba(212, 175, 55, 0.3);
     backdrop-filter: blur(8px);
@@ -749,7 +756,7 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 10px;
+    margin-bottom: 18px;
 }
 
 .statRow:last-child {
@@ -758,15 +765,15 @@
 
 .statLabel {
     color: #ccc;
-    font-size: 13px;
+    font-size: 20px;
     font-weight: 600;
     text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8);
     font-family: var(--font-fangzheng-xingkai, 'STKaiti', serif);
 }
 
 .statBar {
-    width: 76px;
-    height: 7px;
+    width: 130px;
+    height: 11px;
     background: rgba(0, 0, 0, 0.6);
     border: 1px solid rgba(255, 255, 255, 0.1);
     border-radius: 999px;
@@ -1192,12 +1199,11 @@
     height: 100%;
     z-index: 0;
     background: linear-gradient(180deg,
-        rgba(0,0,0,0.85) 0%,
-        rgba(0,0,0,0.6) 15%,
-        rgba(0,0,0,0.3) 40%,
-        transparent 60%,
-        rgba(0,0,0,0.2) 100%
-    );
+            rgba(0, 0, 0, 0.85) 0%,
+            rgba(0, 0, 0, 0.6) 15%,
+            rgba(0, 0, 0, 0.3) 40%,
+            transparent 60%,
+            rgba(0, 0, 0, 0.2) 100%);
     pointer-events: none;
 }
 
@@ -1246,14 +1252,14 @@
 .questionLabel {
     display: block;
     color: #888;
-    font-size: 24px;
+    font-size: 28px;
     margin-bottom: 16px;
 }
 
 .questionText {
     display: block;
     color: #D4AF37;
-    font-size: 32px;
+    font-size: 38px;
     font-family: 'Iceland';
     font-weight: bold;
 }
@@ -1284,14 +1290,14 @@
 
 .sectionTitle {
     color: #D4AF37;
-    font-size: 40px;
+    font-size: 48px;
     font-family: 'Iceland';
     font-weight: bold;
 }
 
 .analysisText {
     color: #ccc;
-    font-size: 30px;
+    font-size: 36px;
     line-height: 1.8;
     text-align: justify;
     width: 100%;
@@ -1306,7 +1312,7 @@
 
 .fortuneLabel {
     color: #D4AF37;
-    font-size: 32px;
+    font-size: 38px;
     font-weight: bold;
     margin-bottom: 10px;
     display: block;
@@ -1314,7 +1320,7 @@
 }
 
 .score {
-    font-size: 28px;
+    font-size: 32px;
     font-weight: normal;
     opacity: 0.9;
     color: #FFD700;
@@ -1322,7 +1328,7 @@
 
 .fortuneText {
     color: #aaa;
-    font-size: 28px;
+    font-size: 32px;
     line-height: 1.6;
     width: 100%;
     word-break: break-word;
@@ -1339,7 +1345,7 @@
 
 .luckyInfo {
     color: #888;
-    font-size: 26px;
+    font-size: 30px;
     margin-bottom: 16px;
     display: block;
     border-bottom: 1px dashed rgba(255, 255, 255, 0.1);
@@ -1350,7 +1356,7 @@
 
 .crystalText {
     color: #eee;
-    font-size: 30px;
+    font-size: 34px;
     line-height: 1.6;
     font-style: italic;
     width: 100%;
@@ -1414,8 +1420,15 @@
 }
 
 @keyframes shimmer {
-    0%, 100% { transform: translateX(-100%); }
-    50% { transform: translateX(100%); }
+
+    0%,
+    100% {
+        transform: translateX(-100%);
+    }
+
+    50% {
+        transform: translateX(100%);
+    }
 }
 
 .podcastIcon {
@@ -1443,14 +1456,14 @@
 
 .podcastTitle {
     color: #D4AF37;
-    font-size: 34px;
+    font-size: 40px;
     font-weight: bold;
     font-family: 'Iceland';
 }
 
 .podcastCost {
     color: #888;
-    font-size: 24px;
+    font-size: 28px;
 }
 
 .arrowIcon {

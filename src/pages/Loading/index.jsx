@@ -102,7 +102,10 @@ export default function Loading() {
         }
         const queryString = queryParts.length > 0 ? `?${queryParts.join('&')}` : '';
 
-        if (nfcTagId) {
+        if (Taro.getEnv() === Taro.ENV_TYPE.WEB) {
+          console.log('H5 environment detected, redirecting to NFCTouch');
+          Taro.redirectTo({ url: `/pages/NFCTouch/index${queryString}` });
+        } else if (nfcTagId) {
           console.log('Redirecting to NFCTouch');
           Taro.redirectTo({ url: `/pages/NFCTouch/index${queryString}` });
         } else {

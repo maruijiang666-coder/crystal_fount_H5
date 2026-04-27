@@ -16,7 +16,8 @@
       "Bash(cross-env NODE_ENV=development NODE_OPTIONS=--openssl-legacy-provider npx taro build --type h5)",
       "Bash(node -e \"console.log\\(require\\('react/package.json'\\).version\\)\")",
       "Bash(nohup npm *)",
-      "Bash(echo \"PID=$!\")"
+      "Bash(echo \"PID=$!\")",
+      "Bash(python3 -c \"from PIL import Image; print\\('PIL available'\\)\")"
     ]
   }
 }

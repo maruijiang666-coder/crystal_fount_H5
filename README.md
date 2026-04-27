@@ -156,6 +156,27 @@ npm run build:alipay
 npm run build:tt
 ```
 
+## 环境配置
+
+### 开发环境
+
+- 开发环境配置文件：`config/dev.js`
+- 当前开发接口地址：`http://192.168.1.2:8011`
+- 本地 H5 开发时，`localhost`、`127.0.0.1`、`192.168.1.2` 会走同源 `/api` 代理
+
+### 生产环境
+
+- 生产环境配置文件：`config/prod.js`
+- 当前生产接口地址：`https://crystal.quant-speed.com`
+- H5 生产构建命令：`npm run build:h5`
+
+### H5 上线说明
+
+1. 执行 `npm run build:h5`
+2. 部署生成后的 `dist` 目录
+3. 确认前端可以访问 `https://crystal.quant-speed.com/api/...`
+4. 如果前后端通过反向代理联通，请确认 `/api` 转发规则已正确配置
+
 ## 开发指南
 
 ### 样式规范

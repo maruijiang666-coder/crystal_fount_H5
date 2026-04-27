@@ -7,6 +7,7 @@ import { checkCrystalActivation } from '../../utils/auth.js';
 
 export default function AllRecommendations() {
   const [pressedCard, setPressedCard] = useState(null);
+  const isWebEnv = Taro.getEnv() === Taro.ENV_TYPE.WEB;
 
   const cards = [
     {
@@ -42,6 +43,19 @@ export default function AllRecommendations() {
   const handleCardClick = (card) => {
     console.log('点击卡片:', card);
     if (card.url) {
+      if (card.id === 'card1' && isWebEnv) {
+        if (!Taro.getStorageSync('importcode')) {
+          Taro.showToast({ title: '请先登录', icon: 'none' });
+          setTimeout(() => {
+            Taro.switchTab({ url: '/pages/My/index' });
+          }, 1500);
+          return;
+        }
+
+        Taro.navigateTo({ url: card.url });
+        return;
+      }
+
       if (checkCrystalActivation()) {
         const targetUrl = card.id === 'card2'
           ? `${card.url}?source=entertainment`

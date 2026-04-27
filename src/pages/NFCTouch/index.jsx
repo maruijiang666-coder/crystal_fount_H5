@@ -1,11 +1,10 @@
 import { useState, useEffect, useRef } from 'react';
-import { View, Text, Image, ScrollView, Textarea } from '@tarojs/components';
-import Taro, { useDidShow, useDidHide } from '@tarojs/taro';
+import { View, Text, Image, ScrollView, Textarea, Button } from '@tarojs/components';
+import Taro from '@tarojs/taro';
 import styles from './index.module.css';
 import { getOssImageUrl } from '../../utils/config';
 import { getApiUrl, API_ENDPOINTS } from '../../utils/api.config.js';
 import RollingNumber from '../../components/RollingNumber';
-import NFCManager from '../../utils/NFCManager';
 
 // 故事模板
 const STORY_TEMPLATES = [
@@ -15,9 +14,11 @@ const STORY_TEMPLATES = [
   { text: "突然一阵狂风刮过，小鹿迷失了方向，但它记得你的嘱托：'{wish}'，这给了它力量。", type: "struggle" }
 ];
 
+const DEFAULT_CSRF_TOKEN = 'MFlroPUYKLLVTQDFPpsGv9vMrvQp8n9s';
+
 export default function NFCTouch() {
-  const [status, setStatus] = useState('scanning'); // scanning, reading, success, error
-  const [message, setMessage] = useState('请将手机背部NFC区域靠近水晶');
+  const [status, setStatus] = useState('idle'); // idle, reading, success, error
+  const [message, setMessage] = useState('正在准备水晶共鸣...');
   const [energy, setEnergy] = useState(0); // Total Energy (Accumulated)
   const [balance, setBalance] = useState(0); // Current Energy (Consumable)
   const [touchesUsed, setTouchesUsed] = useState(0);
@@ -40,38 +41,28 @@ export default function NFCTouch() {
   // Use Refs to access latest state in closures (callbacks/timeouts)
   const statusRef = useRef(status);
   statusRef.current = status;
+  const activeCrystalIdRef = useRef('');
+  const actionLockRef = useRef(false);
 
-  // Track if we should be scanning
-  const shouldScan = useRef(false);
-  // Ref to hold the active listener function
-  // const activeListenerRef = useRef(null); // Deprecated
+  const getReadyMessage = (crystalId = activeCrystalIdRef.current) =>
+    crystalId
+      ? '已连接当前水晶，点击下方按钮即可开始共鸣'
+      : '未找到水晶信息，请先返回激活水晶页面';
 
-  useDidShow(() => {
-    console.log('NFCTouch useDidShow');
-    shouldScan.current = true;
-    startNFC();
-  });
-
-  useDidHide(() => {
-    console.log('NFCTouch useDidHide');
-    shouldScan.current = false;
-    stopNFC();
-  });
+  const syncActiveCrystal = (crystalId) => {
+    const normalizedId = (crystalId || '').trim();
+    activeCrystalIdRef.current = normalizedId;
+    if (normalizedId) {
+      Taro.setStorageSync('nfc_tag_id', normalizedId);
+    }
+  };
 
   useEffect(() => {
-    // Check for params passed from ActivateCrystal
     const params = Taro.getCurrentInstance().router?.params || {};
-    if (params.sn) {
-        console.log('NFCTouch initialized with SN:', params.sn);
-        Taro.setStorageSync('nfc_tag_id', params.sn);
-        
-        // Trigger touch logic automatically if SN is present
-        shouldScan.current = false;
-        // Use a slight delay to ensure state is ready
-        setTimeout(() => {
-            handleNFCSuccess();
-        }, 500);
-    }
+    const resolvedCrystalId = `${params.sn || Taro.getStorageSync('nfc_tag_id') || ''}`.trim();
+    syncActiveCrystal(resolvedCrystalId);
+    setStatus('idle');
+    setMessage(getReadyMessage(resolvedCrystalId));
 
     // 初始化数据
     const storedEnergy = Taro.getStorageSync('spirit_energy') || 0;
@@ -107,240 +98,7 @@ export default function NFCTouch() {
       setTouchesUsed(storedTouches !== undefined ? storedTouches : 0);
     }
 
-    // Initial start handled by useDidShow
-    return () => {
-      shouldScan.current = false;
-      stopNFC();
-    };
   }, []);
-
-  const handleNFCDiscovered = (res) => {
-    console.log('NFC Scan Result (Raw):', res);
-    if (res) {
-        // Log additional debug info
-        console.log('Res Keys:', Object.keys(res));
-        if (res.id) console.log('Res ID:', res.id);
-        if (res.messages) console.log('Res Messages Length:', res.messages.length);
-        if (res.techs) console.log('Res Techs:', res.techs);
-    }
-    let scannedSn = null;
-    let foundUri = null;
-    let detectedSn = null;
-
-    // Try to extract ID from NDEF messages
-    if (res && res.messages && res.messages.length > 0) {
-        res.messages.forEach((msg, index) => {
-            console.log(`Processing Message ${index}:`, msg);
-            try {
-                console.log(`Message ${index} JSON:`, JSON.stringify(msg));
-            } catch(e) {}
-            
-            // 增强的 records 提取逻辑：
-            // 如果 msg.records 存在且非空，使用它。
-            // 否则，如果 msg 是数组，使用它。
-            // 否则（msg.records 为空或不存在，且 msg 不是数组），将 msg 本身视为 record。
-            // 这可以解决 msg 被错误包装成 {records: []} 但自身包含 payload 的情况。
-            let records = [];
-            if (msg.records && msg.records.length > 0) {
-                records = msg.records;
-            } else if (Array.isArray(msg)) {
-                records = msg;
-            } else {
-                // Fallback: 即使 msg.records 存在但为空，我们也尝试检查 msg 本身是否有 payload
-                // 如果 msg 只是 {records: []} 且无其他数据，后续 payload 处理会安全跳过
-                records = [msg];
-            }
-            
-            console.log(`Records determined: ${records.length}`, records);
-
-            records.forEach((record, rIndex) => {
-                if (!record) return;
-
-                // Debug: 打印 record 的所有键值，寻找 payload
-                console.log(`Record ${rIndex} Keys:`, Object.keys(record));
-
-                // 安全获取 payload 和 type，防止崩溃
-                // 有些情况下 payload 可能是 number[] 而不是 Uint8Array，需要兼容
-                let payloadRaw = record.payload || [];
-                let typeRaw = record.type || [];
-                
-                // 如果 payload 为空，尝试查找其它可能存放数据的字段 (兼容部分奇怪的实现)
-                if ((!payloadRaw || payloadRaw.length === 0) && record.id) {
-                     console.log('Payload empty, checking record.id as potential payload source...');
-                     // 注意：record.id 通常是记录 ID，但有些非标实现可能会混淆
-                }
-
-                const payloadBytes = new Uint8Array(payloadRaw);
-                const typeBytes = new Uint8Array(typeRaw);
-
-                console.log(`Record ${rIndex} Type:`, typeBytes.join(','));
-                console.log(`Record ${rIndex} Payload Len:`, payloadBytes.length);
-                if (payloadBytes.length > 0) {
-                    console.log(`Record ${rIndex} Payload Hex:`, Array.from(payloadBytes).map(b => b.toString(16).padStart(2, '0')).join(' '));
-                }
-
-                // 1. Check for URI Record (Type 'U' = 0x55)
-                if (typeBytes.length === 1 && typeBytes[0] === 0x55) {
-                    const prefixMap = {
-                        0x01: 'http://www.',
-                        0x02: 'https://www.',
-                        0x03: 'http://',
-                        0x04: 'https://',
-                        0x00: '',
-                    };
-                    const identifierCode = payloadBytes[0];
-                    const prefix = prefixMap[identifierCode] || '';
-                    const uriTailBytes = payloadBytes.slice(1);
-                    let uriTail = '';
-                    try {
-                        let rawStr = "";
-                        for(let i=0; i<uriTailBytes.length; i++) rawStr += String.fromCharCode(uriTailBytes[i]);
-                        uriTail = decodeURIComponent(escape(rawStr));
-                    } catch(e) {
-                        uriTail = String.fromCharCode(...uriTailBytes);
-                    }
-                    foundUri = prefix + uriTail;
-                    console.log('Found URI:', foundUri);
-                } else if (payloadBytes.length > 0) {
-                     // 2. Raw Payload / Text Check (Permissive) - Fallback if not URI record
-                     // Some tags might store the URL directly in payload without Type 'U'
-                     try {
-                         let rawStr = "";
-                         for(let i=0; i<payloadBytes.length; i++) rawStr += String.fromCharCode(payloadBytes[i]);
-                         
-                         if (rawStr.includes('weixin://') || rawStr.includes('sn=')) {
-                             console.log('Found URL-like string in payload:', rawStr);
-                             const urlMatch = rawStr.match(/(weixin:\/\/[^\s\x00]+)/) || rawStr.match(/(http[s]?:\/\/[^\s\x00]+)/);
-                             if (urlMatch) {
-                                 foundUri = urlMatch[1];
-                             } else if (rawStr.includes('sn=')) {
-                                 foundUri = rawStr; 
-                             }
-                         }
-                     } catch (e) {
-                         console.log('Error parsing raw payload for URL:', e);
-                     }
-                }
-
-                if (record.payload) {
-                    // Try to decode NDEF Text Record
-                    if (payloadBytes.length > 0) {
-                        const status = payloadBytes[0];
-                        const langLen = status & 0x3F;
-                        
-                        if (payloadBytes.length > 1 + langLen) {
-                            const textBytes = payloadBytes.slice(1 + langLen);
-                            let textContent = '';
-                            try {
-                                const rawStr = String.fromCharCode(...textBytes);
-                                textContent = decodeURIComponent(escape(rawStr));
-                            } catch (e) {
-                                textContent = String.fromCharCode(...textBytes);
-                            }
-                            console.log(`  Payload (Decoded Text):`, textContent);
-                            detectedSn = textContent; // Default to text content
-                            
-                            if (textContent.includes('sn=')) {
-                                 try {
-                                    const match = textContent.match(/[?&]sn=([^&]+)/i);
-                                    if (match && match[1]) {
-                                        detectedSn = match[1];
-                                    }
-                                 } catch(e) {}
-                            }
-                        }
-                    }
-                }
-            });
-        });
-    }
-
-    // Extract SN from found URI if available
-    if (foundUri) {
-        console.log('Recognized Scheme:', foundUri);
-        try {
-             const match = foundUri.match(/[?&]sn=([^&]+)/i);
-             if (match && match[1]) {
-                 scannedSn = match[1];
-                 console.log('Extracted SN from URI:', scannedSn);
-             }
-        } catch(e) {
-             console.error('Error extracting SN from URI:', e);
-        }
-    }
-    
-    // Use detectedSn if scannedSn is still null
-    if (!scannedSn && detectedSn) {
-        scannedSn = detectedSn;
-        console.log('Using Detected SN from Text Record:', scannedSn);
-    }
-
-    // Fallback: If no SN found from NDEF/URI, use UID
-    if (!scannedSn && res && res.id) {
-         const idHex = Array.from(new Uint8Array(res.id))
-            .map(b => b.toString(16).padStart(2, '0'))
-            .join('');
-         // Only use UID if we really didn't find anything else
-         console.log('No NDEF SN found. Using Tag ID (UID) as SN:', idHex);
-         scannedSn = idHex;
-    }
-
-    if (scannedSn) {
-        const currentSn = Taro.getStorageSync('nfc_tag_id');
-        // If currentSn exists and is different, we might want to prompt or redirect
-        // For now, adhering to existing logic: redirect to activation if mismatch
-        if (currentSn && currentSn !== scannedSn) {
-            console.log(`SN Mismatch: Current ${currentSn} != Scanned ${scannedSn}. Redirecting to Activation.`);
-            Taro.redirectTo({ url: `/pages/ActivateCrystal/index?sn=${scannedSn}` });
-            return false;
-        }
-        
-        // Match or New -> Update storage and proceed
-        Taro.setStorageSync('nfc_tag_id', scannedSn);
-        
-        // 确保 SN 被设置后再返回 true，以便触发 handleNFCSuccess
-        console.log('SN Matched/Updated:', scannedSn);
-        return true;
-    }
-
-    // 走到这里说明是真实扫描，但是没解析出有效 ID
-    if (res && res.id) {
-         const idHex = Array.from(new Uint8Array(res.id))
-            .map(b => b.toString(16).padStart(2, '0'))
-            .join('');
-         console.warn('Failed to parse SN from NDEF. Tag ID:', idHex);
-    }
-
-    setStatus('error');
-    return false;
-   };
-
-  const startNFC = () => {
-    if (!shouldScan.current) return;
-    
-    // 使用 NFCManager 接管监听
-    NFCManager.takeOver(handleNFCDiscoveredCallback);
-  };
-
-  const handleNFCDiscoveredCallback = (res) => {
-       console.log("NFCTouch 监听到nfc事件了:-*-", res);
-       if (!shouldScan.current) {
-           console.log('NFCTouch: Ignored NFC event (page hidden/inactive)');
-           // 既然使用了 NFCManager，这里只需要 release 即可
-           NFCManager.release();
-           return;
-       }
-       
-       const shouldContinue = handleNFCDiscovered(res);
-       if (shouldContinue) {
-           handleNFCSuccess();
-       }
-  };
-
-  const stopNFC = () => {
-    // 使用 NFCManager 释放监听
-    NFCManager.release();
-  };
 
   const animateEnergy = (start, end, duration = 1000) => {
     const range = end - start;
@@ -368,7 +126,19 @@ export default function NFCTouch() {
     tick();
   };
 
-  const handleNFCSuccess = () => {
+  const handleTouchCrystal = async (crystalId) => {
+    const targetCrystalId = `${crystalId || activeCrystalIdRef.current || ''}`.trim();
+    if (!targetCrystalId) {
+      Taro.showToast({ title: '未找到水晶信息', icon: 'none' });
+      setStatus('error');
+      setMessage('未找到水晶信息，请先返回激活水晶页面');
+      return;
+    }
+
+    if (actionLockRef.current) {
+      return;
+    }
+
     // Use Ref for status check to avoid stale closures
     if (statusRef.current === 'success' || statusRef.current === 'reading' || showReward || showMailbox || showInput || showLevelUp) return;
     
@@ -382,116 +152,50 @@ export default function NFCTouch() {
       return;
     }
 
+    actionLockRef.current = true;
     setStatus('reading');
     setMessage('正在感应灵力波动...');
     Taro.vibrateShort({ type: 'medium' });
 
-    // Call Real API
-    callTouchCrystalApi();
+    try {
+      await callTouchCrystalApi(targetCrystalId);
+    } finally {
+      actionLockRef.current = false;
+    }
   };
 
-  const callTouchCrystalApi = () => {
-    const storedNfcId = Taro.getStorageSync('nfc_tag_id');
-    const nfcId = storedNfcId || 'NFC__004';
-      Taro.request({
-          url: getApiUrl(API_ENDPOINTS.TOUCH_CRYSTAL),
+  const callTouchCrystalApi = async (nfcId) => {
+    try {
+      const res = await Taro.request({
+        url: getApiUrl(API_ENDPOINTS.TOUCH_CRYSTAL),
       method: 'POST',
       header: {
         'accept': 'application/json',
         'X-Login-Token': Taro.getStorageSync("importcode"),
         'Content-Type': 'application/json',
-        'X-CSRFTOKEN': 'MFlroPUYKLLVTQDFPpsGv9vMrvQp8n9s'
+        'X-CSRFTOKEN': DEFAULT_CSRF_TOKEN
       },
       data: {
         nfc_tag_id: nfcId,
         touch_time: new Date().toISOString(),
         source: "nfc"
-      },
-      success: (res) => {
-        if (res.statusCode === 200) {
-          handleApiResponse(res.data);
-        } else {
-          Taro.showToast({ title: '感应失败，请重试', icon: 'none' });
-          setStatus('scanning');
-          setMessage('请将手机背部NFC区域靠近水晶');
-        }
-      },
-      fail: (err) => {
-        console.error('API Error:', err);
-        Taro.showToast({ title: '网络连接失败', icon: 'none' });
-        setStatus('scanning');
-        setMessage('请将手机背部NFC区域靠近水晶');
       }
-    });
-  };
-
-  const handleScanActivate = async () => {
-    try {
-      const res = await Taro.scanCode({
-        onlyFromCamera: true,
-        scanType: ['qrCode', 'barCode']
       });
-      const nfcId = res.result || res.data;
-      if (!nfcId) {
-        Taro.showToast({ title: '未识别到有效二维码', icon: 'none' });
+
+      if (res.statusCode === 200) {
+        syncActiveCrystal(nfcId);
+        handleApiResponse(res.data);
         return;
       }
 
-      Taro.showLoading({ title: '激活中...' });
-
-      const loginData = Taro.getStorageSync('loginData');
-      const phoneNumber = loginData?.user?.phone_number || loginData?.data?.phone_number;
-
-      if (!phoneNumber) {
-        Taro.hideLoading();
-        Taro.showToast({ title: '未找到用户手机号，请先登录', icon: 'none' });
-        return;
-      }
-
-      Taro.request({
-        url: getApiUrl(API_ENDPOINTS.ACTIVATE_CRYSTAL),
-        method: 'POST',
-        header: {
-          accept: 'application/json',
-          'X-Login-Token': Taro.getStorageSync('importcode'),
-          'Content-Type': 'application/json',
-          'X-CSRFTOKEN': 'MFlroPUYKLLVTQDFPpsGv9vMrvQp8n9s'
-        },
-        data: {
-          phone_number: phoneNumber,
-          nfc_tag_id: nfcId
-        },
-        success: (resp) => {
-          Taro.hideLoading();
-          if (resp.statusCode === 200 || resp.statusCode === 201) {
-            Taro.setStorageSync('nfc_tag_id', nfcId);
-            Taro.showToast({ title: '激活成功', icon: 'success' });
-          } else {
-            const rawDetail = resp.data?.detail || '';
-            let detail = rawDetail || '激活失败，请重试';
-            if (
-              detail.indexOf('not found') !== -1 ||
-              detail.indexOf('Not found') !== -1 ||
-              detail.indexOf('标签不存在') !== -1
-            ) {
-              detail = '未找到对应的水晶标签，请确认水晶是否已绑定';
-            }
-            Taro.showToast({ title: detail, icon: 'none' });
-          }
-        },
-        fail: (err) => {
-          Taro.hideLoading();
-          console.error('Activate API Error:', err);
-          Taro.showToast({ title: '网络连接失败', icon: 'none' });
-        }
-      });
-    } catch (e) {
-      const msg = e && e.errMsg ? e.errMsg : '';
-      if (typeof msg === 'string' && msg.indexOf('cancel') !== -1) {
-        return;
-      }
-      console.error('Scan activate failed:', e);
-      Taro.showToast({ title: '扫码失败，请重试', icon: 'none' });
+      Taro.showToast({ title: '感应失败，请重试', icon: 'none' });
+      setStatus('error');
+      setMessage('本次共鸣未成功，请检查激活码后重试');
+    } catch (err) {
+      console.error('API Error:', err);
+      Taro.showToast({ title: '网络连接失败', icon: 'none' });
+      setStatus('error');
+      setMessage('网络连接失败，请稍后重试');
     }
   };
 
@@ -660,16 +364,16 @@ export default function NFCTouch() {
     if (levelUpData) {
       setShowLevelUp(true);
     } else {
-      setStatus('scanning');
-      setMessage('请将手机背部NFC区域靠近水晶');
+      setStatus('idle');
+      setMessage(getReadyMessage());
     }
   };
 
   const closeLevelUp = () => {
     setShowLevelUp(false);
     setLevelUpData(null);
-    setStatus('scanning');
-    setMessage('请将手机背部NFC区域靠近水晶');
+    setStatus('idle');
+    setMessage(getReadyMessage());
   };
   
   const toggleMailbox = () => {
@@ -683,34 +387,6 @@ export default function NFCTouch() {
     setHasUnread(updated.some(s => !s.read));
   };
 
-  // 测试功能
-  const testCritical = () => {
-    handleApiResponse({
-        total_energy: energy + 100,
-        points_awarded: 100,
-        is_critical: true,
-        level_up: false
-    });
-  };
-
-  const testLevelUp = () => {
-      handleApiResponse({
-          total_energy: energy + 50,
-          points_awarded: 50,
-          is_critical: false,
-          level_up: true,
-          new_level: '星光·启示',
-          level_info: { description: '感知到了星辰的低语' }
-      });
-  };
-
-  // 测试功能：重置次数
-  const resetTouches = () => {
-    setTouchesUsed(0);
-    Taro.setStorageSync('daily_touches_used', 0);
-    Taro.showToast({ title: '次数已重置', icon: 'success' });
-  };
-
   return (
     <View className={styles.page}>
       {/* 顶部状态栏 */}
@@ -721,8 +397,7 @@ export default function NFCTouch() {
           </View>
           <View className={styles.statInfo}>
             <Text className={styles.statLabel}>灵力值</Text>
-            {/* <Text className={styles.statValue}>{energy}</Text> */}
-            <RollingNumber value={energy} height={20} />
+            <RollingNumber value={energy} height={34} fontSize={32} />
           </View>
         </View>
         
@@ -771,7 +446,7 @@ export default function NFCTouch() {
         )}
         
         {/* 寄语按钮 */}
-        {status === 'scanning' && (
+        {status !== 'reading' && (
             <View className={styles.wishBtn} onClick={() => setShowInput(true)}>
                 <Text className={styles.wishText}>{userWish ? "寄语已封存" : "写下寄语"}</Text>
             </View>
@@ -782,6 +457,19 @@ export default function NFCTouch() {
         {status === 'success' ? '共鸣成功' : '触碰水晶'}
       </Text>
       <Text className={styles.subText}>{message}</Text>
+
+      <View className={styles.actionPanel}>
+        <Button
+          className={`${styles.primaryAction} ${status === 'reading' ? styles.primaryActionDisabled : ''}`}
+          disabled={status === 'reading'}
+          onClick={() => handleTouchCrystal()}
+        >
+          {status === 'reading' ? '共鸣中...' : '开始共鸣'}
+        </Button>
+        <Text className={styles.actionTip}>
+          系统会直接使用已缓存的水晶编号，与当前水晶进行共鸣
+        </Text>
+      </View>
       
       {/* 寄语输入弹窗 */}
       {showInput && (
@@ -920,7 +608,7 @@ export default function NFCTouch() {
       <View className={styles.bottomPanel}>
          <View className={styles.balanceSection}>
             <Text className={styles.balanceLabel}>可用灵力</Text>
-            <RollingNumber value={balance} height={40} fontSize={36} />
+            <RollingNumber value={balance} height={48} fontSize={48} />
          </View>
          <View className={styles.levelProgress}>
             <View className={styles.progressInfo}>

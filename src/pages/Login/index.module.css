@@ -1,6 +1,7 @@
 .mt-25 {
   margin-top: 22px;
 }
+
 .page {
   background-color: #0b1411;
   width: 100%;
@@ -13,11 +14,13 @@
   flex-direction: column;
   justify-content: center;
 }
+
 .group {
   width: 100%;
   max-width: 420px;
   margin: 0 auto;
 }
+
 .text {
   color: #fbbc05;
   font-size: 32px;
@@ -25,15 +28,18 @@
   line-height: 1.15;
   text-align: center;
 }
+
 .font {
   font-size: 16px;
   font-family: var(--font-primary, Inter);
   line-height: 1.5;
 }
+
 .text_2 {
   color: #dadada;
   text-align: center;
 }
+
 .text-wrapper {
   padding: 16px 0 15px;
   background-color: #a5864d;
@@ -45,12 +51,14 @@
   align-items: center;
   box-sizing: border-box;
 }
+
 .text_3 {
   color: #ffffff;
   font-size: 22px;
   font-family: var(--font-primary, Inter);
   line-height: 1.2;
 }
+
 .login-button {
   background: transparent;
   border: none;
@@ -148,9 +156,9 @@
 
 .modal-content {
   background-image: linear-gradient(200.5deg, #3d6650 -28.1%, #273d31 121.1%);
-  width: min(92vw, 360px);
+  width: min(92vw, 750px);
   border-radius: 16px;
-  padding: 24px 18px 18px;
+  padding: 40px 35px 35px;
   display: flex;
   flex-direction: column;
   border: 2px solid #666666;
@@ -161,26 +169,26 @@
 .modal-header {
   display: flex;
   flex-direction: column;
-  margin-bottom: 20px;
+  margin-bottom: 35px;
 }
 
 .modal-title {
-  font-size: 24px;
+  font-size: 42px;
   color: #fbbc05;
   font-weight: bold;
-  margin-bottom: 10px;
+  margin-bottom: 20px;
   text-align: center;
 }
 
 .modal-subtitle {
-  font-size: 18px;
+  font-size: 32px;
   color: #ffffff;
   font-weight: bold;
-  margin-bottom: 6px;
+  margin-bottom: 12px;
 }
 
 .modal-desc {
-  font-size: 14px;
+  font-size: 26px;
   color: #dadada;
   line-height: 1.5;
 }
@@ -193,11 +201,11 @@
 .form-item {
   display: flex;
   flex-direction: row;
-  align-items: flex-start;
+  align-items: center;
   justify-content: space-between;
-  padding: 16px 0;
+  padding: 20px 0;
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-  gap: 12px;
+  gap: 30px;
 }
 
 .form-item:last-child {
@@ -205,9 +213,10 @@
 }
 
 .form-label {
-  font-size: 16px;
+  font-size: 28px;
   color: #dadada;
   flex-shrink: 0;
+  white-space: nowrap;
 }
 
 .avatar-btn {
@@ -242,7 +251,7 @@
 
 .modal-input {
   text-align: right;
-  font-size: 16px;
+  font-size: 28px;
   color: #ffffff;
   width: 100%;
   min-width: 0;
@@ -270,20 +279,20 @@
 
 .code-btn {
   flex-shrink: 0;
-  height: 36px;
-  padding: 0 12px;
-  line-height: 36px;
+  height: 52px;
+  padding: 0 24px;
+  line-height: 52px;
   border-radius: 10px;
   background: linear-gradient(90deg, #a5864d 0%, #d6b36a 100%);
   color: #ffffff;
-  font-size: 13px;
+  font-size: 22px;
   border: none;
   box-sizing: border-box;
   display: flex;
   align-items: center;
   justify-content: center;
-  min-width: 76px;
-  width: 76px;
+  min-width: 140px;
+  width: 140px;
   appearance: none;
 }
 
@@ -299,47 +308,53 @@
   display: flex;
   flex-direction: row;
   justify-content: space-between;
-  margin-top: 22px;
-  gap: 12px;
+  margin-top: 35px;
+  gap: 24px;
 }
 
 .btn-refuse {
   flex: 1;
   background-color: rgba(255, 255, 255, 0.1);
   color: #dadada;
-  font-size: 16px;
-  padding: 12px 0;
+  font-size: 28px;
+  padding: 20px 0;
   border-radius: 8px;
   text-align: center;
   line-height: 1.4;
   margin: 0;
 }
-.btn-refuse::after { border: none; }
+
+.btn-refuse::after {
+  border: none;
+}
 
 .btn-save {
   flex: 1;
   background-color: #a5864d;
   color: #ffffff;
-  font-size: 16px;
-  padding: 12px 0;
+  font-size: 28px;
+  padding: 20px 0;
   border-radius: 8px;
   text-align: center;
   line-height: 1.4;
   margin: 0;
 }
-.btn-save::after { border: none; }
+
+.btn-save::after {
+  border: none;
+}
 
 .agreement-section {
   display: flex;
   flex-direction: row;
   align-items: flex-start;
-  margin-top: 16px;
+  margin-top: 28px;
   padding: 0 4px;
 }
 
 .agreement-content {
   flex: 1;
-  font-size: 12px;
+  font-size: 22px;
   color: #dadada;
   line-height: 1.6;
 }

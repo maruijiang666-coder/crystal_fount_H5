@@ -15,6 +15,7 @@ const formatTime = (seconds) => {
 
 export default function Podcast() {
   const router = Taro.useRouter();
+  const isWebEnv = Taro.getEnv() === Taro.ENV_TYPE.WEB;
   const [loading, setLoading] = useState(true);
   const [podcastData, setPodcastData] = useState(null);
   const [subtitles, setSubtitles] = useState([]);
@@ -28,14 +29,49 @@ export default function Podcast() {
   const audioContext = useRef(null);
   const lastDuration = useRef(0);
   const introAudioContext = useRef(null);
+  const introAudioDestroyedRef = useRef(false);
+
+  const cleanupIntroAudioContext = (target) => {
+    if (!target || introAudioDestroyedRef.current) {
+      return;
+    }
+
+    introAudioDestroyedRef.current = true;
+
+    try {
+      target.stop?.();
+    } catch (error) {}
+
+    try {
+      target.pause?.();
+    } catch (error) {}
+
+    try {
+      target.src = '';
+    } catch (error) {}
+
+    // Taro H5's InnerAudioContext destroy may try to remove an already-detached DOM node.
+    if (!isWebEnv) {
+      try {
+        target.destroy?.();
+      } catch (error) {
+        console.warn('Failed to destroy intro audio context:', error);
+      }
+    }
+
+    if (introAudioContext.current === target) {
+      introAudioContext.current = null;
+    }
+  };
 
   // Initialize Intro Audio Context
   useEffect(() => {
+    introAudioDestroyedRef.current = false;
     const iac = Taro.createInnerAudioContext();
     iac.src = 'https://tangledup-ai-staging.oss-cn-shanghai.aliyuncs.com/mini_app/crystal_mini_app/sounds/found_sund.mp3';
     introAudioContext.current = iac;
     return () => {
-      iac.destroy();
+      cleanupIntroAudioContext(iac);
     };
   }, []);
 
@@ -435,12 +471,12 @@ export default function Podcast() {
           showScrollbar={false}
         >
           {!podcastData?.ai_data?.tts_audio_url ? (
-            <View className={styles.generating} style={{ textAlign: 'center', padding: '20px' }}>
-              <Text>没有生成运势播客，请在抽卡占卜答案页面底部点击生成对应播客。</Text>
+            <View className={styles['empty-state']}>
+              <Text className={styles['empty-text']}>没有生成运势播客，请在抽卡占卜答案页面底部点击生成对应播客。</Text>
             </View>
           ) : subtitles.length === 0 ? (
             <View className={styles.generating}>
-              <Text>正在生成...</Text>
+              <Text className={styles['generating-text']}>正在生成...</Text>
             </View>
           ) : (
             <>
@@ -518,8 +554,8 @@ export default function Podcast() {
            </View>
 
            <View className={styles['time-display']}>
-                <Text>{formatTime(currentTime)}</Text>
-                <Text>{formatTime(duration)}</Text>
+                <Text className={styles['time-text']}>{formatTime(currentTime)}</Text>
+                <Text className={styles['time-text']}>{formatTime(duration)}</Text>
            </View>
 
            <View className={styles['buttons-row']}>
@@ -529,30 +565,32 @@ export default function Podcast() {
 
               <View className={styles['main-controls']}>
                   <View className={styles['btn-icon']} onClick={() => audioContext.current.seek(currentTime - 15)}>
-                    <Text>↺ 15s</Text>
+                    <Text className={styles['control-text']}>↺ 15s</Text>
                   </View>
                   
                   <View className={styles['btn-play']} onClick={togglePlay}>
                     {isPlaying ? (
                         <Image 
                             src="https://tangledup-ai-staging.oss-cn-shanghai.aliyuncs.com/mini_app/crystal_mini_app/assets/Podcsat/icon4.png"
-                            style={{ width: '60px', height: '60px' }}
+                            className={styles['play-icon']}
+                            mode="aspectFit"
                         />
                     ) : (
                         <Image 
                             src="https://tangledup-ai-staging.oss-cn-shanghai.aliyuncs.com/mini_app/crystal_mini_app/assets/Podcsat/icon1.png"
-                            style={{ width: '60px', height: '60px' }}
+                            className={styles['play-icon']}
+                            mode="aspectFit"
                         />
                     )}
                   </View>
 
                   <View className={styles['btn-icon']} onClick={() => audioContext.current.seek(currentTime + 15)}>
-                    <Text>15s ↻</Text>
+                    <Text className={styles['control-text']}>15s ↻</Text>
                   </View>
               </View>
 
               {/* Placeholder for loop/mode or just empty to balance layout */}
-              <View style={{ width: '40px' }}></View>
+              <View className={styles['controls-spacer']}></View>
           </View>
       </View>
     </View>

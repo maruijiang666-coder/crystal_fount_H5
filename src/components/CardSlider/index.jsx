@@ -244,11 +244,14 @@ const CardSlider = forwardRef((props, ref) => {
         const startIndex = Math.max(0, selectedIndex - leftCount);
         const actualIndex = Math.min(totalCards - 1, startIndex + displayIndex);
         
-        // 弧形分布算法
+        // 扁平牌阵：更接近参考图的横向展开与轻弧度
         const displayCenterIndex = leftCount;
         const distanceFromCenter = displayIndex - displayCenterIndex;
-        const x = distanceFromCenter * 50;
-        const y = Math.abs(distanceFromCenter) * Math.abs(distanceFromCenter) * 2.2;
+        const absDistance = Math.abs(distanceFromCenter);
+        const x = distanceFromCenter * 29;
+        const y = absDistance * absDistance * 1.5 + absDistance * 2;
+        const rotation = distanceFromCenter * 5.8;
+        const scale = displayIndex === leftCount ? 1.04 : Math.max(0.9, 1 - absDistance * 0.018);
         const dragFollow = dragOffsetX * 0.22;
         
         return (
@@ -259,11 +262,11 @@ const CardSlider = forwardRef((props, ref) => {
             style={{
               position: 'absolute',
               left: `calc(50% + ${x}px)`,
-              top: `calc(52% + ${y}px)`,
+              top: `calc(50% + ${y}px)`,
               transform: displayIndex === leftCount
-                ? `translate(-50%, -50%) translateX(${dragFollow}px) scale(1.05)`
-                : `translate(-50%, -50%) translateX(${dragFollow}px)`,
-              zIndex: (leftCount + rightCount) - displayIndex,
+                ? `translate(-50%, -50%) translateX(${dragFollow}px) rotate(${rotation}deg) scale(${scale})`
+                : `translate(-50%, -50%) translateX(${dragFollow}px) rotate(${rotation}deg) scale(${scale})`,
+              zIndex: displayIndex === leftCount ? 999 : 500 - Math.abs(distanceFromCenter),
               filter: displayIndex === leftCount ? 'none' : 'grayscale(50%) brightness(70%)',
               transition: 'all 0.2s ease-out',
               width: `${cardWidth}px`,

@@ -1,24 +1,29 @@
 .mt-15 {
   margin-top: 30px;
 }
+
 .ml-19 {
   margin-left: 38px;
 }
+
 .font {
   font-size: 48px;
   font-family: Inter;
   line-height: 44.3px;
   color: #ffffff;
 }
+
 .font_2 {
   font-size: 25px;
   font-family: Inter;
   line-height: 28px;
   color: #ffffff;
 }
+
 .text_2 {
   text-indent: 27.08px;
 }
+
 .view {
   width: 100%;
   min-height: 320px;
@@ -35,16 +40,20 @@
   flex-direction: row;
   align-items: center;
 }
+
 .image_7 {
   width: 120px;
   height: 232px;
   flex-shrink: 0;
-  margin-right: 30px;
+  margin-right: 60px;
 }
+
 .group_4 {
+  padding-left: 220px;
   flex: 1;
   margin-top: 11.68px;
 }
+
 .text_5 {
   margin-left: 15.68px;
   line-height: 44.36px;

@@ -19,6 +19,30 @@ export default function SJShouYe(props) {
   const [showDeerTooltip, setShowDeerTooltip] = useState(false);
   const isWebEnv = Taro.getEnv() === Taro.ENV_TYPE.WEB;
 
+  const ensureLoginForTouch = () => {
+    if (Taro.getStorageSync('importcode')) {
+      return true;
+    }
+
+    Taro.showToast({ title: '请先登录', icon: 'none', duration: 1500 });
+    setTimeout(() => {
+      Taro.switchTab({ url: '/pages/My/index' });
+    }, 1500);
+    return false;
+  };
+
+  const handleTouchCrystalClick = () => {
+    if (isWebEnv) {
+      if (!ensureLoginForTouch()) return;
+      Taro.navigateTo({ url: '/pages/NFCTouch/index' });
+      return;
+    }
+
+    if (checkCrystalActivation()) {
+      Taro.navigateTo({ url: '/pages/NFCTouch/index' });
+    }
+  };
+
   useDidShow(() => {
     // 检查是否有播客生成提示
     const showPodcastToast = Taro.getStorageSync('showPodcastToast');
@@ -526,9 +550,7 @@ export default function SJShouYe(props) {
               onTouchEnd={() => setPressedCard(null)}
               onTouchCancel={() => setPressedCard(null)}
               onClick={() => {
-                if (checkCrystalActivation()) {
-                  Taro.navigateTo({ url: '/pages/NFCTouch/index' });
-                }
+                handleTouchCrystalClick();
               }}
               style={{
                 backgroundImage: `url(${getOssImageUrl('SJSY/sjsy_bc1.png')})`,

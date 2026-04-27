@@ -22,21 +22,32 @@ const SPREAD_TYPES = [
     name: '三选一牌阵',
     subTitle: 'Decision Spread',
     description: '对比清晰：直观呈现两种选择的利弊与潜在结果\n聚焦决策：专为面临明确三元选择设计\n适用场景：职业选择、关系决策、路径选择',
-    positions: ['用户选中的选项 (Option 1)', '选项二 (Option 2)', '选项三 (Option 3)']
+    positions: ['用户选中的选项 (Option 1)', '选项二 (Option 2)', '选项三 (Option 3)'],
+    cardCount: 3
   },
   {
     id: 'holy_triangle',
     name: '圣三角牌阵',
     subTitle: 'Holy Triangle Spread',
     description: '经典通用：使用率约 30%，被视为塔罗基础牌阵\n时间流视角：清晰展示事件演变逻辑与因果关系\n适用场景：趋势预测、问题溯源、个人成长规划',
-    positions: ['过去 (Past)', '现在 (Present)', '未来 (Future)']
+    positions: ['过去 (Past)', '现在 (Present)', '未来 (Future)'],
+    cardCount: 3
   },
   {
     id: 'issue_focus',
     name: '三牌问题导向阵',
     subTitle: 'Issue Focus Spread',
     description: '问题解决导向：从 “是什么 - 为什么 - 怎么办” 提供完整思路\n实用性强：不纠结过去，聚焦当下行动方案\n适用场景：工作难题突破、关系矛盾处理、个人瓶颈突破',
-    positions: ['现状 (Situation)', '挑战 (Challenge)', '建议 (Advice)']
+    positions: ['现状 (Situation)', '挑战 (Challenge)', '建议 (Advice)'],
+    cardCount: 3
+  },
+  {
+    id: 'single_card',
+    name: '单牌指引阵',
+    subTitle: 'Single Card Guidance',
+    description: '快速指引：一张牌即可获得当下最需要的提示\n简洁直接：不纠结复杂关系，聚焦核心建议\n适用场景：日常指引、快速决策、灵感获取',
+    positions: ['指引 (Guidance)'],
+    cardCount: 1
   }
 ];
 
@@ -49,19 +60,21 @@ export default function TaLuo(props) {
   const [drawnCards, setDrawnCards] = useState([]); // 存储实际抽到的塔罗牌数据
   const [flippedStatus, setFlippedStatus] = useState([false, false, false]); // 记录卡片是否翻开
   const [currentSpreadIndex, setCurrentSpreadIndex] = useState(0);
+  const cardCount = SPREAD_TYPES[currentSpreadIndex].cardCount;
   const [isSpreadConfirmed, setIsSpreadConfirmed] = useState(false); // 是否确认牌阵
-  const [cardOrder, setCardOrder] = useState([0, 1, 2]); // 卡片逻辑顺序映射
+  const [cardOrder, setCardOrder] = useState(Array.from({ length: SPREAD_TYPES[0].cardCount }, (_, i) => i)); // 卡片逻辑顺序映射
   const touchStartRef = useRef({ x: 0, y: 0 });
   const cardSliderRef = useRef(null);
   const isTouchingCardSlider = useRef(false);
 
   const resetSpreadState = (showToast = false) => {
+    const count = SPREAD_TYPES[0].cardCount;
     setSelectedCardIndex(null);
     setSelectedCards([]);
     setDrawnCards([]);
-    setFlippedStatus([false, false, false]);
+    setFlippedStatus(Array(count).fill(false));
     setCurrentSpreadIndex(0);
-    setCardOrder([0, 1, 2]);
+    setCardOrder(Array.from({ length: count }, (_, i) => i));
     setIsSpreadConfirmed(false);
     isTouchingCardSlider.current = false;
     touchStartRef.current = { x: 0, y: 0 };
@@ -99,9 +112,9 @@ export default function TaLuo(props) {
       return;
     }
 
-    if (selectedCards.length >= 3) {
+    if (selectedCards.length >= cardCount) {
       Taro.showToast({
-        title: '已达到3张上限',
+        title: `已达到${cardCount}张上限`,
         icon: 'none',
         duration: 1000
       });
@@ -206,10 +219,10 @@ export default function TaLuo(props) {
 
   // 监听翻牌状态，全部翻开时打印日志
   useEffect(() => {
-    if (flippedStatus.every(status => status) && drawnCards.length === 3) {
+    if (flippedStatus.every(status => status) && drawnCards.length === cardCount) {
       console.log('1. 要占卜的内容:', userQuestion || '未输入');
       console.log('2. 牌阵:', SPREAD_TYPES[currentSpreadIndex].name);
-      
+
       // 使用逻辑顺序打印
       const orderedCards = cardOrder.map(index => {
         const drawn = drawnCards[index];
@@ -217,14 +230,14 @@ export default function TaLuo(props) {
       });
       console.log('3. 目前抽到的牌(按选择顺序):', orderedCards);
     }
-  }, [flippedStatus, drawnCards, currentSpreadIndex, userQuestion, cardOrder]);
+  }, [flippedStatus, drawnCards, currentSpreadIndex, userQuestion, cardOrder, cardCount]);
 
   // 点击翻牌
   const handleCardFlip = (index) => {
-    // 必须抽满3张才能翻牌
-    if (selectedCards.length < 3) {
+    // 必须抽满才能翻牌
+    if (selectedCards.length < cardCount) {
       Taro.showToast({
-        title: '请先抽取3张牌',
+        title: `请先抽取${cardCount}张牌`,
         icon: 'none',
         duration: 1000
       });
@@ -271,13 +284,20 @@ export default function TaLuo(props) {
 
   const handleSpreadChange = (e) => {
     setCurrentSpreadIndex(e.detail.current);
+    // 切换牌阵时重置卡牌状态，使 cardCount 与新牌阵一致
+    setSelectedCardIndex(null);
+    setSelectedCards([]);
+    setDrawnCards([]);
+    const newCount = SPREAD_TYPES[e.detail.current].cardCount;
+    setFlippedStatus(Array(newCount).fill(false));
+    setCardOrder(Array.from({ length: newCount }, (_, i) => i));
   };
 
   const handleConfirmSpread = () => {
     setIsSpreadConfirmed(true);
   };
 
-  const canShowPlacementButton = flippedStatus.every(status => status) && drawnCards.length === 3;
+  const canShowPlacementButton = flippedStatus.every(status => status) && drawnCards.length === cardCount;
 
   Taro.useDidShow(() => {
     // 进入页面时强制重开一局，避免上一次的抽牌状态残留
@@ -377,8 +397,8 @@ export default function TaLuo(props) {
             <CardSlider
                 ref={cardSliderRef}
                 style={{ width: '100%', height: '100%' }}
-                cardWidth={124}
-                cardHeight={186}
+                cardWidth={126}
+                cardHeight={190}
                 onCardSelect={handleCardSelect}
                 onSwipeUp={handlePickCurrentCard}
                 onInSliderChange={(isInside) => {
@@ -390,35 +410,18 @@ export default function TaLuo(props) {
 
         {/* 结果显示区域 */}
         <View className={`flex-col self-stretch ${styles['group_5']}`}>
-            {/* Card 1 */}
-            <View className={styles.resultItem}>
+            {Array.from({ length: cardCount }).map((_, i) => (
+              <View key={i} className={styles.resultItem}>
                 <Text className={`self-center ${styles['font_2']} ${styles['text_2']}`}>
-                    {SPREAD_TYPES[currentSpreadIndex].positions[0]}
-                </Text>
-                <Text className={`self-center ${styles['font_3']} ${styles['text_3']}`} style={{ marginTop: 0 }}>
-                    {flippedStatus[cardOrder[0]] && drawnCards[cardOrder[0]] && drawnCards[cardOrder[0]].card ? `${drawnCards[cardOrder[0]].card.chinese_name} (${drawnCards[cardOrder[0]].isReversed ? '逆位' : '正位'})` : '未知'}
-                </Text>
-            </View>
-
-            {/* Card 2 */}
-            <View className={styles.resultItem}>
-                <Text className={`self-center ${styles['font_2']} ${styles['text_2']}`}>
-                    {SPREAD_TYPES[currentSpreadIndex].positions[1]}
+                    {SPREAD_TYPES[currentSpreadIndex].positions[i]}
                 </Text>
                 <Text className={`self-center ${styles['font_3']} ${styles['text_5']}`} style={{ marginTop: 0 }}>
-                    {flippedStatus[cardOrder[1]] && drawnCards[cardOrder[1]] && drawnCards[cardOrder[1]].card ? `${drawnCards[cardOrder[1]].card.chinese_name} (${drawnCards[cardOrder[1]].isReversed ? '逆位' : '正位'})` : '未知'}
+                    {flippedStatus[cardOrder[i]] && drawnCards[cardOrder[i]] && drawnCards[cardOrder[i]].card
+                      ? `${drawnCards[cardOrder[i]].card.chinese_name} (${drawnCards[cardOrder[i]].isReversed ? '逆位' : '正位'})`
+                      : '未知'}
                 </Text>
-            </View>
-
-            {/* Card 3 */}
-            <View className={styles.resultItem}>
-                <Text className={`self-center ${styles['font_2']} ${styles['text_2']}`}>
-                    {SPREAD_TYPES[currentSpreadIndex].positions[2]}
-                </Text>
-                <Text className={`self-center ${styles['font_3']} ${styles['text_7']}`} style={{ marginTop: 0 }}>
-                    {flippedStatus[cardOrder[2]] && drawnCards[cardOrder[2]] && drawnCards[cardOrder[2]].card ? `${drawnCards[cardOrder[2]].card.chinese_name} (${drawnCards[cardOrder[2]].isReversed ? '逆位' : '正位'})` : '未知'}
-                </Text>
-            </View>
+              </View>
+            ))}
 
           <View className={`flex-row items-center justify-center `}>
             <Image
@@ -474,7 +477,7 @@ export default function TaLuo(props) {
           {/* 进度提示 */}
           <View className={styles.progressIndicator}>
             <Text className={styles.progressText}>
-              {selectedCards.length}/3
+              {selectedCards.length}/{cardCount}
             </Text>
           </View>
 

@@ -15,9 +15,7 @@ const JiangKangCard = (props) => {
       }}
     >
       <View className="flex-row section">
-        <Image
-          className="shrink-0 self-center image_7"
-        />
+
         <View className="flex-col flex-1 self-start group_4 ml-19">
           <Text className="self-start font text_5">健康</Text>
           <Text className="self-stretch font_2 text_2 mt-10">

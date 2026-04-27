@@ -226,7 +226,7 @@
   flex-direction: row;
   align-items: center;
   justify-content: center;
-  gap: 12px;
+  gap: 6px;
   padding: 12px;
   max-width: 90vw;
   overflow: hidden;
@@ -238,7 +238,7 @@
   flex-direction: column;
   align-items: center;
   animation: floatIn 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) both;
-  max-width: 140px;
+  max-width: 168px;
   flex: 0 0 auto;
 }
 
@@ -310,8 +310,8 @@
 
 /* 3D Flip Scene */
 .flipScene {
-  width: 140px;
-  height: 210px;
+  width: 168px;
+  height: 252px;
   position: relative;
   /* 悬浮动画移到这里 */
   animation: cardFloat 3s ease-in-out infinite;

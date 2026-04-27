@@ -23,7 +23,7 @@ const ShiYeCard = (props) => {
             {content}
           </Text>
         </View>
-        <View className="right-spacer" />
+        
       </View>
     </View>
   );

@@ -7,7 +7,6 @@ if (process.env.TARO_ENV === 'h5' && typeof window !== 'undefined') {
   const isLocalH5 =
     hostname === 'localhost' ||
     hostname === '127.0.0.1' ||
-    hostname === '6.6.6.123' ||
     hostname === '192.168.1.2'
 
   window.__API_BASE_URL__ = isLocalH5 ? '' : API_BASE_URL

@@ -435,7 +435,7 @@ export default function Xiangxi(props) {
       </View>
       <Text className={`mt-28 self-start ${styles['font_2']} ${styles['text_17']}`}>其他</Text>
       <View className={`mt-28 flex-col self-stretch ${styles['group_6']}`}>
-        <View className={`flex-row items-center ${styles['waterfall']}`}>
+        <View className={`flex-row ${styles['waterfall']}`}>
           <View className={`flex-col justify-start ${styles['group_7']}`}>
             <View 
               className={`flex-col items-start ${styles['waterfall-item']} ${styles['section_6']}`}
@@ -451,13 +451,13 @@ export default function Xiangxi(props) {
               />
             </View>
           </View>
-          <View className={`flex-col ${styles['group_8']} ${styles['ml-33']}`}>
+          <View className={`flex-col ${styles['group_8']}`}>
             <View className={`flex-row justify-between items-center ${styles['waterfall-item_2']}`}>
               <View className={`flex-col items-start ${styles['group_9']}`}>
                 {/* 上文字 */}
                 <Text className={`${styles['font_6']} ${styles['text_18']}`}>触碰次数</Text>
                 {/* 下文字 */}
-                <View className={`flex-row items-center mt-30`}>
+                <View className={`flex-row items-center`}>
                   <Image
                     className={`${styles['image_5']}`}
                     style={{width: '50px', height: '50px', marginRight: '10px'}}
@@ -476,14 +476,10 @@ export default function Xiangxi(props) {
             </View>
 
             
-            <View className={`flex-row justify-center items-center ${styles['waterfall-item_3']} ${styles['mt-7']}`}>
-              <Image
-                className={`${styles['image_5']}`}
-                src={getOssImageUrl('xiangxi/6905bd2070a87082767a39d7fc1f49ed.png')}
-              />
-              <View className={`flex-col items-start ${styles['group_10']}`}>
+            <View className={`flex-row justify-between items-center ${styles['waterfall-item_2']}`}>
+              <View className={`flex-col items-start ${styles['group_9']}`}>
                 <Text className={`${styles['font_6']} ${styles['text_24']}`}>水晶数量</Text>
-                <View className={`flex-row items-center mt-30`}>
+                <View className={`flex-row items-center`}>
                   <Image
                     className={`${styles['image_5']}`}
                     style={{width: '50px', height: '50px', marginRight: '10px'}}
@@ -493,6 +489,12 @@ export default function Xiangxi(props) {
                   <Text className={`${styles['font_7']} ${styles['text_25']}`}>{crystalCount}</Text>
                 </View>
               </View>
+              <View className={`flex-col items-end`}>
+                <Image
+                  className={`${styles['image_5']}`}
+                  src={getOssImageUrl('xiangxi/6905bd2070a87082767a39d7fc1f49ed.png')}
+                />
+              </View>
             </View>
           </View>
         </View>
@@ -501,7 +503,6 @@ export default function Xiangxi(props) {
           style={{
             backgroundImage: `url(${getOssImageUrl('xiangxi/143ec245a2bae3214b1506f1f3b2c285.png')})`,
             height: 'auto',
-            minHeight: '200px',
             transition: 'all 0.3s ease'
           }}
           onClick={() => setIsExpanded(!isExpanded)}
@@ -512,17 +513,20 @@ export default function Xiangxi(props) {
               <Image
                 className={`${styles['image_7']} ${styles['ml-97']}`}
                 src={getOssImageUrl('xiangxi/044bcef08aca0ee9332cd4f81b1d405e.png')}
+                style={{ transform: `rotate(${isExpanded ? '180deg' : '0deg'})`, transition: 'transform 0.3s ease' }}
               />
             </View>
-            <Text className={`mt-4 self-start ${styles['font_8']} ${styles['text_27']}`}>
-              了解NFC标签位置和使用方法
-            </Text>
             {isExpanded && (
-              <View style={{ marginTop: '40px', paddingRight: '20px' }}>
-                <Text className={`${styles['font_8']}`} style={{ color: '#ffffff', lineHeight: '1.6' }}>
-                  在“我的”页面中，点击“激活水晶”，确保您的手机NFC功能开启的情况下，用手机贴近手串从而激活水晶。
+              <>
+                <Text className={`mt-4 self-start ${styles['font_8']} ${styles['text_27']}`}>
+                  了解NFC标签位置和使用方法
                 </Text>
-              </View>
+                <View style={{ marginTop: '40px', paddingRight: '20px' }}>
+                  <Text className={`${styles['font_8']}`} style={{ color: '#ffffff', lineHeight: '1.6' }}>
+                    在”我的”页面中，点击”激活水晶”，确保您的手机NFC功能开启的情况下，用手机贴近手串从而激活水晶。
+                  </Text>
+                </View>
+              </>
             )}
           </View>
           <View className={`flex-col justify-start items-end ${styles['text-wrapper_2']}`}>

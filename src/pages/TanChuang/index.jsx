@@ -12,7 +12,7 @@ export default function TanChuang(props) {
   const handleDivination = () => {
     // 1. API Call
     const nfcId = Taro.getStorageSync('nfc_tag_id');
-    
+
     if (!nfcId) {
       Taro.showModal({
         title: '提示',
@@ -27,7 +27,7 @@ export default function TanChuang(props) {
       });
       return;
     }
-    
+
     Taro.request({
       url: getApiUrl(API_ENDPOINTS.TOUCH_CRYSTAL_CONSUME_ENERGY),
       method: 'POST',
@@ -44,54 +44,54 @@ export default function TanChuang(props) {
       },
       success: (res) => {
         if (res.statusCode === 200) {
-           // Success
-           setEnergyAnimation('success');
-           
-           // Show toast for clarity as well
-           Taro.showToast({
-             title: '消耗 40 灵力',
-             icon: 'success',
-             duration: 1500
-           });
+          // Success
+          setEnergyAnimation('success');
 
-           // Wait for animation then navigate
-           setTimeout(() => {
-              Taro.navigateTo({ url: `/pages/TaLuo/index?question=${encodeURIComponent(inputValue)}` });
-              setEnergyAnimation(null);
-           }, 1500);
+          // Show toast for clarity as well
+          Taro.showToast({
+            title: '消耗 40 灵力',
+            icon: 'success',
+            duration: 1500
+          });
+
+          // Wait for animation then navigate
+          setTimeout(() => {
+            Taro.navigateTo({ url: `/pages/TaLuo/index?question=${encodeURIComponent(inputValue)}` });
+            setEnergyAnimation(null);
+          }, 1500);
         } else {
-           const rawDetail = res.data?.detail || ''
-           let detail = rawDetail || '能量消耗失败，请稍后重试'
-           
-           if (detail.includes('Insufficient') || detail.includes('insufficient')) {
-             detail = '能量不足，当前灵力无法完成本次占卜'
-           }
+          const rawDetail = res.data?.detail || ''
+          let detail = rawDetail || '能量消耗失败，请稍后重试'
 
-           if (detail.includes('能量不足')) {
-               setErrorMsg(detail);
-               setEnergyAnimation('fail');
-               setTimeout(() => setEnergyAnimation(null), 3000);
-           } else {
-               Taro.showToast({ title: detail || '能量消耗失败，请稍后重试', icon: 'none' });
-           }
+          if (detail.includes('Insufficient') || detail.includes('insufficient')) {
+            detail = '能量不足，当前灵力无法完成本次占卜'
+          }
+
+          if (detail.includes('能量不足')) {
+            setErrorMsg(detail);
+            setEnergyAnimation('fail');
+            setTimeout(() => setEnergyAnimation(null), 3000);
+          } else {
+            Taro.showToast({ title: detail || '能量消耗失败，请稍后重试', icon: 'none' });
+          }
         }
       },
       fail: (err) => {
-         Taro.showToast({ title: '网络请求失败', icon: 'none' });
-         console.error(err);
+        Taro.showToast({ title: '网络请求失败', icon: 'none' });
+        console.error(err);
       }
     });
   };
 
   return (
     <View className={`flex-col justify-start items-center relative ${styles['page']} ${props.className}`}>
-      
+
       {/* Animation Overlays */}
       {energyAnimation === 'success' && (
-         <View className={styles.energyFloat}>-40 灵力</View>
+        <View className={styles.energyFloat}>-40 灵力</View>
       )}
       {energyAnimation === 'fail' && (
-         <View className={styles.energyError}>{errorMsg}</View>
+        <View className={styles.energyError}>{errorMsg}</View>
       )}
 
       <View className={`flex-col relative ${styles['section']}`}>
@@ -101,7 +101,7 @@ export default function TanChuang(props) {
         </View>
         <View className={`mt-34 flex-col`}>
           <View className={`flex-col justify-start items-start relative ${styles['text-wrapper']}`}>
-            <Input 
+            <Input
               className={`${styles['text_3']} ${styles['input-style']}`}
               placeholder="请输入你想了解的内容"
               placeholderStyle="color: rgba(255,255,255,0.3);"
@@ -116,10 +116,10 @@ export default function TanChuang(props) {
             >
               <Text className={`${styles['text_4']}`}>提交问题</Text>
             </View>
-            
+
             <Text className={styles.energyNotice}>本次提问将消耗 40 灵力</Text>
 
-            <Text 
+            <Text
               className={`mt-10 self-center ${styles['text_5']}`}
               onClick={() => {
                 Taro.navigateBack();
@@ -130,10 +130,7 @@ export default function TanChuang(props) {
             </Text>
           </View>
         </View>
-        <Image
-          className={`${styles['image']} ${styles['pos']}`}
-          src="https://ide.code.fun/api/image?token=69290ea0043f1900118ee756&name=ba29a9bfea020d78cb3bf1760d2e5c28.png"
-        />
+
       </View>
     </View>
   );

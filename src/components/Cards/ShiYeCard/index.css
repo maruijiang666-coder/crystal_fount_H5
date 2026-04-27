@@ -30,9 +30,9 @@
   flex-direction: row;
   align-items: center;
 }
-.right-spacer {
-  width: 120px;
-  flex-shrink: 0;
+
+.section > .flex-1 {
+  padding-right: 200px;
 }
 .pos {
   position: relative;

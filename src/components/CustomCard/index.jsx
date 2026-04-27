@@ -13,12 +13,11 @@ import './index.css'
  * @param {string} props.description - 描述文字（可选）
  */
 const CustomCard = (props) => {
-  const { 
-    children, 
-    className, 
-    style, 
-    onClick, 
-    image = 'https://ide.code.fun/api/image?token=69290ea0043f1900118ee756&name=eeacc8e98445154364ba7a0e8f863b15.png',
+  const {
+    children,
+    className,
+    style,
+    onClick,
     title = '健康',
     description = '桃花窗口仍在，但"质量"比"数量"更值得评估。白羊、天秤、射手会遇到多位示好对象，却可能因自己标准模糊而错过最佳互动时机；慢下来、先观察兴趣价值观是否合拍，再决定要不要深入'
   } = props
@@ -26,7 +25,7 @@ const CustomCard = (props) => {
   // 如果提供了children，优先使用children内容
   if (children) {
     return (
-      <View 
+      <View
         className={`custom-card ${className || ''}`}
         style={style}
         onClick={onClick}
@@ -38,7 +37,7 @@ const CustomCard = (props) => {
 
   // 默认结构 - 使用flex-column布局，避免绝对定位
   return (
-    <View 
+    <View
       className={`custom-card ${className || ''}`}
       style={style}
       onClick={onClick}
@@ -51,14 +50,14 @@ const CustomCard = (props) => {
           mode="aspectFit"
         />
       </View>
-      
+
       {/* 内容区域 */}
       <View className="custom-card-content">
         {/* 标题区域 */}
         <View className="custom-card-header">
           <Text className="custom-card-title">{title}</Text>
         </View>
-        
+
         {/* 描述内容区域 */}
         <View className="custom-card-body">
           <Text className="custom-card-description">

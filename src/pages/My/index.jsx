@@ -616,13 +616,17 @@ export default function My(props) {
                 onChooseAvatar={handleChooseAvatar}
               >
                 {tempUserInfo.avatar ? (
-                  <Image 
-                    src={tempUserInfo.avatar} 
+                  <Image
+                    src={tempUserInfo.avatar}
                     className={styles['avatar-img']}
                     mode="aspectFill"
                   />
                 ) : (
-                  <Text className={styles['avatar-tip']}>点击选择头像</Text>
+                  <Image
+                    src={getOssImageUrl('My/default_avatar.png')}
+                    className={styles['avatar-img']}
+                    mode="aspectFill"
+                  />
                 )}
               </Button>
             </View>
@@ -660,64 +664,70 @@ export default function My(props) {
       {/* 个人资料详情弹窗 */}
       {showProfileDetailModal && profileDetailData && (
         <View className={styles['modal-overlay']}>
-          <View className={styles['modal-content']}>
-            <View className={styles['modal-title']}>个人资料</View>
+          <View className={`${styles['modal-content']} ${styles['profile-modal-content']}`}>
+            <View className={styles['profile-modal-header']}>
+              <View className={styles['profile-modal-tag']}>PROFILE</View>
+              <View className={`${styles['modal-title']} ${styles['profile-modal-title']}`}>个人资料</View>
+              <View className={styles['profile-modal-desc']}>查看你的基础档案与当前记录信息</View>
+            </View>
             
             <ScrollView scrollY className={styles['profile-scroll']}>
-              <View className={styles['profile-item']}>
-                <Text className={styles['profile-label']}> 出生日期</Text>
-                <Text className={styles['profile-value']}>{profileDetailData.birth_date || '未填写'}</Text>
-              </View>
-               <View className={styles['profile-item']}>
-                <Text className={styles['profile-label']}>🕒 出生时间</Text>
-                <Text className={styles['profile-value']}>{profileDetailData.birth_time || '未填写'}</Text>
-              </View>
-              <View className={styles['profile-item']}>
-                <Text className={styles['profile-label']}>🧩 MBTI</Text>
-                <Text className={styles['profile-value']}>{profileDetailData.mbti_type || '未填写'}</Text>
-              </View>
-              <View className={styles['profile-item']}>
-                <Text className={styles['profile-label']}>🌟 星座</Text>
-                <Text className={styles['profile-value']}>{profileDetailData.zodiac || '未填写'}</Text>
-              </View>
-              <View className={styles['profile-item']}>
-                <Text className={styles['profile-label']}>❤️ 情感状态</Text>
-                <Text className={styles['profile-value']}>
-                  {profileDetailData.relationship_status === 'single' ? '单身贵族' :
-                   profileDetailData.relationship_status === 'dating' ? '暧昧接触' :
-                   profileDetailData.relationship_status === 'in_love' ? '恋爱中' :
-                   profileDetailData.relationship_status === 'married' ? '已婚' :
-                   profileDetailData.relationship_status === 'complicated' ? '关系复杂' :
-                   profileDetailData.relationship_status === 'healing' ? '疗愈期' :
-                   profileDetailData.relationship_status || '未填写'}
-                </Text>
-              </View>
-              <View className={styles['profile-item']}>
-                <Text className={styles['profile-label']}>💼 职业</Text>
-                <Text className={styles['profile-value']}>{profileDetailData.occupation || '未填写'}</Text>
-              </View>
-              <View className={styles['profile-item']}>
-                <Text className={styles['profile-label']}>✍️ 个性签名</Text>
-                <Text className={styles['profile-value']}>{profileDetailData.signature || '未填写'}</Text>
-              </View>
-              <View className={styles['profile-item']}>
-                <Text className={styles['profile-label']}>📖 故事</Text>
-                <Text className={styles['profile-value']}>{profileDetailData.story || '未填写'}</Text>
-              </View>
-               <View className={styles['profile-item']}>
-                <Text className={styles['profile-label']}>🎯 关注领域</Text>
-                <Text className={styles['profile-value']}>
-                  {(() => {
-                    const areas = profileDetailData.focus_areas;
-                    if (!areas) return '未填写';
-                    const keys = Array.isArray(areas) ? areas : Object.keys(areas);
-                    return keys.length > 0 ? keys.map(item => FOCUS_AREAS_MAP[item] || item).join('、') : '未填写';
-                  })()}
-                </Text>
+              <View className={styles['profile-grid']}>
+                <View className={styles['profile-item']}>
+                  <Text className={styles['profile-label']}>出生日期</Text>
+                  <Text className={styles['profile-value']}>{profileDetailData.birth_date || '未填写'}</Text>
+                </View>
+                <View className={styles['profile-item']}>
+                  <Text className={styles['profile-label']}>出生时间</Text>
+                  <Text className={styles['profile-value']}>{profileDetailData.birth_time || '未填写'}</Text>
+                </View>
+                <View className={styles['profile-item']}>
+                  <Text className={styles['profile-label']}>MBTI</Text>
+                  <Text className={styles['profile-value']}>{profileDetailData.mbti_type || '未填写'}</Text>
+                </View>
+                <View className={styles['profile-item']}>
+                  <Text className={styles['profile-label']}>星座</Text>
+                  <Text className={styles['profile-value']}>{profileDetailData.zodiac || '未填写'}</Text>
+                </View>
+                <View className={styles['profile-item']}>
+                  <Text className={styles['profile-label']}>情感状态</Text>
+                  <Text className={styles['profile-value']}>
+                    {profileDetailData.relationship_status === 'single' ? '单身贵族' :
+                     profileDetailData.relationship_status === 'dating' ? '暧昧接触' :
+                     profileDetailData.relationship_status === 'in_love' ? '恋爱中' :
+                     profileDetailData.relationship_status === 'married' ? '已婚' :
+                     profileDetailData.relationship_status === 'complicated' ? '关系复杂' :
+                     profileDetailData.relationship_status === 'healing' ? '疗愈期' :
+                     profileDetailData.relationship_status || '未填写'}
+                  </Text>
+                </View>
+                <View className={styles['profile-item']}>
+                  <Text className={styles['profile-label']}>职业</Text>
+                  <Text className={styles['profile-value']}>{profileDetailData.occupation || '未填写'}</Text>
+                </View>
+                <View className={styles['profile-item']}>
+                  <Text className={styles['profile-label']}>个性签名</Text>
+                  <Text className={styles['profile-value']}>{profileDetailData.signature || '未填写'}</Text>
+                </View>
+                <View className={styles['profile-item']}>
+                  <Text className={styles['profile-label']}>故事</Text>
+                  <Text className={styles['profile-value']}>{profileDetailData.story || '未填写'}</Text>
+                </View>
+                <View className={styles['profile-item']}>
+                  <Text className={styles['profile-label']}>关注领域</Text>
+                  <Text className={styles['profile-value']}>
+                    {(() => {
+                      const areas = profileDetailData.focus_areas;
+                      if (!areas) return '未填写';
+                      const keys = Array.isArray(areas) ? areas : Object.keys(areas);
+                      return keys.length > 0 ? keys.map(item => FOCUS_AREAS_MAP[item] || item).join('、') : '未填写';
+                    })()}
+                  </Text>
+                </View>
               </View>
             </ScrollView>
 
-            <View className={styles['modal-footer']}>
+            <View className={`${styles['modal-footer']} ${styles['profile-modal-footer']}`}>
               <View 
                 className={`${styles['modal-btn']} ${styles['btn-cancel']}`}
                 onClick={() => setShowProfileDetailModal(false)}
@@ -746,22 +756,22 @@ export default function My(props) {
             {isLoggedIn ? (
               <Button 
                 className={`${styles['avatar-wrapper']}`}
-                style={{ margin: 0, padding: 0, width: '120px', height: '120px', background: 'none', border: 'none' }}
+                style={{ margin: 0, padding: 0, width: '80px', height: '80px', background: 'none', border: 'none' }}
                 openType="chooseAvatar" 
                 onChooseAvatar={onChooseAvatarDirect}
               >
                 {userInfo?.avatar ? (
-                  <Image 
-                    src={userInfo.avatar} 
+                  <Image
+                    src={userInfo.avatar}
                     className={`${styles['avatar']}`}
                     mode='aspectFill'
                   />
                 ) : (
-                  <View className={`${styles['avatar-placeholder']}`}>
-                    <Text className={`${styles['avatar-text']}`}>
-                      {userInfo?.nickname?.charAt(0) || '水'}
-                    </Text>
-                  </View>
+                  <Image
+                    className={`${styles['avatar']}`}
+                    src="https://api.dicebear.com/7.x/adventurer/png?seed=crystal&backgroundColor=b8860b&size=120"
+                    mode='aspectFill'
+                  />
                 )}
               </Button>
             ) : (
