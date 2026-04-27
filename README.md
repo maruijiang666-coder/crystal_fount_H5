@@ -177,6 +177,42 @@ npm run build:tt
 3. 确认前端可以访问 `https://crystal.quant-speed.com/api/...`
 4. 如果前后端通过反向代理联通，请确认 `/api` 转发规则已正确配置
 
+### Docker 部署
+
+项目已提供以下 Docker 文件：
+
+- `Dockerfile`：多阶段构建，先打包 H5，再用 Nginx 提供静态站点
+- `docker-compose.yml`：本地或服务器快速启动
+- `docker/nginx/default.conf`：Nginx 静态站点配置，包含 SPA 路由回退
+
+#### 构建镜像
+
+```bash
+docker build -t crystal-fount-h5:latest .
+```
+
+#### 启动容器
+
+```bash
+docker run -d --name crystal-fount-h5 -p 8080:80 crystal-fount-h5:latest
+```
+
+#### 使用 Compose 启动
+
+```bash
+docker compose up -d --build
+```
+
+#### 访问地址
+
+- 默认访问地址：`http://localhost:8080`
+
+#### API 说明
+
+- 当前 H5 生产环境接口地址编译为：`https://crystal.quant-speed.com`
+- 如果你希望前端和后端走同一个域名，可以在 `docker/nginx/default.conf` 或外层网关中为 `/api` 增加反向代理
+- 如果后端已经部署在 `https://crystal.quant-speed.com`，当前 Docker 镜像可以直接使用
+
 ## 开发指南
 
 ### 样式规范

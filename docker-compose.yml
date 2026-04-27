@@ -1,0 +1,10 @@
+services:
+  crystal-fount-h5:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: crystal-fount-h5:latest
+    container_name: crystal-fount-h5
+    restart: unless-stopped
+    ports:
+      - "8070:80"

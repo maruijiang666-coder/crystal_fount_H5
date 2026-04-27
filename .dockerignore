@@ -1,0 +1,15 @@
+.git
+.codex
+.claude
+.playwright-cli
+.trae
+.vscode
+dist
+node_modules
+.temp
+.rn_temp
+deploy_versions
+build-h5.log
+devh5.err.log
+devh5.out.log
+*.log
