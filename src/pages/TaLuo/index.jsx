@@ -163,7 +163,7 @@ export default function TaLuo(props) {
   };
 
   const getRandomCard = (currentDrawn) => {
-    const availableCards = VALID_CARDS.filter(card => 
+    const availableCards = VALID_CARDS.filter(card =>
       !currentDrawn.some(drawn => drawn.card.number === card.number)
     );
     if (availableCards.length === 0) return null;
@@ -254,7 +254,7 @@ export default function TaLuo(props) {
 
     if (!flippedStatus[index]) {
       const currentSpread = SPREAD_TYPES[currentSpreadIndex];
-      
+
       // 所有牌阵都保持抽牌顺序，不因首次点击而重排 cardOrder
       if (currentSpread.id === 'decision') {
         console.log('[TaLuo] decision spread keeps draw order', {
@@ -262,12 +262,12 @@ export default function TaLuo(props) {
           clickedIndex: index,
         });
       }
-      
+
       // 翻开当前点击的牌
       const newStatus = [...flippedStatus];
       newStatus[index] = true;
       setFlippedStatus(newStatus);
-      
+
       // 如果是三选一牌阵且是第一次翻牌，自动翻开剩余两张
       if (currentSpread.id === 'decision' && flippedStatus.every(status => !status)) {
         setTimeout(() => {
@@ -314,7 +314,7 @@ export default function TaLuo(props) {
         {/* 顶部区域 - 牌阵选择 */}
         <View className={`flex-col items-center self-stretch ${styles['section']}`} style={{ backgroundImage: `url(${getOssImageUrl('TaLuo/1e734912a97ed8f162bfe0b3fe1f74f7.png')})`, backgroundSize: '100% 100%', backgroundRepeat: 'no-repeat', position: 'relative', height: 'auto' }}>
           <Text className={`${styles['font']}`}>Tarot Mapping</Text>
-          
+
           {/* 显示用户问题 */}
           {userQuestion && (
             <View className={styles.userQuestionContainer}>
@@ -323,105 +323,105 @@ export default function TaLuo(props) {
               </Text>
             </View>
           )}
-          
+
           {/* Spread Selector - Only show full swiper when spread is not confirmed */}
           {!isSpreadConfirmed ? (
             <>
               <View style={{ width: '100%', overflow: 'hidden' }}>
                 <Swiper
-                className={styles.spreadSwiper}
-                indicatorDots
-                indicatorColor='rgba(255, 255, 255, 0.3)'
-                indicatorActiveColor='#D4AF37'
-                circular
-                current={currentSpreadIndex}
-                onChange={handleSpreadChange}
-                style={{ width: '100%', height: 'auto', minHeight: '300px', marginTop: '20px' }}
+                  className={styles.spreadSwiper}
+                  indicatorDots
+                  indicatorColor='rgba(255, 255, 255, 0.3)'
+                  indicatorActiveColor='#D4AF37'
+                  circular
+                  current={currentSpreadIndex}
+                  onChange={handleSpreadChange}
+                  style={{ width: '100%', height: 'auto', minHeight: '300px', marginTop: '20px' }}
                 >
-                {SPREAD_TYPES.map((spread) => (
+                  {SPREAD_TYPES.map((spread) => (
                     <SwiperItem key={spread.id}>
-                    <View className='flex-col items-center justify-center' style={{ height: '100%', padding: '0 10px' }}>
+                      <View className='flex-col items-center justify-center' style={{ height: '100%', padding: '0 10px' }}>
                         <Text className={styles.spreadTitle} style={{ color: '#D4AF37', fontSize: '25px', fontWeight: 'bold', marginBottom: '5px' }}>
-                        {spread.name}
+                          {spread.name}
                         </Text>
                         <Text style={{ color: '#aaa', fontSize: '26px', marginBottom: '12px' }}>
                           {spread.subTitle}
                         </Text>
                         <Text style={{ color: '#fff', fontSize: '16px', textAlign: 'center', lineHeight: '1.5', whiteSpace: 'pre-wrap' }}>
-                        {spread.description}
+                          {spread.description}
                         </Text>
-                    </View>
+                      </View>
                     </SwiperItem>
-                ))}
+                  ))}
                 </Swiper>
               </View>
-                
-                {/* Confirm Button */}
-                <View 
-                    className={styles.confirmButton}
-                    onClick={handleConfirmSpread}
-                >
-                    <Text className={styles.confirmButtonText}>Confirm Selection</Text>
-                </View>
+
+              {/* Confirm Button */}
+              <View
+                className={styles.confirmButton}
+                onClick={handleConfirmSpread}
+              >
+                <Text className={styles.confirmButtonText}>Confirm Selection</Text>
+              </View>
             </>
           ) : (
             // Simplified View when spread is confirmed
             <View className='flex-col items-center justify-center' style={{ width: '90%', height: '100px', marginTop: '20px' }}>
-                <Text className={styles.spreadTitle} style={{ color: '#D4AF37', fontSize: '32px', fontWeight: 'bold' }}>
-                    {SPREAD_TYPES[currentSpreadIndex].name}
-                </Text>
-                <Text style={{ color: '#aaa', fontSize: '24px' }}>
-                    {SPREAD_TYPES[currentSpreadIndex].subTitle}
-                </Text>
+              <Text className={styles.spreadTitle} style={{ color: '#D4AF37', fontSize: '32px', fontWeight: 'bold' }}>
+                {SPREAD_TYPES[currentSpreadIndex].name}
+              </Text>
+              <Text style={{ color: '#aaa', fontSize: '24px' }}>
+                {SPREAD_TYPES[currentSpreadIndex].subTitle}
+              </Text>
             </View>
           )}
         </View>
 
         {isSpreadConfirmed && (
-            <View className={`flex-col items-center self-center ${styles['group']}`}
+          <View className={`flex-col items-center self-center ${styles['group']}`}
             onClick={() => {
-                Taro.navigateTo({ url: '/pages/TaLuoAnswer/index?skipPlacement=1' });
+              Taro.navigateTo({ url: '/pages/TaLuoAnswer/index?skipPlacement=1' });
             }}>
             <Text className={`${styles['text']}`}>Tap to pick your card</Text>
             <Image
-                style={{ margin: '20px 0 0 0' }}
-                className={`${styles['image_2']} ${styles['mt-7']}`}
-                src={getOssImageUrl('TaLuo/e3fe51b2b356d777af64ab7ea8fac5f9.png')}
+              style={{ margin: '20px 0 0 0' }}
+              className={`${styles['image_2']} ${styles['mt-7']}`}
+              src={getOssImageUrl('TaLuo/e3fe51b2b356d777af64ab7ea8fac5f9.png')}
             />
-            </View>
+          </View>
         )}
 
         {/* 卡片选择器 - Only show when spread is confirmed */}
         {isSpreadConfirmed && (
-            <View style={{ width: '100%', height: '200px', flexShrink: 0, marginTop: '-6px' }}>
+          <View style={{ width: '100%', height: '200px', flexShrink: 0, marginTop: '-6px' }}>
             <CardSlider
-                ref={cardSliderRef}
-                style={{ width: '100%', height: '100%' }}
-                cardWidth={126}
-                cardHeight={190}
-                onCardSelect={handleCardSelect}
-                onSwipeUp={handlePickCurrentCard}
-                onInSliderChange={(isInside) => {
-                  isTouchingCardSlider.current = isInside;
-                }}
+              ref={cardSliderRef}
+              style={{ width: '100%', height: '100%' }}
+              cardWidth={126}
+              cardHeight={190}
+              onCardSelect={handleCardSelect}
+              onSwipeUp={handlePickCurrentCard}
+              onInSliderChange={(isInside) => {
+                isTouchingCardSlider.current = isInside;
+              }}
             />
-            </View>
+          </View>
         )}
 
         {/* 结果显示区域 */}
         <View className={`flex-col self-stretch ${styles['group_5']}`}>
-            {Array.from({ length: cardCount }).map((_, i) => (
-              <View key={i} className={styles.resultItem}>
-                <Text className={`self-center ${styles['font_2']} ${styles['text_2']}`}>
-                    {SPREAD_TYPES[currentSpreadIndex].positions[i]}
-                </Text>
-                <Text className={`self-center ${styles['font_3']} ${styles['text_5']}`} style={{ marginTop: 0 }}>
-                    {flippedStatus[cardOrder[i]] && drawnCards[cardOrder[i]] && drawnCards[cardOrder[i]].card
-                      ? `${drawnCards[cardOrder[i]].card.chinese_name} (${drawnCards[cardOrder[i]].isReversed ? '逆位' : '正位'})`
-                      : '未知'}
-                </Text>
-              </View>
-            ))}
+          {Array.from({ length: cardCount }).map((_, i) => (
+            <View key={i} className={styles.resultItem}>
+              <Text className={`self-center ${styles['font_2']} ${styles['text_2']}`}>
+                {SPREAD_TYPES[currentSpreadIndex].positions[i]}
+              </Text>
+              <Text className={`self-center ${styles['font_3']} ${styles['text_5']}`} style={{ marginTop: 0 }}>
+                {flippedStatus[cardOrder[i]] && drawnCards[cardOrder[i]] && drawnCards[cardOrder[i]].card
+                  ? `${drawnCards[cardOrder[i]].card.chinese_name} (${drawnCards[cardOrder[i]].isReversed ? '逆位' : '正位'})`
+                  : '未知'}
+              </Text>
+            </View>
+          ))}
 
           <View className={`flex-row items-center justify-center `}>
             <Image
@@ -455,7 +455,7 @@ export default function TaLuo(props) {
                   })
                 };
                 Taro.setStorageSync('last_tarot_reading', readingData);
-                
+
                 Taro.navigateTo({ url: `/pages/TaLuoAnswer/index?skipPlacement=1` });
               }}
             >
@@ -516,12 +516,12 @@ export default function TaLuo(props) {
                       />
                     </View>
                   </View>
-                  
+
                   <Text className={styles.floatingCardText}>
-                    {isFlipped && drawnCard && drawnCard.card 
-                      ? `${drawnCard.card.chinese_name} (${drawnCard.isReversed ? '逆位' : '正位'})` 
-                      : drawnCard && drawnCard.card 
-                        ? '已抽牌但未翻转' 
+                    {isFlipped && drawnCard && drawnCard.card
+                      ? `${drawnCard.card.chinese_name} (${drawnCard.isReversed ? '逆位' : '正位'})`
+                      : drawnCard && drawnCard.card
+                        ? '已抽牌但未翻转'
                         : '未知'}
                   </Text>
                   <View className={styles.cardBadge}>

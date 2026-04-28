@@ -105,7 +105,10 @@ export default function MbtiTest() {
   const handleUseResult = () => {
     const mbtiType = getResult()
     Taro.setStorageSync('mbtiTestResult', mbtiType)
-    Taro.navigateBack()
+    // 导航到 LoginGuide 页面，确保能正确显示表单而不是引导页
+    Taro.navigateTo({
+      url: '/pages/LoginGuide/index'
+    })
   }
 
   if (finished) {

@@ -115,23 +115,64 @@ const TEMPLATES = [
     { type: "zodiac", name: "星座", description: "占星" }
 ];
 
-const getUserData = () => {
-    const loginData = Taro.getStorageSync('loginData') || {};
-    const userProfile = Taro.getStorageSync('userprofile') || {};
+const getUserData = async () => {
+    try {
+        const token = Taro.getStorageSync('importcode');
+        if (!token) {
+            throw new Error('未找到登录凭证');
+        }
 
-    // Extract nickname from loginData (compatible with multiple structures)
-    const nickname = loginData.user?.nickname || loginData.data?.nickname || "水晶用户";
+        const res = await Taro.request({
+            url: getApiUrl(API_ENDPOINTS.PROFILES),
+            method: 'GET',
+            header: {
+                'accept': 'application/json',
+                'X-Login-Token': token,
+                'X-CSRFTOKEN': 'MFlroPUYKLLVTQDFPpsGv9vMrvQp8n9s'
+            }
+        });
 
-    return {
-        name: nickname,
-        birth_date: userProfile.birth_date || "1996-11-19",
-        zodiac: userProfile.zodiac || "天蝎",
-        mbti: userProfile.mbti_type || "ENTJ",
-        relationship_status: userProfile.relationship_status || "in_love",
-        occupation: userProfile.occupation || "企业家",
-        signature: userProfile.signature || "我是一个超人",
-        story: userProfile.story || "我终将成为我自己"
-    };
+        if (res.statusCode === 200 && res.data?.results?.length > 0) {
+            const profile = res.data.results[0];
+            const loginData = Taro.getStorageSync('loginData') || {};
+
+            // Extract nickname from loginData (compatible with multiple structures)
+            const nickname = loginData.user?.nickname || loginData.data?.nickname || "水晶用户";
+
+            return {
+                name: nickname,
+                birth_date: profile.birth_date || "1996-11-19",
+                zodiac: profile.zodiac || "天蝎",
+                mbti: profile.mbti_type || "ENTJ",
+                relationship_status: profile.relationship_status || "in_love",
+                occupation: profile.occupation || "企业家",
+                signature: profile.signature || "我是一个超人",
+                story: profile.story || "我终将成为我自己"
+            };
+        } else {
+            throw new Error('无法获取用户信息');
+        }
+    } catch (error) {
+        console.error('获取用户信息失败:', error);
+
+        // 回退到本地存储
+        const loginData = Taro.getStorageSync('loginData') || {};
+        const userProfile = Taro.getStorageSync('userprofile') || {};
+
+        // Extract nickname from loginData (compatible with multiple structures)
+        const nickname = loginData.user?.nickname || loginData.data?.nickname || "水晶用户";
+
+        return {
+            name: nickname,
+            birth_date: userProfile.birth_date || "1996-11-19",
+            zodiac: userProfile.zodiac || "天蝎",
+            mbti: userProfile.mbti_type || "ENTJ",
+            relationship_status: userProfile.relationship_status || "in_love",
+            occupation: userProfile.occupation || "企业家",
+            signature: userProfile.signature || "我是一个超人",
+            story: userProfile.story || "我终将成为我自己"
+        };
+    }
 };
 
 // Spread Configuration
@@ -905,81 +946,90 @@ export default function TaLuoAnswer(props) {
         setReport(null);
         Taro.removeStorageSync(FORTUNE_REPORT_STORAGE_KEY);
 
-        // Construct Request Body
-        const requestBody = {
-            ...getUserData(),
-            focus_area: "事业", // Default
-            user_question: readingData?.question || "我的运势如何？",
-            spread_type: readingData?.spread_type || 'holy_triangle',
-            cards: normalizeReadingCards(readingData?.cards || []),
-            prompt_id: selectedReaderId,
-            template_type: selectedTemplateType,
-            temperature: 1
-        };
-
-
-
-        // Adjust focus area based on template
-        if (selectedTemplateType === 'career') requestBody.focus_area = '事业';
-        if (selectedTemplateType === 'love') requestBody.focus_area = '情感';
-
-        if (pollTimerRef.current) {
-            clearTimeout(pollTimerRef.current);
-            pollTimerRef.current = null;
-        }
-        pollAttemptRef.current = 0;
-
         try {
-            const res = await Taro.request({
-                url: `${getApiUrl(API_ENDPOINTS.YUNSHI_REPORT)}?async=1`,
-                method: 'POST',
-                header: {
-                    'accept': 'application/json',
-                    'X-Login-Token': Taro.getStorageSync("importcode"),
-                    'Content-Type': 'application/json',
-                    'X-CSRFTOKEN': 'MFlroPUYKLLVTQDFPpsGv9vMrvQp8n9s'
-                },
-                data: requestBody
-            });
+            // 从服务器获取用户信息
+            const userData = await getUserData();
 
-            const data = normalizeRequestPayload(res);
-            const statusCode = typeof res?.statusCode === 'number' ? res.statusCode : (data.status ? 200 : 0);
-            const taskId = data.task_id;
-            const immediateReport = pickFortuneReportObject(data);
+            // Construct Request Body
+            const requestBody = {
+                ...userData,
+                focus_area: "事业", // Default
+                user_question: readingData?.question || "我的运势如何？",
+                spread_type: readingData?.spread_type || 'holy_triangle',
+                cards: normalizeReadingCards(readingData?.cards || []),
+                prompt_id: selectedReaderId,
+                template_type: selectedTemplateType,
+                temperature: 1
+            };
 
-            if (!data || (!taskId && !immediateReport && !data.status) || (statusCode && statusCode >= 400)) {
-                console.error('API Error:', res);
-                Taro.showToast({ title: 'AI 连接失败，请重试', icon: 'none' });
-                setStep('selecting');
-                return;
+
+
+            // Adjust focus area based on template
+            if (selectedTemplateType === 'career') requestBody.focus_area = '事业';
+            if (selectedTemplateType === 'love') requestBody.focus_area = '情感';
+
+            if (pollTimerRef.current) {
+                clearTimeout(pollTimerRef.current);
+                pollTimerRef.current = null;
             }
+            pollAttemptRef.current = 0;
 
-            if (taskId) {
-                Taro.setStorageSync(FORTUNE_TASK_ID_STORAGE_KEY, taskId);
-            }
+            try {
+                const res = await Taro.request({
+                    url: `${getApiUrl(API_ENDPOINTS.YUNSHI_REPORT)}?async=1`,
+                    method: 'POST',
+                    header: {
+                        'accept': 'application/json',
+                        'X-Login-Token': Taro.getStorageSync("importcode"),
+                        'Content-Type': 'application/json',
+                        'X-CSRFTOKEN': 'MFlroPUYKLLVTQDFPpsGv9vMrvQp8n9s'
+                    },
+                    data: requestBody
+                });
 
-            if (immediateReport) {
-                setReport(immediateReport);
-                setStep('result');
-                Taro.setStorageSync(FORTUNE_REPORT_STORAGE_KEY, immediateReport);
-                if (taskId) {
-                    clearFortuneTaskCache();
+                const data = normalizeRequestPayload(res);
+                const statusCode = typeof res?.statusCode === 'number' ? res.statusCode : (data.status ? 200 : 0);
+                const taskId = data.task_id;
+                const immediateReport = pickFortuneReportObject(data);
+
+                if (!data || (!taskId && !immediateReport && !data.status) || (statusCode && statusCode >= 400)) {
+                    console.error('API Error:', res);
+                    Taro.showToast({ title: 'AI 连接失败，请重试', icon: 'none' });
+                    setStep('selecting');
+                    return;
                 }
-                return;
-            }
 
-            if (taskId) {
-                activeTaskIdRef.current = taskId;
-                pollFortuneTask(taskId);
-                return;
-            }
+                if (taskId) {
+                    Taro.setStorageSync(FORTUNE_TASK_ID_STORAGE_KEY, taskId);
+                }
 
-            console.error('API Error:', res);
-            Taro.showToast({ title: '任务创建失败，请重试', icon: 'none' });
-            setStep('selecting');
-        } catch (err) {
-            console.error('Network Error:', err);
-            Taro.showToast({ title: '网络错误', icon: 'none' });
+                if (immediateReport) {
+                    setReport(immediateReport);
+                    setStep('result');
+                    Taro.setStorageSync(FORTUNE_REPORT_STORAGE_KEY, immediateReport);
+                    if (taskId) {
+                        clearFortuneTaskCache();
+                    }
+                    return;
+                }
+
+                if (taskId) {
+                    activeTaskIdRef.current = taskId;
+                    pollFortuneTask(taskId);
+                    return;
+                }
+
+                console.error('API Error:', res);
+                Taro.showToast({ title: '任务创建失败，请重试', icon: 'none' });
+                setStep('selecting');
+            } catch (err) {
+                console.error('Network Error:', err);
+                Taro.showToast({ title: '网络错误', icon: 'none' });
+                setStep('selecting');
+            }
+        } catch (error) {
+            console.error('获取用户信息失败:', error);
+            Taro.showToast({ title: '获取用户信息失败', icon: 'none' });
             setStep('selecting');
         }
     };

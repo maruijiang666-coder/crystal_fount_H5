@@ -28,6 +28,15 @@ export default function TanChuang(props) {
       return;
     }
 
+    // 预检查灵力值
+    const currentBalance = Taro.getStorageSync('spirit_balance') || 0;
+    if (currentBalance < 40) {
+      setErrorMsg(`灵力不足，当前灵力为 ${currentBalance}，需要 40 灵力`);
+      setEnergyAnimation('fail');
+      setTimeout(() => setEnergyAnimation(null), 3000);
+      return;
+    }
+
     Taro.request({
       url: getApiUrl(API_ENDPOINTS.TOUCH_CRYSTAL_CONSUME_ENERGY),
       method: 'POST',
@@ -47,6 +56,12 @@ export default function TanChuang(props) {
           // Success
           setEnergyAnimation('success');
 
+          // Update local balance
+          const { current_energy } = res.data;
+          if (current_energy !== undefined) {
+            Taro.setStorageSync('spirit_balance', current_energy);
+          }
+
           // Show toast for clarity as well
           Taro.showToast({
             title: '消耗 40 灵力',
@@ -60,25 +75,30 @@ export default function TanChuang(props) {
             setEnergyAnimation(null);
           }, 1500);
         } else {
+          // Handle API error responses
           const rawDetail = res.data?.detail || ''
           let detail = rawDetail || '能量消耗失败，请稍后重试'
 
-          if (detail.includes('Insufficient') || detail.includes('insufficient')) {
+          // Check for insufficient energy error
+          if (detail.includes('Insufficient') || detail.includes('insufficient') ||
+            detail.includes('能量不足') || detail.includes('灵力不足')) {
             detail = '能量不足，当前灵力无法完成本次占卜'
           }
 
-          if (detail.includes('能量不足')) {
-            setErrorMsg(detail);
-            setEnergyAnimation('fail');
-            setTimeout(() => setEnergyAnimation(null), 3000);
-          } else {
-            Taro.showToast({ title: detail || '能量消耗失败，请稍后重试', icon: 'none' });
-          }
+          // Always show user-friendly error message
+          setErrorMsg(detail);
+          setEnergyAnimation('fail');
+          setTimeout(() => setEnergyAnimation(null), 3000);
+
+          console.error('API Error:', res);
         }
       },
       fail: (err) => {
-        Taro.showToast({ title: '网络请求失败', icon: 'none' });
-        console.error(err);
+        // Handle network errors
+        setErrorMsg('网络连接失败，请检查网络后重试');
+        setEnergyAnimation('fail');
+        setTimeout(() => setEnergyAnimation(null), 3000);
+        console.error('Network Error:', err);
       }
     });
   };

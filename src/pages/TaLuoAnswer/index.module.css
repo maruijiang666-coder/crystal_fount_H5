@@ -1252,14 +1252,14 @@
 .questionLabel {
     display: block;
     color: #888;
-    font-size: 28px;
+    font-size: 32px;
     margin-bottom: 16px;
 }
 
 .questionText {
     display: block;
     color: #D4AF37;
-    font-size: 38px;
+    font-size: 42px;
     font-family: 'Iceland';
     font-weight: bold;
 }
@@ -1290,14 +1290,14 @@
 
 .sectionTitle {
     color: #D4AF37;
-    font-size: 48px;
+    font-size: 52px;
     font-family: 'Iceland';
     font-weight: bold;
 }
 
 .analysisText {
     color: #ccc;
-    font-size: 36px;
+    font-size: 40px;
     line-height: 1.8;
     text-align: justify;
     width: 100%;
@@ -1582,7 +1582,7 @@
 
 .aiDisclaimer {
     color: rgba(255, 255, 255, 0.5);
-    font-size: 20px;
+    font-size: 28px;
     text-align: center;
     margin-top: 10px;
     margin-bottom: 10px;

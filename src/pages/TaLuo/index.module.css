@@ -1,9 +1,11 @@
 .mt-5 {
   margin-top: 10px;
 }
+
 .ml-13 {
   margin-left: 26px;
 }
+
 .page {
   background-image: linear-gradient(180deg, #0c0e0e 0%, #17191a 100%);
   overflow: hidden;
@@ -17,18 +19,22 @@
   flex-direction: column;
   box-sizing: border-box;
 }
+
 .group_1 {
   padding-bottom: 54px;
   overflow-y: auto;
 }
+
 .group {
   padding: 12px 0;
 }
+
 .image {
   margin-left: 18px;
   width: 64px;
   height: 64px;
 }
+
 .section {
   padding: 60px 20px 40px;
   background-size: 100% 100%;
@@ -38,6 +44,7 @@
   flex-direction: column;
   align-items: center;
 }
+
 .pos {
   position: absolute;
   left: 0;
@@ -45,6 +52,7 @@
   top: 0;
   bottom: 0;
 }
+
 .font {
   font-size: 48px;
   font-family: 'Serif', 'Georgia', 'Times New Roman';
@@ -52,22 +60,27 @@
   color: #d6a207;
   font-weight: bold;
 }
+
 .group_2 {
   margin-top: 24px;
 }
+
 .text {
   color: #ffffff;
   font-size: 25px;
   font-family: Iceland;
   line-height: 26px;
 }
+
 .image_2 {
   width: 60px;
   height: 52px;
 }
+
 .group_3 {
   padding-top: 28.36px;
 }
+
 .image_3 {
   width: 100%;
   height: 85.3333vw;
@@ -79,49 +92,60 @@
   width: 100%;
   height: 91.38px;
 }
+
 .pos_2 {
   position: absolute;
   left: 0;
   right: 0;
   top: 0;
 }
+
 .font_2 {
   font-size: 32px;
   font-family: 'Serif', 'Georgia';
   color: transparent;
 }
+
 .text_2 {
   background-image: linear-gradient(90deg, #da9d4d 0%, #835c2f 100%);
   -webkit-background-clip: text;
 }
+
 .font_3 {
   font-size: 28px;
   font-family: 'Serif', 'Georgia';
   color: #828282;
 }
+
 .text_3 {
   margin-top: 20.04px;
   line-height: 37.16px;
 }
+
 .text_4 {
   margin-top: 5px;
 }
+
 .text_5 {
   margin-top: 5px;
   line-height: 36.84px;
 }
+
 .text_6 {
   margin-top: 14.72px;
 }
+
 .text_7 {
   margin-top: 22.8px;
   line-height: 23.2px;
 }
+
 .group_4 {
   margin-top: 28px;
   padding-left: 18px;
   padding-right: 18px;
 }
+
 .group_5 {
   padding-bottom: 24px;
   display: flex;
@@ -146,28 +170,34 @@
   animation: fadeIn 0.5s ease-in-out forwards;
   z-index: 1002;
 }
+
 .resultItem {
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 10px;
 }
+
 .image_4 {
   width: 50px;
   height: 50px;
 }
+
 .text_8 {
   /* margin-left: 16.32px; */
   line-height: 37.92px;
 }
+
 .image_1 {
   margin-left: 3.68px;
 }
+
 .equal-division-item {
   position: relative;
   flex: 1 0 320px;
   max-width: calc(50% - 16px);
 }
+
 .section_3 {
   padding: 0 18px;
   background-color: #161819;
@@ -182,14 +212,17 @@
   justify-content: center;
   gap: 12px;
 }
+
 .image_6 {
   width: 54px;
   height: 40px;
 }
+
 .equal-division-item_2 {
   flex: 1 0 320px;
   max-width: calc(50% - 16px);
 }
+
 .section_4 {
   padding: 0 16px 4px;
   background-color: #161819;
@@ -201,10 +234,12 @@
   width: 100%;
   box-sizing: border-box;
 }
+
 .image_5 {
   width: 56px;
   height: 56px;
 }
+
 .image_7 {
   width: 78px;
   height: 32px;
@@ -214,6 +249,7 @@
   line-height: 1;
   white-space: nowrap;
 }
+
 /*
  悬浮卡片组容器 - 固定在顶部，横向排列 */
 .floatingCardsContainer {
@@ -280,10 +316,12 @@
     box-shadow: 0 0 0 0 rgba(212, 175, 55, 0.4);
     transform: scale(1);
   }
+
   50% {
     box-shadow: 0 0 20px 10px rgba(212, 175, 55, 0);
     transform: scale(1.02);
   }
+
   100% {
     box-shadow: 0 0 0 0 rgba(212, 175, 55, 0);
     transform: scale(1);
@@ -302,6 +340,7 @@
     opacity: 0;
     transform: translateY(400px) scale(0.5);
   }
+
   to {
     opacity: 1;
     transform: translateY(0) scale(1);
@@ -367,9 +406,12 @@
 
 /* Updated Card Float Animation - Only Transform, No Shadow Change (simplification) */
 @keyframes cardFloat {
-  0%, 100% {
+
+  0%,
+  100% {
     transform: translateY(0) rotate(0deg);
   }
+
   50% {
     transform: translateY(-20px) rotate(2deg);
   }
@@ -411,7 +453,7 @@
   border-radius: 48px;
   border: 2px solid rgba(148, 163, 184, 0.3);
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4),
-              inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
   cursor: pointer;
   transition: all 0.3s ease;
   backdrop-filter: blur(10px);
@@ -420,7 +462,7 @@
 .resetButton:active {
   transform: translateX(-50%) scale(0.96);
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5),
-              inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
 }
 
 .resetButtonText {
@@ -475,6 +517,7 @@
     opacity: 0;
     transform: translateX(-50%) translateY(20px);
   }
+
   to {
     opacity: 1;
     transform: translateX(-50%) translateY(0);

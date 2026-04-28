@@ -36,7 +36,7 @@ function decodeBytes(bytes) {
   if (textDecoder) {
     try {
       return textDecoder.decode(bytes);
-    } catch (err) {}
+    } catch (err) { }
   }
 
   let raw = '';
@@ -242,7 +242,7 @@ export default function ActivateCrystal() {
       setMessage(detail);
       Taro.showToast({ title: detail, icon: 'none' });
     } catch (error) {
-      const detail = getErrorMessage(error, '网络连接失败');
+      const detail = getErrorMessage(error, '激活失败');
       console.error('Activate crystal failed:', error);
       setStatus('error');
       setMessage(detail);
@@ -301,7 +301,7 @@ export default function ActivateCrystal() {
       stopWebNfcScan();
       await activateCrystalById(nfcId || readableContent);
     } catch (error) {
-      const detail = getErrorMessage(error, '读取 NFC 失败');
+      const detail = getErrorMessage(error, '激活失败');
       console.error('Web NFC reading failed:', error);
       setStatus('error');
       setMessage(detail);
@@ -334,14 +334,14 @@ export default function ActivateCrystal() {
 
       reader.onreadingerror = () => {
         setStatus('error');
-        setMessage('读取 NFC 失败，请重新贴近水晶');
-        Taro.showToast({ title: '读取 NFC 失败', icon: 'none' });
+        setMessage('激活失败，请重新贴近水晶');
+        Taro.showToast({ title: '激活失败', icon: 'none' });
         stopWebNfcScan();
       };
 
       await reader.scan();
     } catch (error) {
-      const detail = getErrorMessage(error, '启动 NFC 读取失败');
+      const detail = getErrorMessage(error, '激活失败');
       console.error('Web NFC scan failed:', error);
       setStatus('error');
       setMessage(detail);
