@@ -17,7 +17,9 @@
       "Bash(node -e \"console.log\\(require\\('react/package.json'\\).version\\)\")",
       "Bash(nohup npm *)",
       "Bash(echo \"PID=$!\")",
-      "Bash(python3 -c \"from PIL import Image; print\\('PIL available'\\)\")"
+      "Bash(python3 -c \"from PIL import Image; print\\('PIL available'\\)\")",
+      "Bash(dir C:\\\\Users\\\\Administrator\\\\Desktop\\\\*.jpg)",
+      "Read(//mnt/c/Users/Administrator/**)"
     ]
   }
 }

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import Taro, { useRouter } from '@tarojs/taro'
+import Taro, { useRouter, useDidShow } from '@tarojs/taro'
 import { View, Text, Image, Input, Textarea, Picker, Swiper, SwiperItem, ScrollView } from '@tarojs/components'
 import { getApiUrl, API_ENDPOINTS } from '../../utils/api.config.js'
 import styles from './index.module.css'
@@ -67,23 +67,23 @@ export default function LoginGuide() {
         // Parse focus_areas from object to array if needed
         let focusAreas = []
         if (storedData.focus_areas) {
-           if (Array.isArray(storedData.focus_areas)) {
-             focusAreas = storedData.focus_areas
-           } else if (typeof storedData.focus_areas === 'object') {
-             focusAreas = Object.keys(storedData.focus_areas).filter(k => storedData.focus_areas[k])
-           }
+          if (Array.isArray(storedData.focus_areas)) {
+            focusAreas = storedData.focus_areas
+          } else if (typeof storedData.focus_areas === 'object') {
+            focusAreas = Object.keys(storedData.focus_areas).filter(k => storedData.focus_areas[k])
+          }
         }
 
         // Parse tags from object to array if needed
         let tags = []
         if (storedData.tags) {
-           if (Array.isArray(storedData.tags)) {
-             tags = storedData.tags
-           } else if (typeof storedData.tags === 'object') {
-             tags = Object.keys(storedData.tags).filter(k => storedData.tags[k])
-           }
+          if (Array.isArray(storedData.tags)) {
+            tags = storedData.tags
+          } else if (typeof storedData.tags === 'object') {
+            tags = Object.keys(storedData.tags).filter(k => storedData.tags[k])
+          }
         }
- 
+
         setFormData({
           birth_date: storedData.birth_date || '',
           birth_time: storedData.birth_time || '',
@@ -102,32 +102,40 @@ export default function LoginGuide() {
     }
   }, [router.params])
 
+  useDidShow(() => {
+    const mbtiResult = Taro.getStorageSync('mbtiTestResult')
+    if (mbtiResult) {
+      setFormData(prev => ({ ...prev, mbti_type: mbtiResult }))
+      Taro.removeStorageSync('mbtiTestResult')
+    }
+  })
+
   // Tutorial Data
   const tutorialSlides = [
-    { 
-      title: '水晶幻境', 
+    {
+      title: '水晶幻境',
       desc: '探索灵性能量，开启疗愈之旅。',
-      image: 'https://tangledup-ai-staging.oss-cn-shanghai.aliyuncs.com/mini_app/crystal_mini_app/login_info1.png' 
+      image: 'https://tangledup-ai-staging.oss-cn-shanghai.aliyuncs.com/mini_app/crystal_mini_app/login_info1.png'
     },
-    { 
-      title: '每日指引', 
+    {
+      title: '每日指引',
       desc: '结合星盘牌阵，和不同的塔罗师解读今日运势',
       image: 'https://tangledup-ai-staging.oss-cn-shanghai.aliyuncs.com/mini_app/crystal_mini_app/login_info2.png'
     },
-    { 
-      title: '专属灵宠', 
+    {
+      title: '专属灵宠',
       desc: '匹配独一无二的水晶灵宠，陪伴成长。',
-      image: 'https://tangledup-ai-staging.oss-cn-shanghai.aliyuncs.com/mini_app/crystal_mini_app/login_info3.png' 
+      image: 'https://tangledup-ai-staging.oss-cn-shanghai.aliyuncs.com/mini_app/crystal_mini_app/login_info3.png'
     },
-      { 
-      title: '塔罗抽牌', 
+    {
+      title: '塔罗抽牌',
       desc: '通过塔罗牌，了解今日的能量状态和潜在的变化。',
-      image: 'https://tangledup-ai-staging.oss-cn-shanghai.aliyuncs.com/mini_app/crystal_mini_app/login_info4.png' 
+      image: 'https://tangledup-ai-staging.oss-cn-shanghai.aliyuncs.com/mini_app/crystal_mini_app/login_info4.png'
     },
-    { 
-      title: '能量播客', 
+    {
+      title: '能量播客',
       desc: '结合星盘与塔罗，解读能量流动。',
-      image: 'https://tangledup-ai-staging.oss-cn-shanghai.aliyuncs.com/mini_app/crystal_mini_app/login_info5.png' 
+      image: 'https://tangledup-ai-staging.oss-cn-shanghai.aliyuncs.com/mini_app/crystal_mini_app/login_info5.png'
     },
   ]
 
@@ -174,16 +182,16 @@ export default function LoginGuide() {
               <Text className={styles.formIcon}>🌌</Text>
               <Text className={styles.label}>星座/生肖</Text>
             </View>
-            <Picker 
-                mode='selector' 
-                range={['白羊座', '金牛座', '双子座', '巨蟹座', '狮子座', '处女座', '天秤座', '天蝎座', '射手座', '摩羯座', '水瓶座', '双鱼座']} 
-                onChange={(e) => handleInputChange('zodiac', ['白羊座', '金牛座', '双子座', '巨蟹座', '狮子座', '处女座', '天秤座', '天蝎座', '射手座', '摩羯座', '水瓶座', '双鱼座'][e.detail.value])}
-                value={['白羊座', '金牛座', '双子座', '巨蟹座', '狮子座', '处女座', '天秤座', '天蝎座', '射手座', '摩羯座', '水瓶座', '双鱼座'].indexOf(formData.zodiac)}
+            <Picker
+              mode='selector'
+              range={['白羊座', '金牛座', '双子座', '巨蟹座', '狮子座', '处女座', '天秤座', '天蝎座', '射手座', '摩羯座', '水瓶座', '双鱼座']}
+              onChange={(e) => handleInputChange('zodiac', ['白羊座', '金牛座', '双子座', '巨蟹座', '狮子座', '处女座', '天秤座', '天蝎座', '射手座', '摩羯座', '水瓶座', '双鱼座'][e.detail.value])}
+              value={['白羊座', '金牛座', '双子座', '巨蟹座', '狮子座', '处女座', '天秤座', '天蝎座', '射手座', '摩羯座', '水瓶座', '双鱼座'].indexOf(formData.zodiac)}
             >
-               <View className={styles.pickerValue}>
+              <View className={styles.pickerValue}>
                 <Text className={styles.pickerText}>{formData.zodiac || '请选择星座'}</Text>
                 <Text className={styles.arrow}>▼</Text>
-               </View>
+              </View>
             </Picker>
           </View>
         </>
@@ -200,17 +208,20 @@ export default function LoginGuide() {
               <Text className={styles.formIcon}>🧩</Text>
               <Text className={styles.label}>MBTI 人格类型</Text>
             </View>
-            <Picker 
-                mode='selector' 
-                range={MBTI_CHOICES} 
-                rangeKey='label'
-                onChange={(e) => handleInputChange('mbti_type', MBTI_CHOICES[e.detail.value].value)}
+            <Picker
+              mode='selector'
+              range={MBTI_CHOICES}
+              rangeKey='label'
+              onChange={(e) => handleInputChange('mbti_type', MBTI_CHOICES[e.detail.value].value)}
             >
-               <View className={styles.pickerValue}>
-                 <Text className={styles.pickerText}>{MBTI_CHOICES.find(c => c.value === formData.mbti_type)?.label || '请选择 MBTI'}</Text>
-                 <Text className={styles.arrow}>▼</Text>
-               </View>
+              <View className={styles.pickerValue}>
+                <Text className={styles.pickerText}>{MBTI_CHOICES.find(c => c.value === formData.mbti_type)?.label || '请选择 MBTI'}</Text>
+                <Text className={styles.arrow}>▼</Text>
+              </View>
             </Picker>
+            <View className={styles.mbtiTestLink} onClick={handleMbtiTest}>
+              <Text className={styles.mbtiTestLinkText}>不知道自己的类型？去测一测 →</Text>
+            </View>
           </View>
 
           <View className={styles.formGroup}>
@@ -218,16 +229,16 @@ export default function LoginGuide() {
               <Text className={styles.formIcon}>💘</Text>
               <Text className={styles.label}>当前情感状态</Text>
             </View>
-             <Picker 
-                mode='selector' 
-                range={RELATIONSHIP_STATUS_CHOICES} 
-                rangeKey='label'
-                onChange={(e) => handleInputChange('relationship_status', RELATIONSHIP_STATUS_CHOICES[e.detail.value].value)}
+            <Picker
+              mode='selector'
+              range={RELATIONSHIP_STATUS_CHOICES}
+              rangeKey='label'
+              onChange={(e) => handleInputChange('relationship_status', RELATIONSHIP_STATUS_CHOICES[e.detail.value].value)}
             >
-               <View className={styles.pickerValue}>
-                 <Text className={styles.pickerText}>{RELATIONSHIP_STATUS_CHOICES.find(c => c.value === formData.relationship_status)?.label || '请选择状态'}</Text>
-                 <Text className={styles.arrow}>▼</Text>
-               </View>
+              <View className={styles.pickerValue}>
+                <Text className={styles.pickerText}>{RELATIONSHIP_STATUS_CHOICES.find(c => c.value === formData.relationship_status)?.label || '请选择状态'}</Text>
+                <Text className={styles.arrow}>▼</Text>
+              </View>
             </Picker>
           </View>
 
@@ -317,7 +328,7 @@ export default function LoginGuide() {
   const getZodiac = (dateStr) => {
     if (!dateStr) return ''
     const [, month, day] = dateStr.split('-').map(Number)
-    
+
     const m = month; const d = day;
     const zodiacs = [
       { name: '摩羯座', start: [12, 22], end: [1, 19] },
@@ -333,14 +344,14 @@ export default function LoginGuide() {
       { name: '天蝎座', start: [10, 24], end: [11, 22] },
       { name: '射手座', start: [11, 23], end: [12, 21] },
     ];
-    
+
     if ((m === 12 && d >= 22) || (m === 1 && d <= 19)) return '摩羯座';
-    
+
     for (let z of zodiacs) {
-       if (z.name === '摩羯座') continue; 
-       if ((m === z.start[0] && d >= z.start[1]) || (m === z.end[0] && d <= z.end[1])) {
-         return z.name;
-       }
+      if (z.name === '摩羯座') continue;
+      if ((m === z.start[0] && d >= z.start[1]) || (m === z.end[0] && d <= z.end[1])) {
+        return z.name;
+      }
     }
     return '';
   }
@@ -365,6 +376,10 @@ export default function LoginGuide() {
     setFormData(prev => ({ ...prev, [key]: value }))
   }
 
+  const handleMbtiTest = () => {
+    Taro.navigateTo({ url: '/pages/MbtiTest/index' })
+  }
+
   const handleFocusAreaToggle = (value) => {
     setFormData(prev => {
       const areas = [...prev.focus_areas]
@@ -379,22 +394,22 @@ export default function LoginGuide() {
   const handleSubmit = async () => {
     // 收集用户填的信息为 JSON 格式
     const userInfo = {
-       "birth_date": formData.birth_date || '2026-01-01',
-       "birth_time": formData.birth_time || '00:00', 
-       "zodiac": formData.zodiac, 
-       "mbti_type": formData.mbti_type, 
-       "relationship_status": formData.relationship_status, 
-       "occupation": formData.occupation, 
-       "focus_areas": formData.focus_areas.reduce((acc, curr) => ({ ...acc, [curr]: true }), {}), 
-       "avatar_url": formData.avatar_url, 
-       "signature": formData.signature, 
-       "story": formData.story, 
-       "tags": formData.tags.reduce((acc, curr) => ({ ...acc, [curr]: true }), {}) 
+      "birth_date": formData.birth_date || '2026-01-01',
+      "birth_time": formData.birth_time || '00:00',
+      "zodiac": formData.zodiac,
+      "mbti_type": formData.mbti_type,
+      "relationship_status": formData.relationship_status,
+      "occupation": formData.occupation,
+      "focus_areas": formData.focus_areas.reduce((acc, curr) => ({ ...acc, [curr]: true }), {}),
+      "avatar_url": formData.avatar_url,
+      "signature": formData.signature,
+      "story": formData.story,
+      "tags": formData.tags.reduce((acc, curr) => ({ ...acc, [curr]: true }), {})
     }
-    
+
     console.log('Collected User Info JSON:', JSON.stringify(userInfo, null, 2))
     console.log('Form Data:', formData)
-   
+
     try {
       const token = Taro.getStorageSync('importcode');
       if (!token) {
@@ -406,7 +421,7 @@ export default function LoginGuide() {
       const url = isEditMode && profileId
         ? getApiUrl(`${API_ENDPOINTS.PROFILES}${profileId}/`)
         : getApiUrl(API_ENDPOINTS.PROFILES);
-      
+
       const method = isEditMode && profileId ? 'PATCH' : 'POST';
 
       const res = await Taro.request({
@@ -428,13 +443,13 @@ export default function LoginGuide() {
         // 标记已完成引导
         Taro.setStorageSync('hasCompletedGuide', true);
         console.log('✅ 已保存 hasCompletedGuide 标记');
-        
+
         Taro.showToast({
           title: isEditMode ? '更新成功' : '开启旅程...',
           icon: 'success',
           duration: 1500
         })
-        
+
         // 跳转到 My 页面
         setTimeout(() => {
           console.log('准备跳转到 My 页面');
@@ -469,19 +484,17 @@ export default function LoginGuide() {
         <View className={styles.cancelBtnTop} onClick={handleCancel}>
           取消
         </View>
-        <Swiper 
-          className={styles.tutorialSwiper} 
+        <Swiper
+          className={styles.tutorialSwiper}
           indicatorDots={false} // Custom indicators below
-          previousMargin='40px'
-          nextMargin='40px'
           onChange={(e) => setCurrentSwiperIndex(e.detail.current)}
         >
           {tutorialSlides.map((slide, index) => (
-            <SwiperItem key={index} className={styles.swiperItem}>
+            <SwiperItem key={index} className={styles.swiperItem} style={{ height: '100%' }}>
               <View className={`${styles.slideCard} ${currentSwiperIndex === index ? styles.activeCard : ''}`}>
-                <Image 
-                  src={slide.image} 
-                  className={styles.slideImage} 
+                <Image
+                  className={styles.slideImage}
+                  src={slide.image}
                   mode='aspectFit'
                 />
                 <View className={styles.cardContent}>
@@ -496,8 +509,8 @@ export default function LoginGuide() {
         {/* Custom Indicators */}
         <View className={styles.indicators}>
           {tutorialSlides.map((_, index) => (
-            <View 
-              key={index} 
+            <View
+              key={index}
               className={`${styles.dot} ${currentSwiperIndex === index ? styles.activeDot : ''}`}
             />
           ))}
@@ -506,7 +519,7 @@ export default function LoginGuide() {
         {/* Fixed Start Button */}
         {currentSwiperIndex === tutorialSlides.length - 1 && (
           <View className={styles.fixedStartBtnWrapper}>
-             <View className={styles.startBtn} onClick={() => setShowTutorial(false)}>
+            <View className={styles.startBtn} onClick={() => setShowTutorial(false)}>
               开启旅程
             </View>
           </View>
@@ -533,62 +546,62 @@ export default function LoginGuide() {
   // Render Form
   return (
     <View className={styles.container}>
-       <View className={styles.cancelBtnTop} onClick={handleCancel}>
-         取消
-       </View>
-       {/* Progress Bar */}
-       <View className={styles.progressContainer}>
-         <View 
-           className={styles.progressFill} 
-           style={{ width: `${((currentFormStep + 1) / formSteps.length) * 100}%` }} 
-         />
-       </View>
-       <Text className={styles.stepCounter}>
-         {currentFormStep + 1} / {formSteps.length}
-       </Text>
+      <View className={styles.cancelBtnTop} onClick={handleCancel}>
+        取消
+      </View>
+      {/* Progress Bar */}
+      <View className={styles.progressContainer}>
+        <View
+          className={styles.progressFill}
+          style={{ width: `${((currentFormStep + 1) / formSteps.length) * 100}%` }}
+        />
+      </View>
+      <Text className={styles.stepCounter}>
+        {currentFormStep + 1} / {formSteps.length}
+      </Text>
 
-       {/* 改用 View 替换 Swiper，避免 Textarea 在 Swiper 中闪退的问题 */}
-       <View className={styles.formSwiper}>
-         {(() => {
-           const step = formSteps[currentFormStep];
-           const index = currentFormStep;
-           return (
-             <View key={step.key} className={styles.swiperItem} style={{ width: '100%', height: '100%' }}>
-               <View className={`${styles.slideCard} ${styles.activeCard}`}>
-                 
-                 {/* Step Header */}
-                 <View className={styles.stepHeader}>
-                   <Text className={styles.stepTitle}>{step.title}</Text>
-                   <Text className={styles.stepDesc}>{step.desc}</Text>
-                 </View>
+      {/* 改用 View 替换 Swiper，避免 Textarea 在 Swiper 中闪退的问题 */}
+      <View className={styles.formSwiper}>
+        {(() => {
+          const step = formSteps[currentFormStep];
+          const index = currentFormStep;
+          return (
+            <View key={step.key} className={styles.swiperItem} style={{ width: '100%', height: '100%' }}>
+              <View className={`${styles.slideCard} ${styles.activeCard}`}>
 
-                 {/* Form Content */}
-                 <ScrollView className={styles.formScrollArea} scrollY>
-                   {step.render()}
-                 </ScrollView>
+                {/* Step Header */}
+                <View className={styles.stepHeader}>
+                  <Text className={styles.stepTitle}>{step.title}</Text>
+                  <Text className={styles.stepDesc}>{step.desc}</Text>
+                </View>
 
-                 {/* Navigation Buttons */}
-                 <View className={styles.navButtons}>
-                   {index > 0 ? (
-                     <View className={`${styles.navBtn} ${styles.prevBtn}`} onClick={handlePrevStep}>
-                       上一步
-                     </View>
-                   ) : (
-                     <View className={`${styles.navBtn} ${styles.nextBtnDisabled}`}>
-                       {/* Placeholder for layout balance */}
-                     </View>
-                   )}
+                {/* Form Content */}
+                <ScrollView className={styles.formScrollArea} scrollY>
+                  {step.render()}
+                </ScrollView>
 
-                   <View className={`${styles.navBtn} ${styles.nextBtn}`} onClick={handleNextStep}>
+                {/* Navigation Buttons */}
+                <View className={styles.navButtons}>
+                  {index > 0 ? (
+                    <View className={`${styles.navBtn} ${styles.prevBtn}`} onClick={handlePrevStep}>
+                      上一步
+                    </View>
+                  ) : (
+                    <View className={`${styles.navBtn} ${styles.nextBtnDisabled}`}>
+                      {/* Placeholder for layout balance */}
+                    </View>
+                  )}
+
+                  <View className={`${styles.navBtn} ${styles.nextBtn}`} onClick={handleNextStep}>
                     {index === formSteps.length - 1 ? (isEditMode ? '保存修改' : '开启水晶之旅') : '下一步'}
                   </View>
-                 </View>
+                </View>
 
-               </View>
-             </View>
-           );
-         })()}
-       </View>
+              </View>
+            </View>
+          );
+        })()}
+      </View>
     </View>
   )
 }

@@ -418,6 +418,14 @@ export default function Yunshi(props) {
         content={fortuneData ? fortuneData.health_fortune : "正在获取健康解读..."}
       />
 
+      {/* <YueYunCard 
+        title="11月运势报告"
+        content="财运亨通，事业有成，感情稳定..."
+        className="custom-style"
+        onClick={() => console.log('卡片被点击')}
+      /> */}
+
+
 
       <View className={`flex-col self-stretch ${styles['group_4']}`}>
         <View className={`flex-col ${styles['section_13']}`}>
@@ -426,6 +434,14 @@ export default function Yunshi(props) {
             <Text className={`self-stretch ${styles['font_5']} ${styles['text_22']}`}>
               {fortuneData ? (fortuneData.ai_data?.spread_analysis || fortuneData.ai_data?.spread_analysis || "暂无详细报告") : "正在生成您的专解读报告..."}
             </Text>
+            <Button
+              className={`mt-24 flex-row justify-between items-center self-center ${styles['section_15']}`}
+              openType="share"
+              style={{ backgroundColor: 'transparent', lineHeight: 'normal' }}
+            >
+
+              <Text className={`${styles['font_4']} ${styles['text_23']}`}>分享</Text>
+            </Button>
           </View>
         </View>
       </View>

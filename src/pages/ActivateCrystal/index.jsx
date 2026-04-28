@@ -117,6 +117,7 @@ function getErrorMessage(error, fallback = '请求失败，请重试') {
 }
 
 export default function ActivateCrystal() {
+  const router = Taro.useRouter();
   const [status, setStatus] = useState('idle');
   const [message, setMessage] = useState('点击“激活 NFC”后，将手机贴近水晶');
   const [isWebNfcSupported, setIsWebNfcSupported] = useState(false);
@@ -129,6 +130,7 @@ export default function ActivateCrystal() {
   const [activationResult, setActivationResult] = useState(null);
   const webNfcReaderRef = useRef(null);
   const activationLockRef = useRef(false);
+  const autoActivationAttemptedRef = useRef(false);
 
   const stopWebNfcScan = () => {
     const reader = webNfcReaderRef.current;
@@ -381,6 +383,31 @@ export default function ActivateCrystal() {
       stopWebNfcScan();
     };
   }, []);
+
+  useEffect(() => {
+    if (autoActivationAttemptedRef.current) {
+      return;
+    }
+
+    const rawRouteValue =
+      router?.params?.nfc_tag_id ||
+      router?.params?.tag_id ||
+      router?.params?.tagId ||
+      router?.params?.sn ||
+      '';
+
+    const resolvedNfcId = extractNfcIdentifier(rawRouteValue);
+    if (!resolvedNfcId) {
+      return;
+    }
+
+    autoActivationAttemptedRef.current = true;
+    setManualKey(resolvedNfcId);
+    setCurrentContent(resolvedNfcId);
+    setStatus('reading');
+    setMessage('检测到链接参数，正在自动激活水晶...');
+    void activateCrystalById(resolvedNfcId);
+  }, [router?.params]);
 
   return (
     <View className={styles.page}>
