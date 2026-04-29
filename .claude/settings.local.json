@@ -1,0 +1,25 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(python *)",
+      "Bash(curl -s -o /dev/null -w \"Status: %{http_code}\\\\n\" \"http://localhost:10086/pages/xiangxi/xiangxi\" echo \"---\")",
+      "Bash(curl -s http://localhost:10086)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" --connect-timeout 3 http://localhost:10086/js/app.js)",
+      "Bash(curl *)",
+      "Bash(netstat -ano)",
+      "Bash(findstr :10086)",
+      "Bash(taskkill /PID 12032 /F)",
+      "Bash(taskkill /PID 8700 /F)",
+      "Bash(taskkill //PID 12032 //F)",
+      "Bash(taskkill //PID 8700 //F)",
+      "Bash(npm run *)",
+      "Bash(cross-env NODE_ENV=development NODE_OPTIONS=--openssl-legacy-provider npx taro build --type h5)",
+      "Bash(node -e \"console.log\\(require\\('react/package.json'\\).version\\)\")",
+      "Bash(nohup npm *)",
+      "Bash(echo \"PID=$!\")",
+      "Bash(python3 -c \"from PIL import Image; print\\('PIL available'\\)\")",
+      "Bash(dir C:\\\\Users\\\\Administrator\\\\Desktop\\\\*.jpg)",
+      "Read(//mnt/c/Users/Administrator/**)"
+    ]
+  }
+}

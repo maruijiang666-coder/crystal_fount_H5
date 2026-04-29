@@ -1,0 +1,30 @@
+.container {
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+  /* background: rgba(255, 0, 0, 0.2); 调试用 */
+}
+
+.digitWindow {
+  position: relative;
+  overflow: hidden;
+  /* 确保数字垂直居中 */
+  display: flex;
+  justify-content: center;
+}
+
+.digitList {
+  display: flex;
+  flex-direction: column;
+  will-change: transform;
+}
+
+.digit {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'DIN Alternate', 'Roboto', sans-serif; /* 使用数字字体 */
+  font-weight: bold;
+  color: #ffffff;
+  /* line-height 必须与 height 一致 */
+}

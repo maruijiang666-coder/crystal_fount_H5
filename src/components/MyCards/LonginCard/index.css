@@ -1,0 +1,52 @@
+.mt-25 {
+  margin-top: 50px;
+}
+.group {
+  margin: 0 38px;
+}
+.text {
+  color: #fbbc05;
+  font-size: 48px;
+  font-family: Inter;
+  line-height: 44.12px;
+}
+.font {
+  font-size: 28px;
+  font-family: Inter;
+  line-height: 26.02px;
+}
+.text_2 {
+  color: #dadada;
+}
+.text-wrapper {
+  padding: 36.48px 0 34.72px;
+  background-color: #a5864d;
+  width: 566px;
+}
+.text_3 {
+  color: #ffffff;
+  font-size: 40px;
+  font-family: Inter;
+  line-height: 36.8px;
+}
+.section {
+  background-color: #a5864d;
+  border-radius: 50%;
+  width: 108px;
+  height: 108px;
+}
+.pos_2 {
+  position: absolute;
+  right: 0;
+  top: 0;
+}
+.pos {
+  position: absolute;
+  left: 0;
+  top: 0;
+}
+.text_4 {
+  margin-left: 55.18px;
+  color: #dfdfdf;
+  line-height: 26.12px;
+}

@@ -1,0 +1,107 @@
+/* CustomCard组件样式 - 使用flex-column布局，避免绝对定位 */
+
+.custom-card {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: 700px;
+  margin: 0 auto;
+  background: transparent;
+  border-radius: 30px;
+  overflow: hidden;
+}
+
+/* 图片区域 */
+.custom-card-image-wrapper {
+  display: flex;
+  justify-content: flex-end;
+  padding-right: 24px;
+  margin-bottom: -90px; /* 负边距实现图片与内容重叠效果 */
+  z-index: 2; /* 确保图片在内容上方 */
+}
+
+.custom-card-image {
+  width: 174px;
+  height: 220px;
+  border-radius: 15px;
+  box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+/* 内容区域 */
+.custom-card-content {
+  display: flex;
+  flex-direction: column;
+  background-image: linear-gradient(332.1deg, #1b1b1b 3.3%, #18393e 96.7%);
+  border-radius: 30px;
+  padding: 0;
+  min-height: 300px;
+}
+
+/* 标题区域 */
+.custom-card-header {
+  padding: 18px 45px;
+  background-image: linear-gradient(332.1deg, #1b1b1b 3.3%, #18393e 96.7%);
+  border-radius: 30px 40px 0px 0px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.custom-card-title {
+  color: #ffffff;
+  font-size: 48px;
+  font-family: Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-weight: 600;
+  line-height: 44px;
+  letter-spacing: 0.5px;
+}
+
+/* 描述内容区域 */
+.custom-card-body {
+  flex: 1;
+  padding: 20px 30px 30px;
+  background-image: linear-gradient(306.5deg, #1b1b1b 3.3%, #18393e 96.7%);
+  border-radius: 0px 30px 30px 30px;
+}
+
+.custom-card-description {
+  display: block;
+  padding: 60px 20px;
+  background-color: #3a4e44;
+  border-radius: 20px;
+  box-shadow: 0px 8px 8px rgba(0, 0, 0, 0.25) inset;
+  color: #ffffff;
+  font-size: 24px;
+  font-family: Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  line-height: 28px;
+  text-indent: 27px;
+  text-align: justify;
+  letter-spacing: 0.3px;
+}
+
+/* 响应式设计 */
+@media (max-width: 750px) {
+  .custom-card {
+    max-width: 100%;
+    margin: 0 20px;
+  }
+  
+  .custom-card-title {
+    font-size: 42px;
+  }
+  
+  .custom-card-description {
+    font-size: 22px;
+    line-height: 26px;
+  }
+}
+
+/* 点击效果 */
+.custom-card:active {
+  transform: scale(0.98);
+  transition: transform 0.1s ease;
+}
+
+.custom-card-header:active,
+.custom-card-body:active {
+  opacity: 0.95;
+  transition: opacity 0.1s ease;
+}

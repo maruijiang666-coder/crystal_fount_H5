@@ -1,0 +1,18 @@
+[     717ms] [LOG] [HMR] Waiting for update signal from WDS... @ webpack-internal:///./node_modules/webpack/hot/log.js:23
+[    1012ms] [ERROR] 不支持 API InnerAudioContext.obeyMuteSwitch @ webpack-internal:///./node_modules/@tarojs/taro-h5/dist/api/utils/index.js:123
+[    1013ms] [LOG] Entering selection, playing sound for: 林清玄 (Lin Qingxuan) @ webpack-internal:///./src/pages/TaLuoAnswer/index.jsx:599
+[    1024ms] Object
+[    1066ms] [LOG] Swiper Change: 0 @ webpack-internal:///./src/pages/TaLuoAnswer/index.jsx:1189
+[    1067ms] [LOG] Try to play sound: https://tangledup-ai-staging.oss-cn-shanghai.aliyuncs.com/mini_app/crystal_mini_app/assets/TaLuo/lqq.mp3 @ webpack-internal:///./src/pages/TaLuoAnswer/index.jsx:1195
+[    1079ms] [LOG] Swiper Change: 0 @ webpack-internal:///./src/pages/TaLuoAnswer/index.jsx:1189
+[    1079ms] [LOG] Try to play sound: https://tangledup-ai-staging.oss-cn-shanghai.aliyuncs.com/mini_app/crystal_mini_app/assets/TaLuo/lqq.mp3 @ webpack-internal:///./src/pages/TaLuoAnswer/index.jsx:1195
+[    1149ms] [WARNING] Reader audio autoplay skipped: NotAllowedError: play() failed because the user didn't interact with the document first. https://goo.gl/xX8pDD @ webpack-internal:///./src/pages/TaLuoAnswer/index.jsx:501
+[    8868ms] [ERROR] [WDS] Disconnected! @ webpack-internal:///./node_modules/webpack-dev-server/client/index.js?http://6.6.6.123:10086:171
+[  178891ms] [LOG] [HMR] Waiting for update signal from WDS... @ webpack-internal:///./node_modules/webpack/hot/log.js:23
+[  179143ms] [LOG] Entering selection, playing sound for: 林清玄 (Lin Qingxuan) @ webpack-internal:///./src/pages/TaLuoAnswer/index.jsx:604
+[  179225ms] [LOG] Swiper Change: 0 @ webpack-internal:///./src/pages/TaLuoAnswer/index.jsx:1194
+[  179228ms] [LOG] Try to play sound: https://tangledup-ai-staging.oss-cn-shanghai.aliyuncs.com/mini_app/crystal_mini_app/assets/TaLuo/lqq.mp3 @ webpack-internal:///./src/pages/TaLuoAnswer/index.jsx:1200
+[  179244ms] [LOG] Swiper Change: 0 @ webpack-internal:///./src/pages/TaLuoAnswer/index.jsx:1194
+[  179244ms] [LOG] Try to play sound: https://tangledup-ai-staging.oss-cn-shanghai.aliyuncs.com/mini_app/crystal_mini_app/assets/TaLuo/lqq.mp3 @ webpack-internal:///./src/pages/TaLuoAnswer/index.jsx:1200
+[  179367ms] [WARNING] Reader audio autoplay skipped: NotAllowedError: play() failed because the user didn't interact with the document first. https://goo.gl/xX8pDD @ webpack-internal:///./src/pages/TaLuoAnswer/index.jsx:504
+[  187048ms] [ERROR] [WDS] Disconnected! @ webpack-internal:///./node_modules/webpack-dev-server/client/index.js?http://6.6.6.123:10086:171

@@ -1,0 +1,15 @@
+{
+  "miniprogramRoot": "./dist",
+  "projectname": "codefun",
+  "description": "",
+  "appid": "wxb74152f68d8ad954",
+  "setting": {
+    "urlCheck": false,
+    "es6": false,
+    "postcss": false,
+    "minified": false,
+    "enhance": true
+  },
+  "compileType": "miniprogram",
+  "libVersion": "2.21.2"
+}

@@ -1,0 +1,20 @@
+services:
+  crystal-fount-h5:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: crystal-fount-h5:latest
+    container_name: crystal-fount-h5
+    restart: unless-stopped
+    ports:
+      - "8070:80"
+    environment:
+      - NODE_ENV=production
+    volumes:
+      - ./logs:/var/log/nginx
+    networks:
+      - crystal-network
+
+networks:
+  crystal-network:
+    driver: bridge

@@ -1,0 +1,11 @@
+<button 
+  class="avatar-button-native" 
+  open-type="chooseAvatar" 
+  bindchooseavatar="handleChooseAvatarNative"
+>
+  <image 
+    class="avatar-image-native" 
+    src="{{avatarUrl}}" 
+    mode="aspectFill"
+  />
+</button>

@@ -1,0 +1,36 @@
+diff --git a/node_modules/@tarojs/plugin-platform-weapp/dist/index.js b/node_modules/@tarojs/plugin-platform-weapp/dist/index.js
+index 5375194..a801cb1 100644
+--- a/node_modules/@tarojs/plugin-platform-weapp/dist/index.js
++++ b/node_modules/@tarojs/plugin-platform-weapp/dist/index.js
+@@ -147,6 +147,7 @@ const components = {
+         'show-message-card': _false,
+         'business-id': _empty,
+         bindGetUserInfo: _empty,
++        bindChooseAvatar: _empty,
+         bindContact: _empty,
+         bindGetPhoneNumber: _empty,
+         bindError: _empty,
+diff --git a/node_modules/@tarojs/plugin-platform-weapp/dist/runtime-utils.js b/node_modules/@tarojs/plugin-platform-weapp/dist/runtime-utils.js
+index 82508ff..5b219d6 100644
+--- a/node_modules/@tarojs/plugin-platform-weapp/dist/runtime-utils.js
++++ b/node_modules/@tarojs/plugin-platform-weapp/dist/runtime-utils.js
+@@ -81,6 +81,7 @@ const components = {
+         'show-message-card': _false,
+         'business-id': _empty,
+         bindGetUserInfo: _empty,
++        bindChooseAvatar: _empty,
+         bindContact: _empty,
+         bindGetPhoneNumber: _empty,
+         bindError: _empty,
+diff --git a/node_modules/@tarojs/plugin-platform-weapp/dist/runtime.js b/node_modules/@tarojs/plugin-platform-weapp/dist/runtime.js
+index 7ca3c95..ecd0d71 100644
+--- a/node_modules/@tarojs/plugin-platform-weapp/dist/runtime.js
++++ b/node_modules/@tarojs/plugin-platform-weapp/dist/runtime.js
+@@ -81,6 +81,7 @@ const components = {
+         'show-message-card': _false,
+         'business-id': _empty,
+         bindGetUserInfo: _empty,
++        bindChooseAvatar: _empty,
+         bindContact: _empty,
+         bindGetPhoneNumber: _empty,
+         bindError: _empty,

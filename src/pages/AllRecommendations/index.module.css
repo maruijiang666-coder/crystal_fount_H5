@@ -1,0 +1,56 @@
+.page {
+  background-color: #0b1411;
+  min-height: 100vh;
+  padding: 32px;
+  display: flex;
+  flex-direction: column;
+}
+
+.title {
+  font-size: 40px;
+  color: #d6a207;
+  font-weight: 900;
+  margin-bottom: 32px;
+  font-family: var(--font-primary, Inter);
+}
+
+.grid {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: space-between;
+}
+
+.card {
+  width: 48%;
+  margin-bottom: 32px;
+  padding: 40px 20px 40px;
+  border-radius: 20px;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  box-sizing: border-box;
+  height: 286px;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  transition: all 0.1s ease;
+}
+
+.font {
+  font-size: 32px;
+  font-family: var(--font-primary, Inter);
+  line-height: 30.52px;
+  font-weight: 900;
+  color: #ffffff;
+}
+
+.desc {
+  font-size: 24px;
+  font-family: var(--font-primary, Inter);
+  line-height: 32px;
+  font-weight: 900;
+  color: #dadada;
+  margin-top: 13px;
+}

@@ -1,0 +1,253 @@
+.container {
+  width: 100%;
+  min-height: 100vh;
+  background: radial-gradient(circle at 50% 0%, #0d0d12 0%, #050508 100%);
+  color: #fff;
+  font-family: -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Helvetica, Segoe UI, Arial, Roboto, 'PingFang SC', 'miui', 'Hiragino Sans GB', 'Microsoft Yahei', sans-serif;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 60px 28px 36px;
+  box-sizing: border-box;
+}
+
+/* Header */
+.header {
+  text-align: center;
+  margin-bottom: 24px;
+}
+
+.headerTitle {
+  font-size: 32px;
+  font-weight: 700;
+  display: block;
+  margin-bottom: 10px;
+  color: #fff;
+  letter-spacing: 3px;
+}
+
+.headerSub {
+  font-size: 22px;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+/* Progress Bar */
+.progressBar {
+  width: 100%;
+  max-width: 500px;
+  height: 6px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 3px;
+  margin-bottom: 40px;
+  overflow: hidden;
+}
+
+.progressFill {
+  height: 100%;
+  background: linear-gradient(90deg, #d6a207, #f5d76e);
+  border-radius: 3px;
+  transition: width 0.3s ease;
+}
+
+/* Question Card */
+.questionCard {
+  width: 100%;
+  max-width: 500px;
+  background: rgba(20, 20, 20, 0.6);
+  border-radius: 24px;
+  padding: 40px 32px;
+  box-sizing: border-box;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  margin-bottom: 28px;
+}
+
+.questionNum {
+  font-size: 20px;
+  color: #d6a207;
+  font-weight: 600;
+  letter-spacing: 3px;
+  display: block;
+  margin-bottom: 20px;
+}
+
+.questionText {
+  font-size: 30px;
+  color: #fff;
+  line-height: 1.6;
+  display: block;
+  margin-bottom: 40px;
+  font-weight: 500;
+}
+
+/* Options */
+.options {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.option {
+  padding: 20px 24px;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  text-align: center;
+  transition: all 0.2s;
+}
+
+.option:active {
+  transform: scale(0.98);
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.optionSelected {
+  background: rgba(214, 162, 7, 0.12);
+  border-color: rgba(214, 162, 7, 0.4);
+}
+
+.optionText {
+  font-size: 24px;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.optionTextSelected {
+  color: #d6a207;
+  font-weight: 600;
+}
+
+/* Navigation */
+.nav {
+  width: 100%;
+  max-width: 500px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.navBtn {
+  padding: 16px 36px;
+  border-radius: 28px;
+  background: rgba(255, 255, 255, 0.08);
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 22px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.navBtn:active {
+  background: rgba(255, 255, 255, 0.15);
+}
+
+.navHint {
+  font-size: 20px;
+  color: rgba(255, 255, 255, 0.3);
+}
+
+/* Result Page */
+.resultCard {
+  width: 100%;
+  max-width: 500px;
+  background: rgba(20, 20, 20, 0.6);
+  border-radius: 24px;
+  padding: 48px 32px 40px;
+  box-sizing: border-box;
+  border: 1px solid rgba(214, 162, 7, 0.2);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 28px;
+}
+
+.resultEmoji {
+  font-size: 64px;
+  display: block;
+  margin-bottom: 16px;
+}
+
+.resultLabel {
+  font-size: 22px;
+  color: rgba(255, 255, 255, 0.5);
+  margin-bottom: 12px;
+}
+
+.resultType {
+  font-size: 56px;
+  font-weight: 800;
+  letter-spacing: 8px;
+  color: #d6a207;
+  margin-bottom: 16px;
+  text-shadow: 0 0 30px rgba(214, 162, 7, 0.3);
+}
+
+.resultDesc {
+  font-size: 24px;
+  color: rgba(255, 255, 255, 0.7);
+  text-align: center;
+  line-height: 1.6;
+  margin-bottom: 36px;
+}
+
+/* Dimension Score Bars */
+.dimScores {
+  width: 100%;
+  margin-bottom: 40px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.dimRow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.dimLabel {
+  font-size: 20px;
+  color: rgba(255, 255, 255, 0.5);
+  width: 60px;
+  text-align: center;
+  flex-shrink: 0;
+}
+
+.dimBar {
+  flex: 1;
+  height: 8px;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.dimFill {
+  height: 100%;
+  background: linear-gradient(90deg, #8e6c05, #d6a207);
+  border-radius: 4px;
+  transition: width 0.5s ease;
+}
+
+/* Result Buttons */
+.resultBtn {
+  width: 100%;
+  padding: 22px 0;
+  background: linear-gradient(135deg, #d6a207, #a5864d);
+  color: #fff;
+  font-size: 26px;
+  font-weight: 600;
+  border-radius: 40px;
+  text-align: center;
+  letter-spacing: 3px;
+  box-shadow: 0 6px 28px rgba(214, 162, 7, 0.25);
+}
+
+.resultBtn:active {
+  transform: scale(0.98);
+}
+
+.retestLink {
+  margin-top: 22px;
+  font-size: 22px;
+  color: rgba(255, 255, 255, 0.4);
+}

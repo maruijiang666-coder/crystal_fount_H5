@@ -1,0 +1,21 @@
+
+> codefun@1.0.0 dev:h5
+> cross-env NODE_OPTIONS=--openssl-legacy-provider npm run build:h5 -- --watch
+
+
+> codefun@1.0.0 build:h5
+> cross-env NODE_OPTIONS=--openssl-legacy-provider taro build --type h5 --watch
+
+👽 Taro v3.4.2
+
+
+[34mi[39m [90m｢wds｣[39m: Project is running at http://6.6.6.123:10086/
+[34mi[39m [90m｢wds｣[39m: webpack output is served from /
+[34mi[39m [90m｢wds｣[39m: Content not from webpack is served from F:\DieJiaTai\crystal_fount-xiaomaH5\dist
+[34mi[39m [90m｢wds｣[39m: 404s will fallback to /index.html
+http://172.25.192.1:10086/
+
+ℹ️  Listening at http://0.0.0.0:10086/
+
+监听文件修改中...
+

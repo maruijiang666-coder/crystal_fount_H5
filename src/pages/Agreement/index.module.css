@@ -1,0 +1,47 @@
+.page {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background-color: #f8f8f8;
+}
+
+.header {
+  padding: 18px 16px;
+  background-color: #ffffff;
+  border-bottom: 1px solid #e0e0e0;
+  display: flex;
+  justify-content: center;
+}
+
+.title {
+  font-size: 24px;
+  font-weight: bold;
+  color: #333333;
+}
+
+.content {
+  flex: 1;
+  padding: 18px 16px 28px;
+  box-sizing: border-box;
+}
+
+.section {
+  margin-bottom: 24px;
+}
+
+.sectionTitle {
+  font-size: 18px;
+  font-weight: bold;
+  color: #333333;
+  margin-bottom: 10px;
+  display: block;
+}
+
+.paragraph {
+  font-size: 14px;
+  color: #666666;
+  line-height: 1.75;
+  margin-bottom: 10px;
+  display: block;
+  text-align: justify;
+}

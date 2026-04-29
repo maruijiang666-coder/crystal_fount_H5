@@ -1,0 +1,153 @@
+/* 统一字体管理文件 */
+
+/* 阿里云OSS字体 - 张海山草体 */
+@font-face {
+  font-family: 'ZhangHaishanCaoti';
+  src: url('https://tangledup-ai-staging.oss-cn-shanghai.aliyuncs.com/mini_app/crystal_mini_app/font/%E5%BC%A0%E6%B5%B7%E5%B1%B1%E8%8D%89%E6%B3%A5%E9%A9%AC%E4%BD%93.TTF') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap; /* 提高加载性能 */
+}
+
+/* 阿里云OSS字体 - 方正行楷简体 */
+@font-face {
+  font-family: 'FangzhengXingkaiJianti';
+  src: url('https://tangledup-ai-staging.oss-cn-shanghai.aliyuncs.com/mini_app/crystal_mini_app/font/%E6%96%B9%E6%AD%A3%E8%A1%8C%E6%A5%B7%E7%AE%80%E4%BD%93.TTF') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* 阿里云OSS字体 - 汉仪雪君体简体 */
+@font-face {
+  font-family: 'HanyiXuejunJianti';
+  src: url('https://tangledup-ai-staging.oss-cn-shanghai.aliyuncs.com/mini_app/crystal_mini_app/font/%E6%B1%89%E4%BB%AA%E9%9B%AA%E5%90%9B%E4%BD%93%E7%AE%80.TTF') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* 阿里云OSS字体 - 汉仪雪君体繁体 */
+@font-face {
+  font-family: 'HanyiXuejunFanti';
+  src: url('https://tangledup-ai-staging.oss-cn-shanghai.aliyuncs.com/mini_app/crystal_mini_app/font/%E6%B1%89%E4%BB%AA%E9%9B%AA%E5%90%9B%E4%BD%93%E7%B9%81.TTF') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* 阿里云OSS字体 - 造字工房尚黑常规体 */
+@font-face {
+  font-family: 'ZaoziGongfangShangHeiOss';
+  src: url('https://tangledup-ai-staging.oss-cn-shanghai.aliyuncs.com/mini_app/crystal_mini_app/font/%E9%80%A0%E5%AD%97%E5%B7%A5%E6%88%BF%E5%B0%9A%E9%BB%91%E5%B8%B8%E8%A7%84%E4%BD%93.TTF') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+
+
+/* 字体变量定义 - 统一使用方正行楷简体 */
+:root {
+  /* 主要字体 - 全部使用方正行楷简体 */
+  --font-primary: 'FangzhengXingkaiJianti', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+  --font-secondary: 'FangzhengXingkaiJianti', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+  
+  /* 新添加的字体 - 统一使用方正行楷简体 */
+  --font-fangzheng-xingkai: 'FangzhengXingkaiJianti', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+  --font-hanyi-xuejun-jian: 'FangzhengXingkaiJianti', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+  --font-hanyi-xuejun-fan: 'FangzhengXingkaiJianti', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+  --font-zaozi-oss: 'FangzhengXingkaiJianti', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+  
+  /* 备用字体栈 */
+  --font-fallback: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', sans-serif;
+  
+  /* 数字英文字体 - 也使用方正行楷简体 */
+  --font-number: 'FangzhengXingkaiJianti', 'Inter', 'Helvetica Neue', Arial, sans-serif;
+  --font-english: 'FangzhengXingkaiJianti', 'Inter', 'Helvetica Neue', Arial, sans-serif;
+}
+
+/* 字体工具类 - 统一使用方正行楷简体 */
+.font-primary,
+.font-secondary,
+.font-number,
+.font-english,
+.font-fangzheng-xingkai,
+.font-hanyi-xuejun-jian,
+.font-hanyi-xuejun-fan,
+.font-zaozi-oss {
+  font-family: 'FangzhengXingkaiJianti', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif !important;
+}
+
+/* 全局字体应用 - 统一使用方正行楷简体 */
+body,
+page,
+text,
+view,
+button,
+input,
+textarea,
+label,
+navigator,
+image,
+scroll-view,
+swiper,
+swiper-item,
+cover-view,
+cover-image,
+icon,
+progress,
+rich-text,
+checkbox,
+checkbox-group,
+form,
+input,
+picker,
+picker-view,
+picker-view-column,
+radio,
+radio-group,
+slider,
+switch,
+editor,
+scroll-view,
+movable-area,
+movable-view,
+cover-image,
+cover-view,
+open-data,
+web-view,
+functional-page-navigator,
+video,
+camera,
+live-player,
+live-pusher,
+map,
+canvas {
+  font-family: 'FangzhengXingkaiJianti', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif !important;
+}
+
+/* 特殊场景字体 - 统一使用方正行楷简体 */
+.font-crystal,
+.font-title,
+.font-content,
+.font-number-large {
+  font-family: 'FangzhengXingkaiJianti', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif !important;
+}
+
+.font-crystal {
+  font-weight: 500;
+}
+
+.font-title {
+  font-weight: 600;
+}
+
+.font-content {
+  font-weight: 400;
+}
+
+.font-number-large {
+  font-weight: 900;
+  font-size: 1.2em;
+}

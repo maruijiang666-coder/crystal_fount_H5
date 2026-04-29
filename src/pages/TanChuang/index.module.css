@@ -1,0 +1,231 @@
+.mt-17 {
+  margin-top: 34px;
+}
+
+.mt-21 {
+  margin-top: 42px;
+}
+
+.page {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-image: linear-gradient(180deg, #0c0e0e 0%, #17191a 100%);
+  width: 100%;
+  height: 100vh;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+.section {
+  padding: 40px 30px 35px;
+  /* Darker, more mystical background with a gold border */
+  background: linear-gradient(160deg, rgba(30, 30, 30, 0.9) 0%, rgba(10, 10, 10, 0.95) 100%);
+  border-radius: 20px;
+  border: 2px solid #da9d4d;
+  box-shadow: 0 0 20px rgba(218, 157, 77, 0.18), inset 0 0 18px rgba(0, 0, 0, 0.8);
+  position: relative;
+  width: min(92vw, 700px);
+  box-sizing: border-box;
+}
+
+.font {
+  font-size: 48px;
+  font-family: Iceland;
+  color: #ffffff;
+  text-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+}
+
+.text {
+  line-height: 1.15;
+  background: linear-gradient(90deg, #fff 0%, #ccc 100%);
+  -webkit-background-clip: text;
+  color: transparent;
+}
+
+.text_2 {
+  line-height: 1.2;
+  font-family: 'Homemade Apple', cursive, sans-serif;
+  /* Try to use the fancy font */
+  color: #da9d4d;
+  font-size: 28px;
+  opacity: 0.9;
+}
+
+.text-wrapper {
+  padding: 20px 22px 100px;
+  background-color: rgba(255, 255, 255, 0.05);
+  border-radius: 14px;
+  border: 1px solid rgba(218, 157, 77, 0.3);
+  width: 100%;
+  box-sizing: border-box;
+  transition: all 0.3s ease;
+}
+
+.text-wrapper:focus-within {
+  border-color: #da9d4d;
+  background-color: rgba(255, 255, 255, 0.08);
+  box-shadow: 0 0 15px rgba(218, 157, 77, 0.1);
+}
+
+.text_3 {
+  color: #fff;
+  /* Input text color white for contrast */
+  font-size: 32px;
+  font-family: Iceland;
+  line-height: 1.5;
+  width: 100%;
+}
+
+.input-style {
+  background-color: transparent;
+  border: none;
+  outline: none;
+  width: 100%;
+  padding: 0;
+  margin: 0;
+  color: #fff;
+  height: auto;
+  min-height: 40px;
+}
+
+.group {
+  padding: 0 10px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.text-wrapper_2 {
+  padding: 20px 0;
+  background: linear-gradient(90deg, #D4AF37 0%, #F8D96D 100%);
+  /* Gold gradient like TaLuo button */
+  border-radius: 24px;
+  box-shadow: 0 4px 12px rgba(212, 175, 55, 0.3);
+  width: 100%;
+  transition: transform 0.2s;
+}
+
+.text-wrapper_2:active {
+  transform: scale(0.98);
+}
+
+.text_4 {
+  color: #1a1a1a;
+  /* Dark text on gold button */
+  font-size: 32px;
+  font-family: Iceland;
+  font-weight: bold;
+  letter-spacing: 2px;
+}
+
+.text_5 {
+  color: #888;
+  font-size: 30px;
+  font-family: Iceland;
+  margin-top: 12px;
+  text-decoration: underline;
+  opacity: 0.7;
+}
+
+.image {
+  width: 180px;
+  height: 200px;
+  opacity: 0.8;
+  pointer-events: none;
+}
+
+.pos {
+  position: absolute;
+  right: -44px;
+  top: -92px;
+  z-index: 10;
+  filter: drop-shadow(0 0 20px rgba(0, 0, 0, 0.5));
+}
+
+/* Energy Consumption Notice */
+.energyNotice {
+  font-family: Iceland;
+  color: #da9d4d;
+  font-size: 20px;
+  margin-top: 15px;
+  text-align: center;
+  opacity: 0.8;
+}
+
+/* Animations */
+.energyFloat {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: #ef4444;
+  /* Red for consumption */
+  font-size: 36px;
+  font-weight: bold;
+  font-family: Iceland;
+  pointer-events: none;
+  animation: floatUp 1.5s forwards;
+  z-index: 100;
+  text-shadow: 0 0 15px rgba(0, 0, 0, 0.8);
+}
+
+.energyError {
+  position: absolute;
+  top: 40%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: #ff6666;
+  font-size: 32px;
+  font-weight: bold;
+  font-family: Iceland;
+  background: rgba(0, 0, 0, 0.9);
+  padding: 16px 24px;
+  border-radius: 16px;
+  border: 2px solid #ff6666;
+  box-shadow: 0 0 20px rgba(255, 102, 102, 0.5);
+  text-align: center;
+  min-width: 300px;
+  z-index: 1000;
+  pointer-events: none;
+  animation: fadeInOut 2.5s forwards;
+  white-space: nowrap;
+}
+
+@keyframes floatUp {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, 0);
+  }
+
+  20% {
+    opacity: 1;
+    transform: translate(-50%, -40px);
+  }
+
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -100px);
+  }
+}
+
+@keyframes fadeInOut {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, -40%);
+  }
+
+  15% {
+    opacity: 1;
+    transform: translate(-50%, -50%);
+  }
+
+  85% {
+    opacity: 1;
+    transform: translate(-50%, -50%);
+  }
+
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -60%);
+  }
+}

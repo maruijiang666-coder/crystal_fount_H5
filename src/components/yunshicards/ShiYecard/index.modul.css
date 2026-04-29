@@ -1,0 +1,57 @@
+/* 卡片容器 - 使用 flex-column 布局 */
+.card_container {
+  width: 100%;
+}
+
+/* 徽章包装器 */
+.badge_wrapper {
+  padding-right: 72px;
+  margin-bottom: -22px;
+}
+
+.badge_image {
+  width: 104px;
+  height: 44px;
+}
+
+/* 卡片内容区域 */
+.card_content {
+  padding: 40px 12px 64px 30px;
+  border-radius: 30px;
+  /* background-image: url('https://ide.code.fun/api/image?token=692abbb19520a30011f718bf&name=acc6c0e9bcd6deb4c00d199b30f142b8.png'); */
+  /* 小马修改卡片 */
+  background-image: url('https://tangledup-ai-staging.oss-cn-shanghai.aliyuncs.com/mini_app/crystal_mini_app/assets/yunshi/1.png');
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+  gap: 10px;
+}
+
+/* 文字区域 */
+.text_section {
+  margin-top: 20px;
+}
+
+/* 标题 */
+.title {
+  font-size: 48px;
+  font-family: Inter;
+  line-height: 44.3px;
+  color: #ffffff;
+  margin-left: 16px;
+}
+
+/* 内容文字 - 使用 self-stretch 动态变化 */
+.content_text {
+  font-size: 24px;
+  font-family: Inter;
+  line-height: 28px;
+  color: #ffffff;
+  text-indent: 27px;
+}
+
+/* 图标图片 */
+.icon_image {
+  width: 224px;
+  height: 208px;
+  flex-shrink: 0;
+}
