@@ -718,7 +718,7 @@ export default function TaLuoAnswer(props) {
                 });
             }, 800); // Wait for transition and render
         }
-    }, [step]);
+    }, [step, readingData]);
 
     const lastDragPos = useRef({}); // Map { id: {x, y} }
 
@@ -1530,7 +1530,7 @@ export default function TaLuoAnswer(props) {
 
                 <View className={styles.resultContent}>
 
-                    <Text className={styles.aiDisclaimer}>
+                    <Text className={styles.aiDisclaimer} style={{ marginBottom: '30px', fontSize: '26px', color: 'rgba(212, 175, 55, 0.8)' }}>
                         -- 本服务由人工智能提供技术支持 --
                     </Text>
 
@@ -1624,7 +1624,7 @@ export default function TaLuoAnswer(props) {
                     <View style={{ height: '100px' }}></View>
 
                 </View>
-            </ScrollView>
+            </ScrollView >
         );
     };
 

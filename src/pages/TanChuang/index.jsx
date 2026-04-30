@@ -30,7 +30,11 @@ export default function TanChuang(props) {
 
     // 直接跳转到塔罗页面，不再消耗灵力
     Taro.navigateTo({ url: `/pages/TaLuo/index?question=${encodeURIComponent(inputValue)}` });
-  };
+    setTimeout(() => setEnergyAnimation(null), 3000);
+    return;
+  }
+
+
 
   return (
     <View className={`flex-col justify-start items-center relative ${styles['page']} ${props.className}`}>

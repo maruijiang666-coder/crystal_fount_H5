@@ -10,7 +10,6 @@ import tarotData from './tarot_mapping.json';
 const FORTUNE_TASK_ID_STORAGE_KEY = 'TaLuoAnswer_fortune_task_id';
 const FORTUNE_REPORT_STORAGE_KEY = 'TaLuoAnswer';
 const AUTO_START_FORTUNE_REPORT_STORAGE_KEY = 'TaLuoAnswer_auto_start_report';
-
 // Parse Tarot Data
 const OSS_BASE_URL = tarotData[0].image_url;
 // Filter out the first element (url) and the back card (number 78)
@@ -429,6 +428,7 @@ export default function TaLuo(props) {
   };
 
   const canShowPlacementButton = flippedStatus.every(status => status) && drawnCards.length === cardCount;
+  console.log('[TaLuo] canShowPlacementButton:', canShowPlacementButton);
 
   Taro.useDidShow(() => {
     // 进入页面时强制重开一局，避免上一次的抽牌状态残留
@@ -439,6 +439,8 @@ export default function TaLuo(props) {
     <>
       <View
         className={`flex-col ${styles['page']} ${props.className}`}
+        onTouchStart={handleTouchStart}
+        onTouchEnd={handleTouchEnd}
       >
         {/* 顶部区域 - 牌阵选择 */}
         <View className={`flex-col items-center self-stretch ${styles['section']}`} style={{ backgroundImage: `url(${getOssImageUrl('TaLuo/1e734912a97ed8f162bfe0b3fe1f74f7.png')})`, backgroundSize: '100% 100%', backgroundRepeat: 'no-repeat', position: 'relative', height: 'auto' }}>
@@ -575,7 +577,10 @@ export default function TaLuo(props) {
           <View className={styles.placementButtonWrap}>
             <View
               className={`flex-row ${styles['section_3']}`}
-              onClick={handlePlacement}
+              onClick={() => {
+                console.log('[TaLuo] placement button clicked in render');
+                handlePlacement();
+              }}
             >
               <Image
                 className={`shrink-0 ${styles['image_6']}`}
@@ -595,75 +600,77 @@ export default function TaLuo(props) {
       )}
 
       {/* 悬浮的选中卡片组 - 固定在顶部区域上方，横向排列 */}
-      {selectedCards.length > 0 && (
-        <>
-          {/* 进度提示 */}
-          <View className={styles.progressIndicator}>
-            <Text className={styles.progressText}>
-              {selectedCards.length}/{cardCount}
-            </Text>
-          </View>
+      {
+        selectedCards.length > 0 && (
+          <>
+            {/* 进度提示 */}
+            <View className={styles.progressIndicator}>
+              <Text className={styles.progressText}>
+                {selectedCards.length}/{cardCount}
+              </Text>
+            </View>
 
-          {/* 卡片容器 */}
-          <View className={styles.floatingCardsContainer}>
-            {drawnCards.map((drawnCard, index) => {
-              // 安全获取逻辑索引，避免越界
-              const logicalIndex = (cardOrder && cardOrder.length > index) ? cardOrder[index] : index;
-              // 安全获取翻转状态
-              const isFlipped = (flippedStatus && flippedStatus.length > logicalIndex) ? flippedStatus[logicalIndex] : false;
+            {/* 卡片容器 */}
+            <View className={styles.floatingCardsContainer}>
+              {drawnCards.map((drawnCard, index) => {
+                // 安全获取逻辑索引，避免越界
+                const logicalIndex = (cardOrder && cardOrder.length > index) ? cardOrder[index] : index;
+                // 安全获取翻转状态
+                const isFlipped = (flippedStatus && flippedStatus.length > logicalIndex) ? flippedStatus[logicalIndex] : false;
 
-              return (
-                <View
-                  key={index}  // 统一使用 index 作为 key
-                  className={styles.floatingCardWrapper}
-                  style={{
-                    animationDelay: `${index * 0.15}s`
-                  }}
-                  onClick={() => handleCardFlip(logicalIndex)}
-                >
-                  <View className={styles.flipScene}>
-                    <View className={`${styles.flipper} ${isFlipped ? styles.flipped : ''}`}>
-                      {/* Front: 牌背 (Cover) */}
-                      <Image
-                        className={`${styles.cardFace} ${styles.cardFaceFront}`}
-                        src={getOssImageUrl('TaLuo/onlyCard.png')}
-                        mode='aspectFit'
-                      />
-                      {/* Back: 牌面 (Content) */}
-                      <Image
-                        className={`${styles.cardFace} ${styles.cardFaceBack} ${drawnCard && drawnCard.isReversed ? styles.cardFaceBackReversed : ''}`}
-                        src={drawnCard && drawnCard.card ? `${OSS_BASE_URL}${drawnCard.card.filename}` : ''}
-                        onLoad={() => console.log(`图片加载成功: ${drawnCard.card.filename}`)}
-                        onError={() => console.error(`图片加载失败: ${drawnCard.card.filename}`)}
-                        mode='aspectFit'
-                      />
+                return (
+                  <View
+                    key={index}  // 统一使用 index 作为 key
+                    className={styles.floatingCardWrapper}
+                    style={{
+                      animationDelay: `${index * 0.15}s`
+                    }}
+                    onClick={() => handleCardFlip(logicalIndex)}
+                  >
+                    <View className={styles.flipScene}>
+                      <View className={`${styles.flipper} ${isFlipped ? styles.flipped : ''}`}>
+                        {/* Front: 牌背 (Cover) */}
+                        <Image
+                          className={`${styles.cardFace} ${styles.cardFaceFront}`}
+                          src={getOssImageUrl('TaLuo/onlyCard.png')}
+                          mode='aspectFit'
+                        />
+                        {/* Back: 牌面 (Content) */}
+                        <Image
+                          className={`${styles.cardFace} ${styles.cardFaceBack} ${drawnCard && drawnCard.isReversed ? styles.cardFaceBackReversed : ''}`}
+                          src={drawnCard && drawnCard.card ? `${OSS_BASE_URL}${drawnCard.card.filename}` : ''}
+                          onLoad={() => console.log(`图片加载成功: ${drawnCard.card.filename}`)}
+                          onError={() => console.error(`图片加载失败: ${drawnCard.card.filename}`)}
+                          mode='aspectFit'
+                        />
+                      </View>
+                    </View>
+
+                    <Text className={styles.floatingCardText}>
+                      {isFlipped && drawnCard && drawnCard.card
+                        ? `${drawnCard.card.chinese_name} (${drawnCard.isReversed ? '逆位' : '正位'})`
+                        : drawnCard && drawnCard.card
+                          ? '已抽牌但未翻转'
+                          : '未知'}
+                    </Text>
+                    <View className={styles.cardBadge}>
+                      <Text className={styles.cardBadgeText}>{index + 1}</Text>
                     </View>
                   </View>
+                );
+              })}
+            </View>
 
-                  <Text className={styles.floatingCardText}>
-                    {isFlipped && drawnCard && drawnCard.card
-                      ? `${drawnCard.card.chinese_name} (${drawnCard.isReversed ? '逆位' : '正位'})`
-                      : drawnCard && drawnCard.card
-                        ? '已抽牌但未翻转'
-                        : '未知'}
-                  </Text>
-                  <View className={styles.cardBadge}>
-                    <Text className={styles.cardBadgeText}>{index + 1}</Text>
-                  </View>
-                </View>
-              );
-            })}
-          </View>
-
-          {/* 重置按钮 */}
-          <View
-            className={styles.resetButton}
-            onClick={handleReset}
-          >
-            <Text className={styles.resetButtonText}>重置</Text>
-          </View>
-        </>
-      )}
+            {/* 重置按钮 */}
+            <View
+              className={styles.resetButton}
+              onClick={handleReset}
+            >
+              <Text className={styles.resetButtonText}>重置</Text>
+            </View>
+          </>
+        )
+      }
       {/* 预加载图片 - 隐藏渲染 */}
       <View style={{ display: 'none' }}>
         {drawnCards.map((drawn, index) => (

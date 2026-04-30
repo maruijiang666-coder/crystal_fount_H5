@@ -87,7 +87,7 @@ export default function LoginGuide() {
         setFormData({
           birth_date: storedData.birth_date || '',
           birth_time: storedData.birth_time || '',
-          zodiac: storedData.zodiac || '',
+          zodiac: getZodiac(storedData.birth_date || '') || storedData.zodiac || '',
           mbti_type: storedData.mbti_type || '',
           relationship_status: storedData.relationship_status || 'single',
           occupation: storedData.occupation || '',
@@ -180,19 +180,11 @@ export default function LoginGuide() {
           <View className={styles.formGroup}>
             <View className={styles.labelWrapper}>
               <Text className={styles.formIcon}>🌌</Text>
-              <Text className={styles.label}>星座/生肖</Text>
+              <Text className={styles.label}>星座</Text>
             </View>
-            <Picker
-              mode='selector'
-              range={['白羊座', '金牛座', '双子座', '巨蟹座', '狮子座', '处女座', '天秤座', '天蝎座', '射手座', '摩羯座', '水瓶座', '双鱼座']}
-              onChange={(e) => handleInputChange('zodiac', ['白羊座', '金牛座', '双子座', '巨蟹座', '狮子座', '处女座', '天秤座', '天蝎座', '射手座', '摩羯座', '水瓶座', '双鱼座'][e.detail.value])}
-              value={['白羊座', '金牛座', '双子座', '巨蟹座', '狮子座', '处女座', '天秤座', '天蝎座', '射手座', '摩羯座', '水瓶座', '双鱼座'].indexOf(formData.zodiac)}
-            >
-              <View className={styles.pickerValue}>
-                <Text className={styles.pickerText}>{formData.zodiac || '请选择星座'}</Text>
-                <Text className={styles.arrow}>▼</Text>
-              </View>
-            </Picker>
+            <View className={styles.pickerValue}>
+              <Text className={styles.pickerText}>{formData.zodiac || '选择出生日期后自动计算'}</Text>
+            </View>
           </View>
         </>
       )
