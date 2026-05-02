@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import Taro, { useDidShow } from '@tarojs/taro';
 import { View, Text, Button, Image, Input, ScrollView } from '@tarojs/components';
 import { getOssImageUrl } from '../../utils/config.js';
@@ -20,7 +20,8 @@ export default function My(props) {
       const token = Taro.getStorageSync('importcode');
       const loginData = Taro.getStorageSync('loginData');
       const hasCompletedGuide = Taro.getStorageSync('hasCompletedGuide');
-      return !!(token && loginData && hasCompletedGuide);
+      const profileCheckPending = Taro.getStorageSync('profileCheckPending');
+      return !!(token && loginData && (hasCompletedGuide || profileCheckPending));
     } catch (e) {
       return false;
     }
@@ -31,8 +32,9 @@ export default function My(props) {
       const token = Taro.getStorageSync('importcode');
       const loginData = Taro.getStorageSync('loginData');
       const hasCompletedGuide = Taro.getStorageSync('hasCompletedGuide');
+      const profileCheckPending = Taro.getStorageSync('profileCheckPending');
       
-      if (token && loginData && hasCompletedGuide) {
+      if (token && loginData && (hasCompletedGuide || profileCheckPending)) {
          const phoneData = Taro.getStorageSync('phoneLoginData');
          return {
             nickname: loginData.user?.nickname || loginData.nickname || loginData.data?.nickname || '水晶用户',
@@ -51,6 +53,7 @@ export default function My(props) {
   const [showProfileDetailModal, setShowProfileDetailModal] = useState(false);
   const [profileDetailData, setProfileDetailData] = useState(null);
   const [nickname, setNickname] = useState('');
+  const hasRedirectedToGuideRef = useRef(false);
 
   const navigateToLogin = () => {
     Taro.navigateTo({ url: '/pages/Login/index' });
@@ -93,14 +96,16 @@ export default function My(props) {
       const loginData = Taro.getStorageSync('loginData');
       const phoneData = Taro.getStorageSync('phoneLoginData');
       const hasCompletedGuide = Taro.getStorageSync('hasCompletedGuide');
+      const profileCheckPending = Taro.getStorageSync('profileCheckPending');
       
       console.log('=== 检查登录状态 ===');
       console.log('token:', token);
       console.log('loginData:', loginData);
       console.log('hasCompletedGuide:', hasCompletedGuide);
+      console.log('profileCheckPending:', profileCheckPending);
       
-      // 只有当有 token、loginData 且完成了引导，才显示已登录状态
-      if (token && loginData && hasCompletedGuide) {
+      // 登录成功后如果资料检查还在进行中，也先进入已登录态，避免 H5 黑屏或误判未登录。
+      if (token && loginData && (hasCompletedGuide || profileCheckPending)) {
         // 验证 token 是否有效
         try {
           const validateRes = await Taro.request({
@@ -128,6 +133,7 @@ export default function My(props) {
           Taro.removeStorageSync('loginData');
           Taro.removeStorageSync('phoneLoginData');
           Taro.removeStorageSync('hasCompletedGuide');
+          Taro.removeStorageSync('profileCheckPending');
           
           setIsLoggedIn(false);
           setUserInfo(null);
@@ -141,10 +147,11 @@ export default function My(props) {
         }
 
         console.log('✅ 满足已登录条件，设置为已登录状态');
+        hasRedirectedToGuideRef.current = false;
         setIsLoggedIn(true);
         setUserInfo({
           nickname: loginData.user?.nickname || loginData.nickname || loginData.data?.nickname || '水晶用户',
-          phone: phoneData.user?.phone_number || phoneData?.data?.phone_number || '',
+          phone: phoneData?.user?.phone_number || phoneData?.data?.phone_number || '',
           avatar: loginData.user?.avatar || loginData.avatar || loginData.data?.avatar || ''
         });
 
@@ -163,8 +170,15 @@ export default function My(props) {
            
            if (profileRes.statusCode === 200) {
              const profiles = profileRes.data.results || profileRes.data;
-             if (Array.isArray(profiles) && profiles.length > 0) {
-                 const userProfile = profiles[0];
+             const userProfile = Array.isArray(profiles)
+               ? profiles[0]
+               : profiles && typeof profiles === 'object' && profiles.id
+                 ? profiles
+                 : null;
+
+             if (userProfile) {
+                 Taro.setStorageSync('hasCompletedGuide', true);
+                 Taro.removeStorageSync('profileCheckPending');
                  Taro.setStorageSync('userprofileResId', userProfile.id);
                  
                  // 更新本地显示的用户信息（如果接口返回了）
@@ -175,6 +189,17 @@ export default function My(props) {
                       avatar: userProfile.avatar || prev.avatar
                     }));
                  }
+             } else {
+               Taro.removeStorageSync('hasCompletedGuide');
+               Taro.removeStorageSync('profileCheckPending');
+
+               if (!hasRedirectedToGuideRef.current) {
+                 hasRedirectedToGuideRef.current = true;
+                 Taro.showToast({ title: '请先完善个人资料', icon: 'none', duration: 1500 });
+                 setTimeout(() => {
+                   Taro.navigateTo({ url: '/pages/LoginGuide/index' });
+                 }, 320);
+               }
              }
            }
         } catch (err) {
@@ -186,8 +211,10 @@ export default function My(props) {
         console.log('token 存在:', !!token);
         console.log('loginData 存在:', !!loginData);
         console.log('hasCompletedGuide:', hasCompletedGuide);
+        console.log('profileCheckPending:', profileCheckPending);
         
         // 确保状态为未登录，修复登录态过期跳转后仍显示已登录界面的问题
+        hasRedirectedToGuideRef.current = false;
         setIsLoggedIn(false);
         setUserInfo(null);
       }
@@ -207,6 +234,7 @@ export default function My(props) {
           Taro.removeStorageSync('loginData');
           Taro.removeStorageSync('phoneLoginData');
           Taro.removeStorageSync('hasCompletedGuide');
+          Taro.removeStorageSync('profileCheckPending');
           setIsLoggedIn(false);
           setUserInfo(null);
           Taro.showToast({

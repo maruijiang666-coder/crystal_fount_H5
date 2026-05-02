@@ -43,15 +43,16 @@ export default function Loading() {
         }
       });
 
-      if (validateRes.statusCode !== 200) {
-        console.warn('Token 失效，状态码:', validateRes.statusCode);
-        // 清除登录信息
-        Taro.removeStorageSync('importcode');
-        Taro.removeStorageSync('loginData');
-        Taro.removeStorageSync('phoneLoginData');
-        Taro.removeStorageSync('hasCompletedGuide');
-        return false;
-      }
+        if (validateRes.statusCode !== 200) {
+          console.warn('Token 失效，状态码:', validateRes.statusCode);
+          // 清除登录信息
+          Taro.removeStorageSync('importcode');
+          Taro.removeStorageSync('loginData');
+          Taro.removeStorageSync('phoneLoginData');
+          Taro.removeStorageSync('hasCompletedGuide');
+          Taro.removeStorageSync('profileCheckPending');
+          return false;
+        }
 
       return true;
     } catch (e) {

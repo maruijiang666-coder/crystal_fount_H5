@@ -5,6 +5,8 @@ import { getApiUrl, API_ENDPOINTS } from '../../utils/api.config.js';
 import styles from './index.module.css';
 
 const DEFAULT_CSRF_TOKEN = 'QjAtpufAC7oTUhnKbQaG8GWwvZ91U2xptiRnJk19S6UXeNW1X6wnmAe6RgYJDf1M';
+const PROFILE_REQUEST_TIMEOUT = 8000;
+const SUCCESS_TOAST_DURATION = 1200;
 
 const getApiErrorMessage = (payload, fallback = '请求异常') => {
   if (!payload) return fallback;
@@ -17,6 +19,26 @@ const getApiErrorMessage = (payload, fallback = '请求异常') => {
   );
 };
 
+const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
+const requestWithTimeout = (promise, timeoutMs, timeoutMessage) => {
+  return new Promise((resolve, reject) => {
+    const timer = setTimeout(() => {
+      reject(new Error(timeoutMessage));
+    }, timeoutMs);
+
+    promise
+      .then((result) => {
+        clearTimeout(timer);
+        resolve(result);
+      })
+      .catch((error) => {
+        clearTimeout(timer);
+        reject(error);
+      });
+  });
+};
+
 export default function Login() {
   const [isAgreed, setIsAgreed] = useState(true);
   const [showLoginModal, setShowLoginModal] = useState(true);
@@ -25,6 +47,8 @@ export default function Login() {
   const [smsCountdown, setSmsCountdown] = useState(0);
   const [isSendingSms, setIsSendingSms] = useState(false);
   const [focusSmsCodeInput, setFocusSmsCodeInput] = useState(false);
+  const [redirectMessage, setRedirectMessage] = useState('');
+  const [isRedirecting, setIsRedirecting] = useState(false);
   const smsTimerRef = useRef(null);
 
   const clearSmsTimer = () => {
@@ -52,35 +76,50 @@ export default function Login() {
 
   const checkUserProfileAndContinue = async (loginToken) => {
     try {
-      const profileRes = await Taro.request({
-        url: getApiUrl(API_ENDPOINTS.PROFILES),
-        method: 'GET',
-        header: {
-          accept: 'application/json',
-          'X-Login-Token': loginToken,
-          'X-CSRFTOKEN': DEFAULT_CSRF_TOKEN
-        }
-      });
+      const profileRes = await requestWithTimeout(
+        Taro.request({
+          url: getApiUrl(API_ENDPOINTS.PROFILES),
+          method: 'GET',
+          header: {
+            accept: 'application/json',
+            'X-Login-Token': loginToken,
+            'X-CSRFTOKEN': DEFAULT_CSRF_TOKEN
+          }
+        }),
+        PROFILE_REQUEST_TIMEOUT,
+        '查询资料超时'
+      );
+
+      if (profileRes.statusCode !== 200) {
+        throw new Error(`Fetch profile failed with status ${profileRes.statusCode}`);
+      }
 
       const results = profileRes.data.results || profileRes.data;
       const hasProfile = Array.isArray(results)
         ? results.length > 0
         : !!(results && typeof results === 'object' && Object.keys(results).length > 0 && results.id);
 
-      if (profileRes.statusCode === 200 && hasProfile) {
+      if (hasProfile) {
         Taro.setStorageSync('hasCompletedGuide', true);
-        setTimeout(() => {
-          Taro.navigateBack();
-        }, 1200);
+        Taro.removeStorageSync('profileCheckPending');
+        setRedirectMessage('正在进入个人中心...');
+        await sleep(240);
+        Taro.switchTab({ url: '/pages/My/index' });
         return;
       }
+
+      Taro.removeStorageSync('hasCompletedGuide');
+      Taro.removeStorageSync('profileCheckPending');
+      setRedirectMessage('正在打开资料填写页...');
+      await sleep(240);
+      Taro.redirectTo({ url: '/pages/LoginGuide/index' });
     } catch (error) {
       console.error('Fetch profile after login failed:', error);
+      Taro.setStorageSync('profileCheckPending', true);
+      setRedirectMessage('登录成功，正在进入个人中心...');
+      await sleep(240);
+      Taro.switchTab({ url: '/pages/My/index' });
     }
-
-    setTimeout(() => {
-      Taro.navigateTo({ url: '/pages/LoginGuide/index' });
-    }, 1200);
   };
 
   const handleSubmitLogin = async () => {
@@ -139,6 +178,7 @@ export default function Login() {
       Taro.setStorageSync('openid', user.openid || '');
       Taro.setStorageSync('loginData', responseData);
       Taro.setStorageSync('importcode', loginToken);
+      Taro.setStorageSync('profileCheckPending', true);
       Taro.setStorageSync('phoneLoginData', {
         user: {
           phone_number: user.phone_number || phoneNumber
@@ -148,16 +188,21 @@ export default function Login() {
         }
       });
 
+      setIsRedirecting(true);
+      setRedirectMessage('登录成功，正在确认资料...');
       setShowLoginModal(false);
       Taro.hideLoading();
       Taro.showToast({
         title: '登录成功',
         icon: 'success',
-        duration: 1200
+        duration: SUCCESS_TOAST_DURATION
       });
 
+      await sleep(SUCCESS_TOAST_DURATION);
+      setRedirectMessage('正在加载你的资料...');
       await checkUserProfileAndContinue(loginToken);
     } catch (error) {
+      setIsRedirecting(false);
       Taro.hideLoading();
       console.error('H5 sms login failed:', error);
       Taro.showToast({
@@ -220,6 +265,15 @@ export default function Login() {
 
   return (
     <View className={styles.page}>
+      {isRedirecting && (
+        <View className={styles['redirect-overlay']}>
+          <View className={styles['redirect-card']}>
+            <View className={styles['redirect-spinner']} />
+            <Text className={styles['redirect-title']}>登录处理中</Text>
+            <Text className={styles['redirect-desc']}>{redirectMessage || '请稍候...'}</Text>
+          </View>
+        </View>
+      )}
 
       {showLoginModal && (
         <View className={styles['modal-overlay']}>
@@ -304,7 +358,7 @@ export default function Login() {
             </View>
 
             <View className={styles['modal-footer']}>
-              <Button className={styles['btn-refuse']} onClick={() => setShowLoginModal(false)}>
+              <Button className={styles['btn-refuse']} onClick={() => Taro.switchTab({ url: '/pages/My/index' })}>
                 取消
               </Button>
               <Button className={styles['btn-save']} onClick={handleSubmitLogin}>

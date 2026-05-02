@@ -434,6 +434,7 @@ export default function LoginGuide() {
       if (res.statusCode === 200 || res.statusCode === 201) {
         // 标记已完成引导
         Taro.setStorageSync('hasCompletedGuide', true);
+        Taro.removeStorageSync('profileCheckPending');
         console.log('✅ 已保存 hasCompletedGuide 标记');
 
         Taro.showToast({

@@ -76,6 +76,7 @@ class App extends Component {
             Taro.removeStorageSync('loginData');
             Taro.removeStorageSync('phoneLoginData');
             Taro.removeStorageSync('hasCompletedGuide');
+            Taro.removeStorageSync('profileCheckPending');
             
             // 不再强制跳转，允许用户浏览部分页面
             // 具体的跳转逻辑交由各页面的交互按钮来处理
