@@ -2,6 +2,11 @@ import { Component } from 'react'
 import Taro from '@tarojs/taro'
 import './app.css'
 
+// 微信小程序云开发初始化 — 必须在模块顶层，早于 App 实例化
+if (process.env.TARO_ENV === 'weapp' && typeof wx !== 'undefined' && wx.cloud) {
+  wx.cloud.init({ env: 'cloud1-d3gxdcbbqab046779' })
+}
+
 if (process.env.TARO_ENV === 'h5' && typeof window !== 'undefined') {
   const hostname = window.location?.hostname || ''
   const isLocalH5 =
