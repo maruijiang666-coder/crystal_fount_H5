@@ -6,51 +6,99 @@ const CardSlider = forwardRef((props, ref) => {
   const { 
     totalCards = 78, 
     defaultSelectedIndex = 60, 
-    visibleCount = 11, 
     imageUrl = "https://tangledup-ai-staging.oss-cn-shanghai.aliyuncs.com/mini_app/crystal_mini_app/assets/TaLuo/oneCard.png",
     onCardSelect,
     onSwipeUp,
-    onInSliderChange,
     cardWidth = 124,
-    cardHeight = 186
+    cardHeight = 186,
+    style
   } = props;
 
-  const [selectedIndex, setSelectedIndex] = useState(defaultSelectedIndex);
-  const [leftCount, setLeftCount] = useState(5);
-  const [rightCount, setRightCount] = useState(5);
-  const [dragOffsetX, setDragOffsetX] = useState(0);
+  const [activePosition, setActivePosition] = useState(defaultSelectedIndex);
   const touchStartXRef = useRef(0);
   const touchStartYRef = useRef(0);
+  const touchStartTimeRef = useRef(0);
+  const touchStartPositionRef = useRef(defaultSelectedIndex);
+  const lastTouchXRef = useRef(0);
+  const lastTouchTimeRef = useRef(0);
+  const swipeVelocityRef = useRef(0);
   const isTouchingRef = useRef(false);
   const gestureIntentRef = useRef('pending');
+  const dragOffsetFrameRef = useRef(null);
+  const pendingPositionRef = useRef(defaultSelectedIndex);
+  const DRAG_INTENT_THRESHOLD = 12;
+  const SWIPE_SNAP_DISTANCE = Math.max(60, Math.round(cardWidth * 0.56));
+  const MAX_VISIBLE_SIDE_CARDS = 5;
+  const RENDER_BUFFER = 1;
+  const maxIndex = Math.max(0, totalCards - 1);
 
-  const calculateLeftCount = (index) => {
-    if (index <= 4) {
-      return Math.max(0, index - 1);
+  const clamp = (value, min, max) => Math.min(max, Math.max(min, value));
+  const selectedIndex = clamp(Math.round(activePosition), 0, maxIndex);
+
+  const applyPositionResistance = (nextPosition) => {
+    if (nextPosition < 0) {
+      return nextPosition * 0.3;
     }
-    return 5;
+
+    if (nextPosition > maxIndex) {
+      return maxIndex + (nextPosition - maxIndex) * 0.3;
+    }
+
+    return nextPosition;
   };
 
-  const calculateRightCount = (index) => {
-    const remainingRight = totalCards - 1 - index;
-    if (remainingRight < 5) {
-      return remainingRight;
+  const cancelPendingDragOffsetUpdate = () => {
+    if (dragOffsetFrameRef.current === null) return;
+
+    if (typeof cancelAnimationFrame === 'function') {
+      cancelAnimationFrame(dragOffsetFrameRef.current);
+    } else {
+      clearTimeout(dragOffsetFrameRef.current);
     }
-    return 5;
+
+    dragOffsetFrameRef.current = null;
+  };
+
+  const schedulePositionUpdate = (nextPosition) => {
+    pendingPositionRef.current = nextPosition;
+
+    if (dragOffsetFrameRef.current !== null) {
+      return;
+    }
+
+    const requestFrame = typeof requestAnimationFrame === 'function'
+      ? requestAnimationFrame
+      : (callback) => setTimeout(callback, 16);
+
+    dragOffsetFrameRef.current = requestFrame(() => {
+      dragOffsetFrameRef.current = null;
+      setActivePosition((prevPosition) => (
+        prevPosition === pendingPositionRef.current ? prevPosition : pendingPositionRef.current
+      ));
+    });
+  };
+
+  const snapToPosition = (nextPosition) => {
+    cancelPendingDragOffsetUpdate();
+    pendingPositionRef.current = nextPosition;
+    setActivePosition((prevPosition) => (
+      prevPosition === nextPosition ? prevPosition : nextPosition
+    ));
   };
 
   const handleTouchStart = (e) => {
     const touch = e.touches[0];
+    const now = Date.now();
     touchStartXRef.current = touch.clientX;
     touchStartYRef.current = touch.clientY;
+    touchStartTimeRef.current = now;
+    touchStartPositionRef.current = activePosition;
+    pendingPositionRef.current = activePosition;
+    lastTouchXRef.current = touch.clientX;
+    lastTouchTimeRef.current = now;
+    swipeVelocityRef.current = 0;
     isTouchingRef.current = true;
     gestureIntentRef.current = 'pending';
-    if (onInSliderChange) onInSliderChange(true);
-    console.log('[CardSlider] touchstart', {
-      x: touchStartXRef.current,
-      y: touchStartYRef.current,
-      selectedIndex,
-    });
   };
 
   const handleTouchMove = (e) => {
@@ -58,40 +106,34 @@ const CardSlider = forwardRef((props, ref) => {
     const touch = e.touches[0];
     const deltaX = touch.clientX - touchStartXRef.current;
     const deltaY = touch.clientY - touchStartYRef.current;
+    const now = Date.now();
 
     if (gestureIntentRef.current === 'pending') {
       const absX = Math.abs(deltaX);
       const absY = Math.abs(deltaY);
-      if (absX > 12 || absY > 12) {
+      if (absX > DRAG_INTENT_THRESHOLD || absY > DRAG_INTENT_THRESHOLD) {
         gestureIntentRef.current = absX > absY ? 'horizontal' : 'vertical';
-        console.log('[CardSlider] gesture decided', {
-          intent: gestureIntentRef.current,
-          deltaX,
-          deltaY,
-          selectedIndex,
-        });
-        if (gestureIntentRef.current === 'horizontal') {
-          if (onInSliderChange) onInSliderChange(true);
-        } else if (onInSliderChange) {
-          onInSliderChange(false);
-        }
       }
     }
-
-    console.log('[CardSlider] touchmove', {
-      deltaX,
-      deltaY,
-      intent: gestureIntentRef.current,
-      selectedIndex,
-    });
     
     if (gestureIntentRef.current === 'horizontal') {
+      const elapsed = Math.max(1, now - lastTouchTimeRef.current);
+      const instantVelocity = (touch.clientX - lastTouchXRef.current) / elapsed;
+      swipeVelocityRef.current = swipeVelocityRef.current * 0.42 + instantVelocity * 0.58;
+      lastTouchXRef.current = touch.clientX;
+      lastTouchTimeRef.current = now;
+
       try {
         e.preventDefault();
       } catch (err) {
-        console.log('preventDefault not supported');
+        // Some Taro runtimes do not expose preventDefault on touch events.
       }
-      setDragOffsetX(deltaX * 0.25);
+
+      const rawPosition = touchStartPositionRef.current - deltaX / SWIPE_SNAP_DISTANCE;
+      const nextPosition = applyPositionResistance(rawPosition);
+      if (Math.abs(nextPosition - pendingPositionRef.current) >= 0.01) {
+        schedulePositionUpdate(nextPosition);
+      }
     }
   };
 
@@ -100,85 +142,39 @@ const CardSlider = forwardRef((props, ref) => {
     const touch = e.changedTouches[0];
     const deltaX = touch.clientX - touchStartXRef.current;
     const deltaY = touch.clientY - touchStartYRef.current;
-    console.log('[CardSlider] touchend raw', {
-      deltaX,
-      deltaY,
-      selectedIndex,
-      dragOffsetX,
-    });
-    console.log('[CardSlider] touchend:start', {
-      deltaX,
-      deltaY,
-      selectedIndex,
-      leftCount,
-      rightCount,
-    });
-    
-    const minSwipeDistance = 24;
-    const isHorizontalSwipe = gestureIntentRef.current === 'horizontal' || Math.abs(deltaX) > Math.abs(deltaY) * 0.8;
-    if (isHorizontalSwipe && Math.abs(deltaX) > minSwipeDistance) {
-      const swipeIntensity = Math.abs(deltaX);
-      let cardChangeCount = 1;
-      
-      if (swipeIntensity > 200) {
-        cardChangeCount = 4;
-      } else if (swipeIntensity > 150) {
-        cardChangeCount = 3;
-      } else if (swipeIntensity > 100) {
-        cardChangeCount = 2;
-      } else {
-        cardChangeCount = 1;
-      }
-      
-      if (deltaX > 0) {
-        console.log('[CardSlider] swipe -> left', { cardChangeCount, deltaX });
-        handleSelectMultipleLeft(cardChangeCount);
-      } else {
-        console.log('[CardSlider] swipe -> right', { cardChangeCount, deltaX });
-        handleSelectMultipleRight(cardChangeCount);
-      }
+    const elapsed = Math.max(1, Date.now() - touchStartTimeRef.current);
+    const isHorizontalSwipe = gestureIntentRef.current === 'horizontal' || Math.abs(deltaX) > Math.abs(deltaY) * 0.85;
+    const velocityFromStart = deltaX / elapsed;
+    const swipeVelocity = Math.abs(swipeVelocityRef.current) > Math.abs(velocityFromStart)
+      ? swipeVelocityRef.current
+      : velocityFromStart;
+
+    if (isHorizontalSwipe && Math.abs(deltaX) > 8) {
+      const currentPosition = pendingPositionRef.current;
+      const momentumOffset = (-swipeVelocity * 180) / SWIPE_SNAP_DISTANCE;
+      const projectedPosition = applyPositionResistance(currentPosition + momentumOffset);
+      const nextIndex = clamp(Math.round(projectedPosition), 0, maxIndex);
+      snapToPosition(nextIndex);
+    } else if (deltaY < -100 && onSwipeUp) {
+      onSwipeUp(selectedIndex);
     } else {
-      console.log('[CardSlider] touchend ignored', {
-        minSwipeDistance,
-        horizontal: Math.abs(deltaX) > Math.abs(deltaY),
-        distance: Math.abs(deltaX),
-      });
-      if (deltaY > 100 && onSwipeUp) {
-        onSwipeUp(selectedIndex);
-      }
+      snapToPosition(selectedIndex);
     }
     
     isTouchingRef.current = false;
     gestureIntentRef.current = 'pending';
-    setDragOffsetX(0);
-    if (onInSliderChange) {
-      onInSliderChange(false);
-    }
   };
 
   const handleTouchCancel = () => {
     isTouchingRef.current = false;
     gestureIntentRef.current = 'pending';
-    setDragOffsetX(0);
-    if (onInSliderChange) {
-      onInSliderChange(false);
-    }
+    snapToPosition(selectedIndex);
   };
 
   useEffect(() => {
-    setLeftCount(calculateLeftCount(selectedIndex));
-    setRightCount(calculateRightCount(selectedIndex));
-    console.log('[CardSlider] selectedIndex changed', {
-      selectedIndex,
-      leftCount: calculateLeftCount(selectedIndex),
-      rightCount: calculateRightCount(selectedIndex),
-    });
-  }, [selectedIndex]);
-
-  // 组件初始化时设置正确的leftCount和rightCount
-  useEffect(() => {
-    setLeftCount(calculateLeftCount(selectedIndex));
-    setRightCount(calculateRightCount(selectedIndex));
+    return () => {
+      cancelPendingDragOffsetUpdate();
+    };
   }, []);
 
   // 确保父组件总是知道当前选中的卡片
@@ -186,43 +182,33 @@ const CardSlider = forwardRef((props, ref) => {
     if (onCardSelect) {
       onCardSelect(selectedIndex);
     }
-  }, [selectedIndex]);
+  }, [selectedIndex, onCardSelect]);
+
+  const visualCenterPosition = clamp(activePosition, 0, maxIndex);
+  const renderStart = Math.max(0, Math.floor(visualCenterPosition) - MAX_VISIBLE_SIDE_CARDS - RENDER_BUFFER);
+  const renderEnd = Math.min(maxIndex, Math.ceil(visualCenterPosition) + MAX_VISIBLE_SIDE_CARDS + RENDER_BUFFER);
+  const cardSpacing = Math.max(28, Math.round(cardWidth * 0.3));
+  const arcHeightFactor = Math.max(3.5, cardHeight * 0.018);
+  const fanCompression = Math.max(3.5, cardWidth * 0.032);
 
   // 处理向左选择
   const handleSelectLeft = () => {
-    setSelectedIndex(prevIndex => {
-      const nextIndex = Math.max(0, prevIndex - 1);
-      console.log('[CardSlider] handleSelectLeft', { prevIndex, nextIndex });
-      return nextIndex;
-    });
+    snapToPosition(clamp(selectedIndex - 1, 0, maxIndex));
   };
 
   // 处理向右选择
   const handleSelectRight = () => {
-    setSelectedIndex(prevIndex => {
-      const nextIndex = Math.min(totalCards - 1, prevIndex + 1);
-      console.log('[CardSlider] handleSelectRight', { prevIndex, nextIndex });
-      return nextIndex;
-    });
+    snapToPosition(clamp(selectedIndex + 1, 0, maxIndex));
   };
 
-  // 处理多张卡片向左切换
-  const handleSelectMultipleLeft = (count) => {
-    setSelectedIndex(prevIndex => {
-      const nextIndex = Math.max(0, prevIndex - count);
-      console.log('[CardSlider] handleSelectMultipleLeft', { prevIndex, count, nextIndex });
-      return nextIndex;
+  useEffect(() => {
+    setActivePosition((prevPosition) => {
+      const normalizedPosition = clamp(prevPosition, 0, maxIndex);
+      return normalizedPosition === prevPosition ? prevPosition : normalizedPosition;
     });
-  };
-
-  // 处理多张卡片向右切换
-  const handleSelectMultipleRight = (count) => {
-    setSelectedIndex(prevIndex => {
-      const nextIndex = Math.min(totalCards - 1, prevIndex + count);
-      console.log('[CardSlider] handleSelectMultipleRight', { prevIndex, count, nextIndex });
-      return nextIndex;
-    });
-  };
+    pendingPositionRef.current = clamp(pendingPositionRef.current, 0, maxIndex);
+    touchStartPositionRef.current = clamp(touchStartPositionRef.current, 0, maxIndex);
+  }, [maxIndex]);
 
   // 公开方法供父组件调用
   useImperativeHandle(ref, () => ({
@@ -238,21 +224,24 @@ const CardSlider = forwardRef((props, ref) => {
       onTouchMove={handleTouchMove}
       onTouchEnd={handleTouchEnd}
       onTouchCancel={handleTouchCancel}
-      style={{ width: '100%', height: '100%', position: 'relative', overflow: 'hidden' }}
+      style={{ width: '100%', height: '100%', position: 'relative', overflow: 'hidden', ...style }}
     >
-      {Array.from({ length: leftCount + 1 + rightCount }, (_, displayIndex) => {
-        const startIndex = Math.max(0, selectedIndex - leftCount);
-        const actualIndex = Math.min(totalCards - 1, startIndex + displayIndex);
-        
-        // 扁平牌阵：更接近参考图的横向展开与轻弧度
-        const displayCenterIndex = leftCount;
-        const distanceFromCenter = displayIndex - displayCenterIndex;
+      {Array.from({ length: renderEnd - renderStart + 1 }, (_, displayIndex) => {
+        const actualIndex = renderStart + displayIndex;
+        const distanceFromCenter = actualIndex - visualCenterPosition;
         const absDistance = Math.abs(distanceFromCenter);
-        const x = distanceFromCenter * 29;
-        const y = absDistance * absDistance * 1.5 + absDistance * 2;
-        const rotation = distanceFromCenter * 5.8;
-        const scale = displayIndex === leftCount ? 1.04 : Math.max(0.9, 1 - absDistance * 0.018);
-        const dragFollow = dragOffsetX * 0.22;
+        const signedDistance = distanceFromCenter === 0 ? 0 : Math.sign(distanceFromCenter);
+        const x = distanceFromCenter * cardSpacing - signedDistance * Math.pow(absDistance, 1.32) * fanCompression;
+        const y = Math.pow(absDistance, 1.55) * arcHeightFactor;
+        const rotation = distanceFromCenter * 6.1;
+        const isCenterCard = actualIndex === selectedIndex;
+        const scale = Math.max(0.84, 1.055 - absDistance * 0.05);
+        const opacity = absDistance > MAX_VISIBLE_SIDE_CARDS + 0.35
+          ? 0
+          : Math.max(0.18, isCenterCard ? 1 : 0.98 - absDistance * 0.16);
+        const transition = isTouchingRef.current && gestureIntentRef.current === 'horizontal'
+          ? 'none'
+          : 'transform 0.3s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.22s ease-out';
         
         return (
           <Image
@@ -263,14 +252,13 @@ const CardSlider = forwardRef((props, ref) => {
               position: 'absolute',
               left: `calc(50% + ${x}px)`,
               top: `calc(50% + ${y}px)`,
-              transform: displayIndex === leftCount
-                ? `translate(-50%, -50%) translateX(${dragFollow}px) rotate(${rotation}deg) scale(${scale})`
-                : `translate(-50%, -50%) translateX(${dragFollow}px) rotate(${rotation}deg) scale(${scale})`,
-              zIndex: displayIndex === leftCount ? 999 : 500 - Math.abs(distanceFromCenter),
-              filter: displayIndex === leftCount ? 'none' : 'grayscale(50%) brightness(70%)',
-              transition: 'all 0.2s ease-out',
+              transform: `translate3d(-50%, -50%, 0) rotate(${rotation}deg) scale(${scale})`,
+              zIndex: 1000 - Math.round(absDistance * 100),
+              opacity,
+              transition,
               width: `${cardWidth}px`,
-              height: `${cardHeight}px`
+              height: `${cardHeight}px`,
+              willChange: 'transform, opacity'
             }}
           />
         );
@@ -302,7 +290,6 @@ const CardSlider = forwardRef((props, ref) => {
 CardSlider.defaultProps = {
   totalCards: 78,
   defaultSelectedIndex: 60,
-  visibleCount: 11,
   cardWidth: 124,
   cardHeight: 186
 };

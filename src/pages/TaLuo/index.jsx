@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef } from 'react';
 import Taro from '@tarojs/taro';
 import { View, Text, Image, Swiper, SwiperItem } from '@tarojs/components';
 import { getOssImageUrl } from '../../utils/config.js';
@@ -69,9 +69,6 @@ export default function TaLuo(props) {
   const [cardOrder, setCardOrder] = useState(Array.from({ length: SPREAD_TYPES[0].cardCount }, (_, i) => i)); // 卡片逻辑顺序映射
   const [errorMsg, setErrorMsg] = useState('');
   const [energyAnimation, setEnergyAnimation] = useState(null);
-  const touchStartRef = useRef({ x: 0, y: 0 });
-  const cardSliderRef = useRef(null);
-  const isTouchingCardSlider = useRef(false);
   const isPlacementSubmittingRef = useRef(false);
 
   const resetSpreadState = (showToast = false) => {
@@ -83,8 +80,6 @@ export default function TaLuo(props) {
     setCurrentSpreadIndex(0);
     setCardOrder(Array.from({ length: count }, (_, i) => i));
     setIsSpreadConfirmed(false);
-    isTouchingCardSlider.current = false;
-    touchStartRef.current = { x: 0, y: 0 };
     Taro.removeStorageSync('last_tarot_reading');
 
     if (showToast) {
@@ -98,11 +93,6 @@ export default function TaLuo(props) {
 
   const handleCardSelect = (index) => {
     setSelectedCardIndex(index);
-    console.log('[TaLuo] onCardSelect', {
-      index,
-      selectedCardsLength: selectedCards.length,
-      isSpreadConfirmed,
-    });
   };
 
   const handlePickCurrentCard = () => {
@@ -137,7 +127,6 @@ export default function TaLuo(props) {
       return;
     }
 
-    console.log('准备添加第', selectedCards.length + 1, '张卡');
     setSelectedCards(prevSelectedCards => [...prevSelectedCards, selectedCardIndex]);
 
     const newCard = getRandomCard(drawnCards);
@@ -145,27 +134,10 @@ export default function TaLuo(props) {
       setDrawnCards(prevDrawnCards => [...prevDrawnCards, newCard]);
     }
 
-    console.log('添加卡片到顶部，当前已选:', selectedCards.length + 1);
     Taro.showToast({
       title: `已选择第${selectedCards.length + 1}张牌`,
       icon: 'none',
       duration: 1000
-    });
-  };
-
-  const handleTouchStart = (e) => {
-    const touch = e.touches[0];
-    touchStartRef.current = {
-      x: touch.clientX,
-      y: touch.clientY,
-    };
-    console.log('[TaLuo] touchstart', {
-      x: touchStartRef.current.x,
-      y: touchStartRef.current.y,
-      selectedCardIndex,
-      selectedCardsLength: selectedCards.length,
-      isSpreadConfirmed,
-      isTouchingCardSlider: isTouchingCardSlider.current,
     });
   };
 
@@ -180,65 +152,6 @@ export default function TaLuo(props) {
     return { card, isReversed };
   };
 
-  const handleTouchEnd = (e) => {
-    if (isTouchingCardSlider.current) {
-      console.log('[TaLuo] touchend skipped because slider is active', {
-        selectedCardIndex,
-        selectedCardsLength: selectedCards.length,
-      });
-      return;
-    }
-    // 未确认牌阵时无法抽卡
-    if (!isSpreadConfirmed) {
-      console.log('[TaLuo] touchend skipped because spread not confirmed');
-      return;
-    }
-
-    const touch = e.changedTouches[0];
-    const deltaX = touchStartRef.current.x - touch.clientX;
-    const deltaY = touchStartRef.current.y - touch.clientY;
-
-    console.log('handleTouchEnd 触发 - deltaX:', deltaX, 'deltaY:', deltaY, 'selectedCardIndex:', selectedCardIndex, 'selectedCards.length:', selectedCards.length);
-
-    // 横向滑动交给 CardSlider 处理，页面不再把它误判成抽牌
-    if (Math.abs(deltaX) > Math.abs(deltaY)) return;
-    console.log('[TaLuo] vertical swipe detected', {
-      deltaX,
-      deltaY,
-      selectedCardIndex,
-      selectedCardsLength: selectedCards.length,
-    });
-
-    // 向上滑动在卡片选择器区域内时，直接触发选牌
-    if (deltaY > 100) {
-      handlePickCurrentCard();
-    }
-  };
-
-  useEffect(() => {
-    if (drawnCards.length > 0) {
-      const lastDrawn = drawnCards[drawnCards.length - 1];
-      if (lastDrawn && lastDrawn.card) {
-        // Preload the image
-      }
-    }
-  }, [drawnCards]);
-
-  // 监听翻牌状态，全部翻开时打印日志
-  useEffect(() => {
-    if (flippedStatus.every(status => status) && drawnCards.length === cardCount) {
-      console.log('1. 要占卜的内容:', userQuestion || '未输入');
-      console.log('2. 牌阵:', SPREAD_TYPES[currentSpreadIndex].name);
-
-      // 使用逻辑顺序打印
-      const orderedCards = cardOrder.map(index => {
-        const drawn = drawnCards[index];
-        return drawn ? `${drawn.card.chinese_name} (${drawn.isReversed ? '逆位' : '正位'})` : '未知';
-      });
-      console.log('3. 目前抽到的牌(按选择顺序):', orderedCards);
-    }
-  }, [flippedStatus, drawnCards, currentSpreadIndex, userQuestion, cardOrder, cardCount]);
-
   // 点击翻牌
   const handleCardFlip = (index) => {
     // 必须抽满才能翻牌
@@ -251,24 +164,8 @@ export default function TaLuo(props) {
       return;
     }
 
-    console.log('点击翻牌:', {
-      index: index,
-      currentSpread: SPREAD_TYPES[currentSpreadIndex].id,
-      flippedStatus: flippedStatus,
-      drawnCards: drawnCards,
-      selectedCards: selectedCards
-    });
-
     if (!flippedStatus[index]) {
       const currentSpread = SPREAD_TYPES[currentSpreadIndex];
-
-      // 所有牌阵都保持抽牌顺序，不因首次点击而重排 cardOrder
-      if (currentSpread.id === 'decision') {
-        console.log('[TaLuo] decision spread keeps draw order', {
-          cardOrder,
-          clickedIndex: index,
-        });
-      }
 
       // 翻开当前点击的牌
       const newStatus = [...flippedStatus];
@@ -305,17 +202,9 @@ export default function TaLuo(props) {
   };
 
   const handlePlacement = async () => {
-    console.log('[TaLuo] placement button clicked', {
-      selectedCardsLength: selectedCards.length,
-      drawnCardsLength: drawnCards.length,
-      cardCount,
-      canShowPlacementButton,
-    });
-
     // 1. 检查是否已激活水晶
     const nfcId = Taro.getStorageSync('nfc_tag_id');
     if (!nfcId) {
-      console.warn('[TaLuo] placement blocked: missing nfc_tag_id');
       Taro.showModal({
         title: '提示',
         content: '您尚未激活水晶，请先去激活',
@@ -332,7 +221,6 @@ export default function TaLuo(props) {
 
     const loginToken = Taro.getStorageSync('importcode');
     if (!loginToken) {
-      console.warn('[TaLuo] placement blocked: missing login token');
       Taro.showToast({
         title: '请先登录',
         icon: 'none',
@@ -345,13 +233,6 @@ export default function TaLuo(props) {
     }
 
     // 本地 spirit_balance 可能是旧缓存，不能作为硬性拦截条件
-    const currentBalance = Taro.getStorageSync('spirit_balance');
-    console.log('[TaLuo] preparing consume request', {
-      nfcId,
-      currentBalance,
-      hasLoginToken: !!loginToken,
-    });
-
     if (isPlacementSubmittingRef.current) {
       return;
     }
@@ -375,7 +256,6 @@ export default function TaLuo(props) {
           reason: "tarot reading"
         }
       });
-      console.log('[TaLuo] consume response received', consumeRes);
 
       if (consumeRes.statusCode !== 200) {
         const rawDetail = consumeRes.data?.detail || '';
@@ -413,7 +293,6 @@ export default function TaLuo(props) {
       Taro.showToast({ title: '消耗 40 灵力', icon: 'success', duration: 1200 });
 
       setTimeout(() => {
-        console.log('[TaLuo] navigate to TaLuoAnswer after consume success');
         Taro.navigateTo({ url: '/pages/TaLuoAnswer/index' });
       }, 200);
     } catch (error) {
@@ -428,7 +307,6 @@ export default function TaLuo(props) {
   };
 
   const canShowPlacementButton = flippedStatus.every(status => status) && drawnCards.length === cardCount;
-  console.log('[TaLuo] canShowPlacementButton:', canShowPlacementButton);
 
   Taro.useDidShow(() => {
     // 进入页面时强制重开一局，避免上一次的抽牌状态残留
@@ -439,8 +317,6 @@ export default function TaLuo(props) {
     <>
       <View
         className={`flex-col ${styles['page']} ${props.className}`}
-        onTouchStart={handleTouchStart}
-        onTouchEnd={handleTouchEnd}
       >
         {/* 顶部区域 - 牌阵选择 */}
         <View className={`flex-col items-center self-stretch ${styles['section']}`} style={{ backgroundImage: `url(${getOssImageUrl('TaLuo/1e734912a97ed8f162bfe0b3fe1f74f7.png')})`, backgroundSize: '100% 100%', backgroundRepeat: 'no-repeat', position: 'relative', height: 'auto' }}>
@@ -524,21 +400,13 @@ export default function TaLuo(props) {
 
         {/* 卡片选择器 - Only show when spread is confirmed */}
         {isSpreadConfirmed && (
-          <View
-            style={{ width: '100%', height: '200px', flexShrink: 0, marginTop: '-6px' }}
-            onTouchStart={handleTouchStart}
-            onTouchEnd={handleTouchEnd}
-          >
+          <View style={{ width: '100%', height: '200px', flexShrink: 0, marginTop: '-6px' }}>
             <CardSlider
-              ref={cardSliderRef}
               style={{ width: '100%', height: '100%' }}
               cardWidth={126}
               cardHeight={190}
               onCardSelect={handleCardSelect}
               onSwipeUp={handlePickCurrentCard}
-              onInSliderChange={(isInside) => {
-                isTouchingCardSlider.current = isInside;
-              }}
             />
           </View>
         )}
@@ -577,10 +445,7 @@ export default function TaLuo(props) {
           <View className={styles.placementButtonWrap}>
             <View
               className={`flex-row ${styles['section_3']}`}
-              onClick={() => {
-                console.log('[TaLuo] placement button clicked in render');
-                handlePlacement();
-              }}
+              onClick={handlePlacement}
             >
               <Image
                 className={`shrink-0 ${styles['image_6']}`}
@@ -639,8 +504,6 @@ export default function TaLuo(props) {
                         <Image
                           className={`${styles.cardFace} ${styles.cardFaceBack} ${drawnCard && drawnCard.isReversed ? styles.cardFaceBackReversed : ''}`}
                           src={drawnCard && drawnCard.card ? `${OSS_BASE_URL}${drawnCard.card.filename}` : ''}
-                          onLoad={() => console.log(`图片加载成功: ${drawnCard.card.filename}`)}
-                          onError={() => console.error(`图片加载失败: ${drawnCard.card.filename}`)}
                           mode='aspectFit'
                         />
                       </View>

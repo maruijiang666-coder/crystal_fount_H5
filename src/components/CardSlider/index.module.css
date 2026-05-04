@@ -9,6 +9,7 @@
   touch-action: pan-y;
   user-select: none;
   -webkit-user-select: none;
+  contain: layout paint;
 }
 
 .cardImage {
@@ -16,4 +17,5 @@
   border-radius: 8px;
   box-shadow: 0 10px 22px rgba(0, 0, 0, 0.28);
   pointer-events: none;
+  backface-visibility: hidden;
 }
