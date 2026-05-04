@@ -269,7 +269,7 @@ export default function TaLuo(props) {
       const { current_energy } = consumeRes.data;
       Taro.setStorageSync('spirit_balance', current_energy);
 
-      // 4. 保存本次牌阵，进入等待连接页后自动发起占卜任务
+      // 4. 保存本次牌阵，进入塔罗师选择页后再由用户确认发起占卜任务
       const readingData = {
         question: userQuestion || '',
         spread_type: SPREAD_TYPES[currentSpreadIndex].id,
@@ -284,16 +284,13 @@ export default function TaLuo(props) {
       Taro.setStorageSync('last_tarot_reading', readingData);
       Taro.removeStorageSync(FORTUNE_TASK_ID_STORAGE_KEY);
       Taro.removeStorageSync(FORTUNE_REPORT_STORAGE_KEY);
-      Taro.setStorageSync(AUTO_START_FORTUNE_REPORT_STORAGE_KEY, {
-        prompt_id: 0,
-        template_type: 'hybrid'
-      });
+      Taro.removeStorageSync(AUTO_START_FORTUNE_REPORT_STORAGE_KEY);
 
       Taro.hideLoading();
       Taro.showToast({ title: '消耗 40 灵力', icon: 'success', duration: 1200 });
 
       setTimeout(() => {
-        Taro.navigateTo({ url: '/pages/TaLuoAnswer/index' });
+        Taro.navigateTo({ url: '/pages/TaLuoAnswer/index?skipPlacement=1' });
       }, 200);
     } catch (error) {
       Taro.hideLoading();
@@ -385,10 +382,7 @@ export default function TaLuo(props) {
         </View>
 
         {isSpreadConfirmed && (
-          <View className={`flex-col items-center self-center ${styles['group']}`}
-            onClick={() => {
-              Taro.navigateTo({ url: '/pages/TaLuoAnswer/index?skipPlacement=1' });
-            }}>
+          <View className={`flex-col items-center self-center ${styles['group']}`}>
             <Text className={`${styles['text']}`}>Tap to pick your card</Text>
             <Image
               style={{ margin: '20px 0 0 0' }}

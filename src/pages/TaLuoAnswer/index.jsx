@@ -626,6 +626,7 @@ export default function TaLuoAnswer(props) {
     useEffect(() => {
         if (skipPlacement) {
             clearFortuneTaskCache();
+            Taro.removeStorageSync(AUTO_START_FORTUNE_REPORT_STORAGE_KEY);
             return;
         }
 
