@@ -20,12 +20,14 @@ const CardSlider = forwardRef((props, ref) => {
   const touchStartTimeRef = useRef(0);
   const touchStartPositionRef = useRef(defaultSelectedIndex);
   const lastTouchXRef = useRef(0);
+  const lastTouchYRef = useRef(0);
   const lastTouchTimeRef = useRef(0);
   const swipeVelocityRef = useRef(0);
   const isTouchingRef = useRef(false);
   const gestureIntentRef = useRef('pending');
   const dragOffsetFrameRef = useRef(null);
   const pendingPositionRef = useRef(defaultSelectedIndex);
+  const activePositionRef = useRef(defaultSelectedIndex);
   const DRAG_INTENT_THRESHOLD = 12;
   const SWIPE_SNAP_DISTANCE = Math.max(60, Math.round(cardWidth * 0.56));
   const MAX_VISIBLE_SIDE_CARDS = 5;
@@ -34,6 +36,44 @@ const CardSlider = forwardRef((props, ref) => {
 
   const clamp = (value, min, max) => Math.min(max, Math.max(min, value));
   const selectedIndex = clamp(Math.round(activePosition), 0, maxIndex);
+
+  const getTouchCoordinate = (value, fallbackValue = 0) => (
+    Number.isFinite(value) ? value : fallbackValue
+  );
+
+  const getTouchPoint = (touchLike, fallbackPoint = {}) => {
+    const fallbackX = getTouchCoordinate(fallbackPoint.x, 0);
+    const fallbackY = getTouchCoordinate(fallbackPoint.y, 0);
+
+    return {
+      x: getTouchCoordinate(
+        touchLike?.clientX,
+        getTouchCoordinate(
+          touchLike?.pageX,
+          getTouchCoordinate(touchLike?.x, fallbackX)
+        )
+      ),
+      y: getTouchCoordinate(
+        touchLike?.clientY,
+        getTouchCoordinate(
+          touchLike?.pageY,
+          getTouchCoordinate(touchLike?.y, fallbackY)
+        )
+      )
+    };
+  };
+
+  const getEventTouchPoint = (e, { useChangedTouches = false, fallbackPoint = {} } = {}) => {
+    const primaryTouch = useChangedTouches
+      ? e?.changedTouches?.[0] || e?.touches?.[0]
+      : e?.touches?.[0] || e?.changedTouches?.[0];
+
+    const nestedTouch = useChangedTouches
+      ? e?.detail?.changedTouches?.[0] || e?.detail?.touches?.[0]
+      : e?.detail?.touches?.[0] || e?.detail?.changedTouches?.[0];
+
+    return getTouchPoint(primaryTouch || nestedTouch || e?.detail || e, fallbackPoint);
+  };
 
   const applyPositionResistance = (nextPosition) => {
     if (nextPosition < 0) {
@@ -75,26 +115,37 @@ const CardSlider = forwardRef((props, ref) => {
       setActivePosition((prevPosition) => (
         prevPosition === pendingPositionRef.current ? prevPosition : pendingPositionRef.current
       ));
+      activePositionRef.current = pendingPositionRef.current;
     });
   };
 
   const snapToPosition = (nextPosition) => {
     cancelPendingDragOffsetUpdate();
     pendingPositionRef.current = nextPosition;
+    activePositionRef.current = nextPosition;
     setActivePosition((prevPosition) => (
       prevPosition === nextPosition ? prevPosition : nextPosition
     ));
   };
 
   const handleTouchStart = (e) => {
-    const touch = e.touches[0];
+    const touch = getEventTouchPoint(e, {
+      fallbackPoint: {
+        x: lastTouchXRef.current,
+        y: lastTouchYRef.current
+      }
+    });
     const now = Date.now();
-    touchStartXRef.current = touch.clientX;
-    touchStartYRef.current = touch.clientY;
+    const currentPosition = pendingPositionRef.current ?? activePositionRef.current;
+
+    touchStartXRef.current = touch.x;
+    touchStartYRef.current = touch.y;
     touchStartTimeRef.current = now;
-    touchStartPositionRef.current = activePosition;
-    pendingPositionRef.current = activePosition;
-    lastTouchXRef.current = touch.clientX;
+    touchStartPositionRef.current = currentPosition;
+    pendingPositionRef.current = currentPosition;
+    activePositionRef.current = currentPosition;
+    lastTouchXRef.current = touch.x;
+    lastTouchYRef.current = touch.y;
     lastTouchTimeRef.current = now;
     swipeVelocityRef.current = 0;
     isTouchingRef.current = true;
@@ -103,9 +154,14 @@ const CardSlider = forwardRef((props, ref) => {
 
   const handleTouchMove = (e) => {
     if (!isTouchingRef.current) return;
-    const touch = e.touches[0];
-    const deltaX = touch.clientX - touchStartXRef.current;
-    const deltaY = touch.clientY - touchStartYRef.current;
+    const touch = getEventTouchPoint(e, {
+      fallbackPoint: {
+        x: lastTouchXRef.current,
+        y: lastTouchYRef.current
+      }
+    });
+    const deltaX = touch.x - touchStartXRef.current;
+    const deltaY = touch.y - touchStartYRef.current;
     const now = Date.now();
 
     if (gestureIntentRef.current === 'pending') {
@@ -118,9 +174,10 @@ const CardSlider = forwardRef((props, ref) => {
     
     if (gestureIntentRef.current === 'horizontal') {
       const elapsed = Math.max(1, now - lastTouchTimeRef.current);
-      const instantVelocity = (touch.clientX - lastTouchXRef.current) / elapsed;
+      const instantVelocity = (touch.x - lastTouchXRef.current) / elapsed;
       swipeVelocityRef.current = swipeVelocityRef.current * 0.42 + instantVelocity * 0.58;
-      lastTouchXRef.current = touch.clientX;
+      lastTouchXRef.current = touch.x;
+      lastTouchYRef.current = touch.y;
       lastTouchTimeRef.current = now;
 
       try {
@@ -139,15 +196,24 @@ const CardSlider = forwardRef((props, ref) => {
 
   const handleTouchEnd = (e) => {
     if (!isTouchingRef.current) return;
-    const touch = e.changedTouches[0];
-    const deltaX = touch.clientX - touchStartXRef.current;
-    const deltaY = touch.clientY - touchStartYRef.current;
+    const touch = getEventTouchPoint(e, {
+      useChangedTouches: true,
+      fallbackPoint: {
+        x: lastTouchXRef.current,
+        y: lastTouchYRef.current
+      }
+    });
+    const deltaX = touch.x - touchStartXRef.current;
+    const deltaY = touch.y - touchStartYRef.current;
     const elapsed = Math.max(1, Date.now() - touchStartTimeRef.current);
     const isHorizontalSwipe = gestureIntentRef.current === 'horizontal' || Math.abs(deltaX) > Math.abs(deltaY) * 0.85;
     const velocityFromStart = deltaX / elapsed;
     const swipeVelocity = Math.abs(swipeVelocityRef.current) > Math.abs(velocityFromStart)
       ? swipeVelocityRef.current
       : velocityFromStart;
+
+    lastTouchXRef.current = touch.x;
+    lastTouchYRef.current = touch.y;
 
     if (isHorizontalSwipe && Math.abs(deltaX) > 8) {
       const currentPosition = pendingPositionRef.current;
@@ -177,6 +243,10 @@ const CardSlider = forwardRef((props, ref) => {
     };
   }, []);
 
+  useEffect(() => {
+    activePositionRef.current = activePosition;
+  }, [activePosition]);
+
   // 确保父组件总是知道当前选中的卡片
   useEffect(() => {
     if (onCardSelect) {
@@ -202,13 +272,10 @@ const CardSlider = forwardRef((props, ref) => {
   };
 
   useEffect(() => {
-    setActivePosition((prevPosition) => {
-      const normalizedPosition = clamp(prevPosition, 0, maxIndex);
-      return normalizedPosition === prevPosition ? prevPosition : normalizedPosition;
-    });
-    pendingPositionRef.current = clamp(pendingPositionRef.current, 0, maxIndex);
-    touchStartPositionRef.current = clamp(touchStartPositionRef.current, 0, maxIndex);
-  }, [maxIndex]);
+    const normalizedDefaultIndex = clamp(defaultSelectedIndex, 0, maxIndex);
+    snapToPosition(normalizedDefaultIndex);
+    touchStartPositionRef.current = normalizedDefaultIndex;
+  }, [defaultSelectedIndex, maxIndex]);
 
   // 公开方法供父组件调用
   useImperativeHandle(ref, () => ({
