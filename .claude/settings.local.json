@@ -21,7 +21,8 @@
       "Bash(dir C:\\\\Users\\\\Administrator\\\\Desktop\\\\*.jpg)",
       "Read(//mnt/c/Users/Administrator/**)",
       "WebFetch(domain:docs.cloudbase.net)",
-      "WebSearch"
+      "WebSearch",
+      "Bash(dir \"F:\\\\DieJiaTai\\\\crystal_fount-xiaomaH5\\\\\")"
     ]
   }
 }

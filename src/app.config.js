@@ -21,7 +21,9 @@ export default {
     'pages/LoginGuide/index',
     'pages/Agreement/index',
     'pages/Privacy/index',
-    'pages/MbtiTest/index'
+    'pages/MbtiTest/index',
+    'pages/match/index',
+    'pages/matchReport/index'
   ],
   tabBar: {
     color: '#999999',

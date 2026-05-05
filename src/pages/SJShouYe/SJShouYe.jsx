@@ -261,6 +261,11 @@ export default function SJShouYe(props) {
     Taro.navigateTo({ url: '/pages/yunshi/yunshi?source=entertainment' });
   };
 
+  const handleMatchClick = () => {
+    if (!checkCrystalActivation()) return;
+    Taro.navigateTo({ url: '/pages/match/index' });
+  };
+
   // 分享给朋友
   Taro.useShareAppMessage(() => {
     return {
@@ -684,6 +689,26 @@ export default function SJShouYe(props) {
               <Text className={`${styles['font']}`}>播客</Text>
               <Text className={`${styles['font_7']} ${styles['text_14']} ${styles['mt-11']}`}>
                 运势解析播客
+              </Text>
+            </View>
+            <View
+              className={`ml-14 flex-col items-start ${styles['equal-division-item_2']} ${styles['section_8']}`}
+              onTouchStart={() => setPressedCard('card5')}
+              onTouchEnd={() => setPressedCard(null)}
+              onTouchCancel={() => setPressedCard(null)}
+              onClick={handleMatchClick}
+              style={{
+                backgroundImage: `url(${getOssImageUrl('SJSY/sjsy_bc3.png')})`,
+                backgroundSize: '100% 100%',
+                backgroundRepeat: 'no-repeat',
+                transform: pressedCard === 'card5' ? 'translateY(4px) scale(0.98)' : 'translateY(0) scale(1)',
+                transition: 'all 0.1s ease',
+                opacity: pressedCard === 'card5' ? 0.9 : 1
+              }}
+            >
+              <Text className={`${styles['font']}`}>匹配度</Text>
+              <Text className={`${styles['font_7']} ${styles['text_14']} ${styles['mt-11']}`}>
+                测试你和TA的匹配度
               </Text>
             </View>
           </ScrollView>

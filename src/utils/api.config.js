@@ -35,6 +35,7 @@ export const API_ENDPOINTS = {
   YUNSHI_PODCAST: '/api/yunshi/fortune/podcast/',
   YUNSHI_REPORT: '/api/yunshi/fortune/report/',
   YUNSHI_TASKS: '/api/yunshi/fortune/tasks/',
+  YUNSHI_MATCH_REPORT: '/api/yunshi/match/report/',
   
   // 其他端点可以在这里添加
 };
