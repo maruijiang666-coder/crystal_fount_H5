@@ -9,9 +9,270 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="white">
   <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" >
   <title></title>
-  <link rel="stylesheet" href="/css/app.css">
+  <style>
+    html,
+    body {
+      margin: 0;
+      min-height: 100%;
+      background: #0b1411;
+    }
+
+    #boot-splash {
+      position: fixed;
+      inset: 0;
+      z-index: 9999;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      background:
+        radial-gradient(circle at top, rgba(214, 162, 7, 0.22), transparent 36%),
+        linear-gradient(180deg, #09110f 0%, #0b1411 52%, #101a16 100%);
+      color: #f4ead2;
+      transition: opacity 0.28s ease, visibility 0.28s ease;
+    }
+
+    #boot-splash.boot-splash-hidden {
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+    }
+
+    .boot-splash__panel {
+      width: min(100%, 420px);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 18px;
+      text-align: center;
+    }
+
+    .boot-splash__halo {
+      position: relative;
+      width: 88px;
+      height: 88px;
+      border-radius: 50%;
+      border: 1px solid rgba(214, 162, 7, 0.42);
+      box-shadow:
+        0 0 0 10px rgba(214, 162, 7, 0.06),
+        0 0 42px rgba(214, 162, 7, 0.18);
+      animation: boot-pulse 2.1s ease-in-out infinite;
+    }
+
+    .boot-splash__halo::before,
+    .boot-splash__halo::after {
+      content: '';
+      position: absolute;
+      inset: 50%;
+      border-radius: 50%;
+      transform: translate(-50%, -50%);
+    }
+
+    .boot-splash__halo::before {
+      width: 42px;
+      height: 42px;
+      background: radial-gradient(circle, rgba(243, 220, 154, 0.95) 0%, rgba(214, 162, 7, 0.62) 58%, rgba(214, 162, 7, 0) 100%);
+      filter: blur(0.5px);
+    }
+
+    .boot-splash__halo::after {
+      width: 72px;
+      height: 72px;
+      border: 1px solid rgba(244, 234, 210, 0.18);
+    }
+
+    .boot-splash__title {
+      font-size: 22px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+    }
+
+    .boot-splash__status {
+      max-width: 22em;
+      font-size: 14px;
+      line-height: 1.7;
+      color: rgba(244, 234, 210, 0.78);
+    }
+
+    .boot-splash__hint {
+      font-size: 12px;
+      line-height: 1.6;
+      color: rgba(244, 234, 210, 0.48);
+    }
+
+    @keyframes boot-pulse {
+      0%,
+      100% {
+        transform: scale(0.98);
+        box-shadow:
+          0 0 0 10px rgba(214, 162, 7, 0.06),
+          0 0 42px rgba(214, 162, 7, 0.18);
+      }
+
+      50% {
+        transform: scale(1.04);
+        box-shadow:
+          0 0 0 14px rgba(214, 162, 7, 0.1),
+          0 0 58px rgba(214, 162, 7, 0.28);
+      }
+    }
+  </style>
 </head>
 <body>
+  <div id="boot-splash">
+    <div class="boot-splash__panel">
+      <div class="boot-splash__halo" aria-hidden="true"></div>
+      <div class="boot-splash__title">水晶之泉正在唤醒</div>
+      <div class="boot-splash__status" id="boot-splash-status">正在连接页面资源，首次进入可能需要几秒钟。</div>
+      <div class="boot-splash__hint">如果长时间没有进入，请检查网络后重新刷新。</div>
+    </div>
+  </div>
   <div id="app"></div>
+  <script>
+    (function () {
+      var splashStatus = document.getElementById('boot-splash-status');
+      var APP_SCRIPT_PATTERN = /\/js\/app\.js(?:\?.*)?$/;
+      var APP_STYLE_PATTERN = /\/css\/app\.css(?:\?.*)?$/;
+      var fallbackIndex = 0;
+      var fallbackBases = [];
+      var triedBases = { '/': true };
+      var isFallbackLoading = false;
+
+      function updateStatus(text) {
+        if (splashStatus) {
+          splashStatus.textContent = text;
+        }
+      }
+
+      function uniquePush(list, value) {
+        if (value && list.indexOf(value) === -1) {
+          list.push(value);
+        }
+      }
+
+      function normalizeBase(value) {
+        if (!value || typeof value !== 'string') {
+          return null;
+        }
+
+        var normalized = value.trim();
+        if (!normalized) {
+          return null;
+        }
+
+        return normalized.charAt(normalized.length - 1) === '/' ? normalized : normalized + '/';
+      }
+
+      function resolveFallbackBases(pathname) {
+        var cleanPath = pathname || '/';
+        var segments = cleanPath.split('/').filter(Boolean);
+        var candidates = [];
+
+        if (!segments.length) {
+          return candidates;
+        }
+
+        if (cleanPath.charAt(cleanPath.length - 1) === '/') {
+          for (var i = segments.length; i >= 1; i -= 1) {
+            uniquePush(candidates, '/' + segments.slice(0, i).join('/') + '/');
+          }
+        } else {
+          var lastSegment = segments[segments.length - 1];
+          if (lastSegment && lastSegment.indexOf('.') === -1) {
+            uniquePush(candidates, '/' + segments.join('/') + '/');
+          }
+
+          for (var j = segments.length - 1; j >= 1; j -= 1) {
+            uniquePush(candidates, '/' + segments.slice(0, j).join('/') + '/');
+          }
+        }
+
+        return candidates;
+      }
+
+      function injectFallbackCss(base) {
+        var href = base + 'css/app.css';
+        if (document.querySelector('link[data-crystal-fallback-href="' + href + '"]')) {
+          return;
+        }
+
+        var link = document.createElement('link');
+        link.rel = 'stylesheet';
+        link.href = href;
+        link.setAttribute('data-crystal-fallback-href', href);
+        document.head.appendChild(link);
+      }
+
+      function tryLoadNextFallbackBase() {
+        if (window.__CRYSTAL_APP_BOOT_READY__ || isFallbackLoading) {
+          return;
+        }
+
+        while (fallbackIndex < fallbackBases.length) {
+          var base = normalizeBase(fallbackBases[fallbackIndex]);
+          fallbackIndex += 1;
+
+          if (!base || triedBases[base]) {
+            continue;
+          }
+
+          triedBases[base] = true;
+          isFallbackLoading = true;
+          window.__CRYSTAL_ASSET_BASE__ = base;
+          updateStatus('正在重新连接页面资源…');
+          injectFallbackCss(base);
+
+          var script = document.createElement('script');
+          script.src = base + 'js/app.js';
+          script.async = true;
+          script.onload = function () {
+            isFallbackLoading = false;
+          };
+          script.onerror = function () {
+            isFallbackLoading = false;
+            tryLoadNextFallbackBase();
+          };
+          document.body.appendChild(script);
+          return;
+        }
+
+        updateStatus('页面资源加载失败，请检查网络或稍后重试。');
+      }
+
+      fallbackBases = resolveFallbackBases(window.location.pathname);
+
+      window.addEventListener('crystal-app-ready', function () {
+        updateStatus('连接成功，正在进入…');
+      });
+
+      window.addEventListener('error', function (event) {
+        var target = event && event.target;
+        if (!target) {
+          return;
+        }
+
+        var source = target.src || target.href || '';
+        if (!source) {
+          return;
+        }
+
+        if (APP_SCRIPT_PATTERN.test(source) || APP_STYLE_PATTERN.test(source)) {
+          tryLoadNextFallbackBase();
+        }
+      }, true);
+
+      window.setTimeout(function () {
+        if (!window.__CRYSTAL_APP_BOOT_READY__) {
+          updateStatus('页面首次启动较慢，正在继续加载资源…');
+        }
+      }, 2600);
+
+      window.setTimeout(function () {
+        if (!window.__CRYSTAL_APP_BOOT_READY__) {
+          updateStatus('如果还没有进入页面，通常是网络较慢或资源路径异常。请刷新后重试。');
+        }
+      }, 8000);
+    })();
+  </script>
 </body>
 </html>

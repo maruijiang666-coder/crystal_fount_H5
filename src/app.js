@@ -1,3 +1,4 @@
+import './runtime-public-path'
 import { Component } from 'react'
 import Taro from '@tarojs/taro'
 import './app.css'
@@ -20,6 +21,39 @@ if (process.env.TARO_ENV === 'h5' && typeof window !== 'undefined') {
 class App extends Component {
 
   resizeHandler = null
+
+  markBootReady = () => {
+    if (process.env.TARO_ENV !== 'h5' || typeof window === 'undefined' || typeof document === 'undefined') {
+      return
+    }
+
+    window.__CRYSTAL_APP_BOOT_READY__ = true
+    let readyEvent = null
+    if (typeof window.Event === 'function') {
+      readyEvent = new window.Event('crystal-app-ready')
+    } else if (document.createEvent) {
+      readyEvent = document.createEvent('Event')
+      readyEvent.initEvent('crystal-app-ready', true, true)
+    }
+
+    if (readyEvent) {
+      window.dispatchEvent(readyEvent)
+    }
+
+    const splash = document.getElementById('boot-splash')
+    if (!splash) {
+      return
+    }
+
+    if (splash.classList && splash.classList.add) {
+      splash.classList.add('boot-splash-hidden')
+    } else {
+      splash.className += ' boot-splash-hidden'
+    }
+    window.setTimeout(() => {
+      splash.remove()
+    }, 360)
+  }
 
   syncH5Viewport = () => {
     if (process.env.TARO_ENV !== 'h5' || typeof window === 'undefined') {
@@ -50,6 +84,7 @@ class App extends Component {
   }
 
   componentDidMount () {
+    this.markBootReady()
     this.syncH5Viewport()
 
     if (process.env.TARO_ENV === 'h5' && typeof window !== 'undefined') {
